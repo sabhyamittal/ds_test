@@ -1,6 +1,7 @@
 # Introduction to Algorithms
 
-## The Role pof 
+## The role of algorithm in computing
+
 
 ### Algorithms
 
@@ -16,3 +17,10 @@ print('Hello World')
 ### Getting Started
 
 Getting started notes
+
+<details>
+<summary>Answer</summary>
+
+Sabhya
+</details>
+

@@ -1,11 +1,21 @@
 # Introduction to Algorithms
 
 ## The role of algorithm in computing
+
+### Algorithms
+
  Algorithms are definite number of steps to solve a given problem in definite amount of time.For example:The travelling salesman problem,
  which finds out the shortest path /route between two cities hence it is used by GPS which is used all over globe.
+ 
+### Algorithms as a technology
 
-### Getting Started
-INSERTION SORT:Efficient algorithm for sorting small number of elements.EX: sorting a deck of cards.
+
+
+## Getting Started
+
+### INSERTION SORT
+
+Efficient algorithm for sorting small number of elements.EX: sorting a deck of cards.
 
 #### CODE FOR INSERTION SORT IN C
 <details>

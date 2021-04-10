@@ -1991,10 +1991,649 @@ void main() {
  KRUSKAL ALGORITHM:Kruskal's algorithm finds a minimum spanning forest of an undirected edge-weighted graph. If the graph is connected, it finds a minimum spanning tree.
  It is a greedy algorithm in graph theory as in each step it adds the next lowest-weight edge that will not form a cycle to the minimum spanning forest.
  ### CODE IN C
+  <details>
+<summary>Answer</summary>
+ 
+```
+ 
+ #include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+int i,j,k,a,b,u,v,n,ne=1;
+int min,mincost=0,cost[9][9],parent[9];
+int find(int);
+int uni(int,int);
+void main()
+{
+	clrscr();
+	printf("\n\tImplementation of Kruskal's algorithm\n");
+	printf("\nEnter the no. of vertices:");
+	scanf("%d",&n);
+	printf("\nEnter the cost adjacency matrix:\n");
+	for(i=1;i<=n;i++)
+	{
+		for(j=1;j<=n;j++)
+		{
+			scanf("%d",&cost[i][j]);
+			if(cost[i][j]==0)
+				cost[i][j]=999;
+		}
+	}
+	printf("The edges of Minimum Cost Spanning Tree are\n");
+	while(ne < n)
+	{
+		for(i=1,min=999;i<=n;i++)
+		{
+			for(j=1;j <= n;j++)
+			{
+				if(cost[i][j] < min)
+				{
+					min=cost[i][j];
+					a=u=i;
+					b=v=j;
+				}
+			}
+		}
+		u=find(u);
+		v=find(v);
+		if(uni(u,v))
+		{
+			printf("%d edge (%d,%d) =%d\n",ne++,a,b,min);
+			mincost +=min;
+		}
+		cost[a][b]=cost[b][a]=999;
+	}
+	printf("\n\tMinimum cost = %d\n",mincost);
+	getch();
+}
+int find(int i)
+{
+	while(parent[i])
+	i=parent[i];
+	return i;
+}
+int uni(int i,int j)
+{
+	if(i!=j)
+	{
+		parent[j]=i;
+		return 1;
+	}
+	return 0;
+}
+ 
+```
+</details>
+ 
+ PRIM'S ALGORITHM:Prim's Algorithm is a famous greedy algorithm. It is used for finding the Minimum Spanning Tree (MST) of a given graph. To apply Prim's algorithm, the given graph must be weighted, connected and undirected.
+ ### CODE IN C
+  <details>
+<summary>Answer</summary>
+ 
+```
  
  
+ #include<stdio.h>
  
+#include<conio.h>
  
+int a,b,u,v,n,i,j,ne=1;
  
+int visited[10]={0},min,mincost=0,cost[10][10];
+ 
+void main()
+ 
+{
+ 
+	clrscr();
+ 
+	printf("\nEnter the number of nodes:");
+ 
+	scanf("%d",&n);
+ 
+	printf("\nEnter the adjacency matrix:\n");
+ 
+	for(i=1;i<=n;i++)
+ 
+	for(j=1;j<=n;j++)
+ 
+	{
+ 
+		scanf("%d",&cost[i][j]);
+ 
+		if(cost[i][j]==0)
+ 
+			cost[i][j]=999;
+ 
+	}
+ 
+	visited[1]=1;
+ 
+	printf("\n");
+ 
+	while(ne < n)
+ 
+	{
+ 
+		for(i=1,min=999;i<=n;i++)
+ 
+		for(j=1;j<=n;j++)
+ 
+		if(cost[i][j]< min)
+ 
+		if(visited[i]!=0)
+ 
+		{
+ 
+			min=cost[i][j];
+ 
+			a=u=i;
+ 
+			b=v=j;
+ 
+		}
+ 
+		if(visited[u]==0 || visited[v]==0)
+ 
+		{
+ 
+			printf("\n Edge %d:(%d %d) cost:%d",ne++,a,b,min);
+ 
+			mincost+=min;
+ 
+			visited[b]=1;
+ 
+		}
+ 
+		cost[a][b]=cost[b][a]=999;
+ 
+	}
+ 
+	printf("\n Minimun cost=%d",mincost);
+ 
+	getch();
+ 
+}
+
+ ```
+</details>
+ 
+ THE BELLMAN-FORD ALGORITHM:gives shortest path from one node to all other nodes. works on negative edge weights.
+ ( works by overestimating the length of the path from the starting vertex to all other vertices. )
+ ### CODE IN C
+ 
+   <details>
+<summary>Answer</summary>
+ 
+```
+ 
+#include <stdio.h>
+#include <stdlib.h>
+
+#define INFINITY 99999
+
+//struct for the edges of the graph
+struct Edge {
+  int u;  //start vertex of the edge
+  int v;  //end vertex of the edge
+  int w;  //weight of the edge (u,v)
+};
+
+//Graph - it consists of edges
+struct Graph {
+  int V;        //total number of vertices in the graph
+  int E;        //total number of edges in the graph
+  struct Edge *edge;  //array of edges
+};
+
+void bellmanford(struct Graph *g, int source);
+void display(int arr[], int size);
+
+int main(void) {
+  //create graph
+  struct Graph *g = (struct Graph *)malloc(sizeof(struct Graph));
+  g->V = 4;  //total vertices
+  g->E = 5;  //total edges
+
+  //array of edges for graph
+  g->edge = (struct Edge *)malloc(g->E * sizeof(struct Edge));
+
+  //------- adding the edges of the graph
+  /*
+		edge(u, v)
+		where 	u = start vertex of the edge (u,v)
+				v = end vertex of the edge (u,v)
+		
+		w is the weight of the edge (u,v)
+	*/
+
+  //edge 0 --> 1
+  g->edge[0].u = 0;
+  g->edge[0].v = 1;
+  g->edge[0].w = 5;
+
+  //edge 0 --> 2
+  g->edge[1].u = 0;
+  g->edge[1].v = 2;
+  g->edge[1].w = 4;
+
+  //edge 1 --> 3
+  g->edge[2].u = 1;
+  g->edge[2].v = 3;
+  g->edge[2].w = 3;
+
+  //edge 2 --> 1
+  g->edge[3].u = 2;
+  g->edge[3].v = 1;
+  g->edge[3].w = 6;
+
+  //edge 3 --> 2
+  g->edge[4].u = 3;
+  g->edge[4].v = 2;
+  g->edge[4].w = 2;
+
+  bellmanford(g, 0);  //0 is the source vertex
+
+  return 0;
+}
+
+void bellmanford(struct Graph *g, int source) {
+  //variables
+  int i, j, u, v, w;
+
+  //total vertex in the graph g
+  int tV = g->V;
+
+  //total edge in the graph g
+  int tE = g->E;
+
+  //distance array
+  //size equal to the number of vertices of the graph g
+  int d[tV];
+
+  //predecessor array
+  //size equal to the number of vertices of the graph g
+  int p[tV];
+
+  //step 1: fill the distance array and predecessor array
+  for (i = 0; i < tV; i++) {
+    d[i] = INFINITY;
+    p[i] = 0;
+  }
+
+  //mark the source vertex
+  d[source] = 0;
+
+  //step 2: relax edges |V| - 1 times
+  for (i = 1; i <= tV - 1; i++) {
+    for (j = 0; j < tE; j++) {
+      //get the edge data
+      u = g->edge[j].u;
+      v = g->edge[j].v;
+      w = g->edge[j].w;
+
+      if (d[u] != INFINITY && d[v] > d[u] + w) {
+        d[v] = d[u] + w;
+        p[v] = u;
+      }
+    }
+  }
+
+  //step 3: detect negative cycle
+  //if value changes then we have a negative cycle in the graph
+  //and we cannot find the shortest distances
+  for (i = 0; i < tE; i++) {
+    u = g->edge[i].u;
+    v = g->edge[i].v;
+    w = g->edge[i].w;
+    if (d[u] != INFINITY && d[v] > d[u] + w) {
+      printf("Negative weight cycle detected!\n");
+      return;
+    }
+  }
+
+  //No negative weight cycle found!
+  //print the distance and predecessor array
+  printf("Distance array: ");
+  display(d, tV);
+  printf("Predecessor array: ");
+  display(p, tV);
+}
+
+void display(int arr[], int size) {
+  int i;
+  for (i = 0; i < size; i++) {
+    printf("%d ", arr[i]);
+  }
+  printf("\n");
+}
+ 
+```
+</details>
+ 
+ DIJKSTRA'S ALGORITHM: Single source shortest path algorithm. does not works on negative weights.
+{minimization problem-optimization problem-greedy method-solved in stages by taking one step at a time and considering one input
+at a time to get an optimal solution}
+### CODE IN  C
+   <details>
+<summary>Answer</summary>
+ 
+```
+#include<stdio.h>
+#include<conio.h>
+#define INFINITY 9999
+#define MAX 10
+ 
+void dijikstra(int G[MAX][MAX], int n, int startnode);
+ 
+void main(){
+	int G[MAX][MAX], i, j, n, u;
+	clrscr();
+	printf("\nEnter the no. of vertices:: ");
+	scanf("%d", &n);
+	printf("\nEnter the adjacency matrix::\n");
+	for(i=0;i < n;i++)
+		for(j=0;j < n;j++)
+			scanf("%d", &G[i][j]);
+	printf("\nEnter the starting node:: ");
+	scanf("%d", &u);
+	dijikstra(G,n,u);
+	getch();
+}
+ 
+void dijikstra(int G[MAX][MAX], int n, int startnode)
+{
+	int cost[MAX][MAX], distance[MAX], pred[MAX];
+	int visited[MAX], count, mindistance, nextnode, i,j;
+	for(i=0;i < n;i++)
+		for(j=0;j < n;j++)
+			if(G[i][j]==0)
+				cost[i][j]=INFINITY;
+			else
+				cost[i][j]=G[i][j];
+	
+	for(i=0;i< n;i++)
+	{
+		distance[i]=cost[startnode][i];
+		pred[i]=startnode;
+		visited[i]=0;
+	}
+	distance[startnode]=0;
+	visited[startnode]=1;
+	count=1;
+	while(count < n-1){
+		mindistance=INFINITY;
+		for(i=0;i < n;i++)
+			if(distance[i] < mindistance&&!visited[i])
+			{
+				mindistance=distance[i];
+				nextnode=i;
+			}
+		visited[nextnode]=1;
+		for(i=0;i < n;i++)
+			if(!visited[i])
+				if(mindistance+cost[nextnode][i] < distance[i])
+				{
+					distance[i]=mindistance+cost[nextnode][i];
+					pred[i]=nextnode;
+				}
+			count++;
+	}
+ 
+	for(i=0;i < n;i++)
+		if(i!=startnode)
+		{
+			printf("\nDistance of %d = %d", i, distance[i]);
+			printf("\nPath = %d", i);
+			j=i;
+			do
+			{
+				j=pred[j];
+				printf(" <-%d", j);
+			}
+			while(j!=startnode);
+		}
+}
+ 
+ ```
+ </details>
+ 
+ MAXIMUM BIPARTITE ALGORITHM:
+ an undirected graph is bipartite if there exists partition into left and right such that every edge has one vertex in left and one in right.
+(no odd length cycles,2 colors).
+ 
+ SIMPLEX ALGORITHM:To find the maximum solution of the linear program.
+linear program-standard form-slack form-simplex algorithm-solution.
+ 
+### CODE IN C 
+   <details>
+<summary>Answer</summary>
+ 
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <assert.h>
+
+#define M 20
+#define N 20
+
+static const double epsilon   = 1.0e-8;
+int equal(double a, double b) { return fabs(a-b) < epsilon; }
+
+typedef struct {
+  int m, n; // m=rows, n=columns, mat[m x n]
+  double mat[M][N];
+} Tableau;
+
+void nl(int k){ int j; for(j=0;j<k;j++) putchar('-'); putchar('\n'); }
+
+void print_tableau(Tableau *tab, const char* mes) {
+  static int counter=0;
+  int i, j;
+  printf("\n%d. Tableau %s:\n", ++counter, mes);
+  nl(70);
+
+  printf("%-6s%5s", "col:", "b[i]");
+  for(j=1;j<tab->n; j++) { printf("    x%d,", j); } printf("\n");
+
+  for(i=0;i<tab->m; i++) {
+    if (i==0) printf("max:"); else
+    printf("b%d: ", i);
+    for(j=0;j<tab->n; j++) {
+      if (equal((int)tab->mat[i][j], tab->mat[i][j]))
+        printf(" %6d", (int)tab->mat[i][j]);
+      else
+        printf(" %6.2lf", tab->mat[i][j]);
+      }
+    printf("\n");
+  }
+  nl(70);
+}
+void read_tableau(Tableau *tab, const char * filename) {
+  int err, i, j;
+  FILE * fp;
+
+  fp  = fopen(filename, "r" );
+  if( !fp ) {
+    printf("Cannot read %s\n", filename); exit(1);
+  }
+  memset(tab, 0, sizeof(*tab));
+  err = fscanf(fp, "%d %d", &tab->m, &tab->n);
+  if (err == 0 || err == EOF) {
+    printf("Cannot read m or n\n"); exit(1);
+  }
+  for(i=0;i<tab->m; i++) {
+    for(j=0;j<tab->n; j++) {
+      err = fscanf(fp, "%lf", &tab->mat[i][j]);
+      if (err == 0 || err == EOF) {
+        printf("Cannot read A[%d][%d]\n", i, j); exit(1);
+      }
+    }
+  }
+  printf("Read tableau [%d rows x %d columns] from file '%s'.\n",
+    tab->m, tab->n, filename);
+  fclose(fp);
+}
+
+void pivot_on(Tableau *tab, int row, int col) {
+  int i, j;
+  double pivot;
+
+  pivot = tab->mat[row][col];
+  assert(pivot>0);
+  for(j=0;j<tab->n;j++)
+    tab->mat[row][j] /= pivot;
+  assert( equal(tab->mat[row][col], 1. ));
+
+  for(i=0; i<tab->m; i++) { // foreach remaining row i do
+    double multiplier = tab->mat[i][col];
+    if(i==row) continue;
+    for(j=0; j<tab->n; j++) { // r[i] = r[i] - z * r[row];
+      tab->mat[i][j] -= multiplier * tab->mat[row][j];
+    }
+  }
+}
+
+// Find pivot_col = most negative column in mat[0][1..n]
+int find_pivot_column(Tableau *tab) {
+  int j, pivot_col = 1;
+  double lowest = tab->mat[0][pivot_col];
+  for(j=1; j<tab->n; j++) {
+    if (tab->mat[0][j] < lowest) {
+      lowest = tab->mat[0][j];
+      pivot_col = j;
+    }
+  }
+  printf("Most negative column in row[0] is col %d = %g.\n", pivot_col, lowest);
+  if( lowest >= 0 ) {
+    return -1; // All positive columns in row[0], this is optimal.
+  }
+  return pivot_col;
+}
+
+// Find the pivot_row, with smallest positive ratio = col[0] / col[pivot]
+int find_pivot_row(Tableau *tab, int pivot_col) {
+  int i, pivot_row = 0;
+  double min_ratio = -1;
+  printf("Ratios A[row_i,0]/A[row_i,%d] = [",pivot_col);
+  for(i=1;i<tab->m;i++){
+    double ratio = tab->mat[i][0] / tab->mat[i][pivot_col];
+    printf("%3.2lf, ", ratio);
+    if ( (ratio > 0  && ratio < min_ratio ) || min_ratio < 0 ) {
+      min_ratio = ratio;
+      pivot_row = i;
+    }
+  }
+  printf("].\n");
+  if (min_ratio == -1)
+    return -1; // Unbounded.
+  printf("Found pivot A[%d,%d], min positive ratio=%g in row=%d.\n",
+      pivot_row, pivot_col, min_ratio, pivot_row);
+  return pivot_row;
+}
+
+void add_slack_variables(Tableau *tab) {
+  int i, j;
+  for(i=1; i<tab->m; i++) {
+    for(j=1; j<tab->m; j++)
+      tab->mat[i][j + tab->n -1] = (i==j);
+  }
+  tab->n += tab->m -1;
+}
+
+void check_b_positive(Tableau *tab) {
+  int i;
+  for(i=1; i<tab->m; i++)
+    assert(tab->mat[i][0] >= 0);
+}
+
+// Given a column of identity matrix, find the row containing 1.
+// return -1, if the column as not from an identity matrix.
+int find_basis_variable(Tableau *tab, int col) {
+  int i, xi=-1;
+  for(i=1; i < tab->m; i++) {
+    if (equal( tab->mat[i][col],1) ) {
+      if (xi == -1)
+        xi=i;   // found first '1', save this row number.
+      else
+        return -1; // found second '1', not an identity matrix.
+
+    } else if (!equal( tab->mat[i][col],0) ) {
+      return -1; // not an identity matrix column.
+    }
+  }
+  return xi;
+}
+
+void print_optimal_vector(Tableau *tab, char *message) {
+  int j, xi;
+  printf("%s at ", message);
+  for(j=1;j<tab->n;j++) { // for each column.
+    xi = find_basis_variable(tab, j);
+    if (xi != -1)
+      printf("x%d=%3.2lf, ", j, tab->mat[xi][0] );
+    else
+      printf("x%d=0, ", j);
+  }
+  printf("\n");
+} 
+
+void simplex(Tableau *tab) {
+  int loop=0;
+  add_slack_variables(tab);
+  check_b_positive(tab);
+  print_tableau(tab,"Padded with slack variables");
+  while( ++loop ) {
+    int pivot_col, pivot_row;
+
+    pivot_col = find_pivot_column(tab);
+    if( pivot_col < 0 ) {
+      printf("Found optimal value=A[0,0]=%3.2lf (no negatives in row 0).\n",
+        tab->mat[0][0]);
+      print_optimal_vector(tab, "Optimal vector");
+      break;
+    }
+    printf("Entering variable x%d to be made basic, so pivot_col=%d.\n",
+      pivot_col, pivot_col);
+
+    pivot_row = find_pivot_row(tab, pivot_col);
+    if (pivot_row < 0) {
+      printf("unbounded (no pivot_row).\n");
+      break;
+    }
+    printf("Leaving variable x%d, so pivot_row=%d\n", pivot_row, pivot_row);
+
+    pivot_on(tab, pivot_row, pivot_col);
+    print_tableau(tab,"After pivoting");
+    print_optimal_vector(tab, "Basic feasible solution");
+
+    if(loop > 20) {
+      printf("Too many iterations > %d.\n", loop);
+      break;
+    }
+  }
+}
+
+Tableau tab  = { 4, 5, {                     // Size of tableau [4 rows x 5 columns ]
+    {  0.0 , -0.5 , -3.0 ,-1.0 , -4.0,   },  // Max: z = 0.5*x + 3*y + z + 4*w,
+    { 40.0 ,  1.0 ,  1.0 , 1.0 ,  1.0,   },  //    x + y + z + w <= 40 .. b1
+    { 10.0 , -2.0 , -1.0 , 1.0 ,  1.0,   },  //  -2x - y + z + w <= 10 .. b2
+    { 10.0 ,  0.0 ,  1.0 , 0.0 , -1.0,   },  //        y     - w <= 10 .. b3
+  }
+};
+
+int main(int argc, char *argv[]){
+  if (argc > 1) { // usage: cmd datafile
+    read_tableau(&tab, argv[1]);
+  }
+  print_tableau(&tab,"Initial");
+  simplex(&tab);
+  return 0;
+}
+ ```
+ </details>
+ THE RABIN-KARP ALGORITHM:
  
 

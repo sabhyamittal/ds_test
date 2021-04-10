@@ -10,6 +10,8 @@ INSERTION SORT:Efficient algorithm for sorting small number of elements.EX: sort
 #### CODE FOR INSERTION SORT IN C
 <details>
 <summary>Answer</summary>
+ 
+```
 void insertionSort(int arr[], int n)
 {
     int i, key, j;
@@ -43,6 +45,6 @@ int main()
  
     return 0;
 }
-
+```
 </details>
 

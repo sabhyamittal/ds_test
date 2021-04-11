@@ -1,5 +1,5 @@
 # Introduction to Algorithms
-#  FOUNDATIONS
+##  FOUNDATIONS
 
 ## The role of algorithm in computing
 

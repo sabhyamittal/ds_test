@@ -1,4 +1,5 @@
 # Introduction to Algorithms
+#  FOUNDATIONS
 
 ## The role of algorithm in computing
 
@@ -17,9 +18,13 @@
 
 Efficient algorithm for sorting small number of elements.EX: sorting a deck of cards.
 
+### ANALYZING ALGORITHMS
+
+### DESIGNING ALGORITHMS
 
 
 #### CODE FOR INSERTION SORT IN C
+
 <details>
 <summary>Answer</summary>
  
@@ -60,7 +65,110 @@ int main()
 ```
 </details>
 
-HEAP SORT:Heap sort can be understood as the improved version of the binary search tree. It does not create a node as in case of binary search tree instead it builds the heap by adjusting the position of elements within the array itself.
+## GROWTH OF FUNCTIONS
+
+### ASYMPTOTIC NOTATIONS
+
+### STANDARD NOTATIONS AND COMMON FUNCTIONS
+
+## DIVIDE AND CONQUER
+
+### THE MAXIMUM SUBARRAY PROBLEM
+
+To find a subarray of the given array whose sum is maximum.
+By divide and conquer->find the center indices->max on the LHS and RHS->sum of max.
+
+#### CODE IN C
+<details>
+<summary>Answer</summary>
+ 
+```
+ 
+#include <stdio.h>
+#include <limits.h>
+ 
+// A naive solution to finding maximum subarray sum using divide-and-conquer
+int maximum_sum(int A[], int n)
+{
+    int max_sum = INT_MIN;
+    int sum = 0;
+ 
+    // do for each subarray starting with `i`
+    for (int i = 0; i < n - 1; i++)
+    {
+        // calculate the sum of subarray `A[i…j]`
+ 
+        sum = 0;    // reset sum
+ 
+        // do for each subarray ending at `j`
+        for (int j = i; j < n; j++)
+        {
+            sum += A[j];
+ 
+            // if the current subarray sum is greater than the maximum
+            // sum calculated so far, update the maximum sum
+            if (sum > max_sum) {
+                max_sum = sum;
+            }
+        }
+    }
+ 
+    return max_sum;
+}
+ 
+int main(void)
+{
+    int arr[] = { 2, -4, 1, 9, -6, 7, -3 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+ 
+    printf("The maximum sum of the subarray is %d", maximum_sum(arr, n));
+ 
+    return 0;
+}
+
+```
+
+</details>
+
+### STRASSEN'S ALGORITHM FOR MATRIX MULTIPLICATION
+
+### THE SUBSTITUTION METHOD FOR SOLVING RECURRENCES
+
+### THE RECURSION-TREE METHOD FOR SOLVING RECURRENCES
+
+### THE MASTER METHOD FOR SOLVING RECURRENCES
+
+### PROOF FOR MASTER'S THEOREM
+
+
+## PROBABILISTIC ANALYSIS AND RANDOMIZED ALGORITHMS
+
+### THE HIRING PROBLEM
+
+### INDICATOR RANDOM VARIABLES
+
+### RANDOMIZED ALGORITHMS
+
+### PROBABILISTIC ANALYSIS AND FURTHER USES OF INDICATOR RANDOM VARIABLES
+
+
+# SORTING AND ORDER STATISTICS
+
+## HEAP SORT
+
+### HEAPS
+
+Heap sort can be understood as the improved version of the binary search tree. It does not create a node as in case of binary search tree instead it builds the heap by adjusting the position of elements within the array itself.
+
+### MAINTAINING THE HEAP PROPERTY
+
+### BUILDING A HEAP
+
+### THE HEAPSORT ALGORITHM
+
+### PRIORITY QUEUES
+
+
 ### CODE IN C:
 <details>
 <summary>Answer</summary>
@@ -133,10 +241,21 @@ HEAP SORT:Heap sort can be understood as the improved version of the binary sear
  `````
  </details>
  
- QUICK SORT:follows divide and conquer strategy.
+ ## QUICK SORT
+ 
+ ### DESCRIPTION OF QUICKSORT
+ 
+follows divide and conquer strategy.
 starting from the first element(pivot);
 It works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays, 
 according to whether they are less than or greater than the pivot. ... The sub-arrays are then sorted recursively.
+
+### PERFORMANCE OF QUICK SORT
+
+### A RANDOMIZED VERSION OF QUICKSORT
+
+### ANALYSIS OF QUICK SORT
+
 ### CODE IN C
 <details>
 <summary>Answer</summary>
@@ -193,66 +312,64 @@ int main(){
 ```
 </details>
 
-## DIVIDE AND CONQUER
-### THE MAXIMUM SUBARRAY PROBLEM
-To find a subarray of the given array whose sum is maximum.
-By divide and conquer->find the center indices->max on the LHS and RHS->sum of max.
+## SORTING IN LINEAR TIME
 
-### CODE IN C
-<details>
-<summary>Answer</summary>
- 
-```
- 
-#include <stdio.h>
-#include <limits.h>
- 
-// A naive solution to finding maximum subarray sum using divide-and-conquer
-int maximum_sum(int A[], int n)
-{
-    int max_sum = INT_MIN;
-    int sum = 0;
- 
-    // do for each subarray starting with `i`
-    for (int i = 0; i < n - 1; i++)
-    {
-        // calculate the sum of subarray `A[i…j]`
- 
-        sum = 0;    // reset sum
- 
-        // do for each subarray ending at `j`
-        for (int j = i; j < n; j++)
-        {
-            sum += A[j];
- 
-            // if the current subarray sum is greater than the maximum
-            // sum calculated so far, update the maximum sum
-            if (sum > max_sum) {
-                max_sum = sum;
-            }
-        }
-    }
- 
-    return max_sum;
-}
- 
-int main(void)
-{
-    int arr[] = { 2, -4, 1, 9, -6, 7, -3 };
-    int n = sizeof(arr) / sizeof(arr[0]);
- 
-    printf("The maximum sum of the subarray is %d", maximum_sum(arr, n));
- 
-    return 0;
-}
+### LOWER BOUNDS FOR SORTING
 
-```
+### COUNTING SORT
 
-</details>
+### RADIX SORT
+
+### BUCKET SORT
+
+## MEDIANS AND ORDER STATISTICS
+
+### MINIMUM AND MAXIMUM
+
+
+### SELECTION IN EXPECTED LINEAR TIME
+
+
+### SELECTION IN WORST-CASE LINEAR TIME
+
+
+# DATA STRUCTURES
+
+## ELEMENTARY DATA STRUCTURES
+
+### STACKS AND QUEUES
+
+### LINKED LIST
+
+### IMPLEMENTING POINTERS AND OBJECTS
+
+### REPRESENTING  ROOTED TREES
+
+## HASH TABLES
+
+### DIRECT-ADDRESS TABLE
+
+### HASH TABLES
+
+### HASH FUNCTIONS
+
+### OPEN ADRESSING
+
+### PERFECT HASHING
  
 ## BINARY SEARCH TREE
+
 it is a binary tree in which each node is having value lesser than itself at left side and greater
 than itself at right hand side.
+
+### WHAT IS BINARY SEARCH TREE?
+
+### QUERYING IN BINARY SEARCH TREE
+
+### INSERTION AND DELETION
+
+### RANDOMLY BUILT BINARY SEARCH TREES
+
 
 ### CODE IN C
 <details>
@@ -477,7 +594,11 @@ int main()
  ```
  </details>
  
-RED BLACK TREES: A red-black tree is a kind of self-balancing binary search tree where each node has an extra bit, and that bit is often interpreted as the colour (red or black). These colours are used to ensure that the tree remains balanced during insertions and deletions. Although the balance of the tree is not perfect, it is good enough to reduce the searching time and maintain it around O(log n) time, where n is the total number of elements in the tree. This tree was invented in 1972 by Rudolf Bayer. 
+ ## RED-BLACK TREES
+ 
+ ### PROPERTIES OF RED-BLACK TREE
+ 
+ A red-black tree is a kind of self-balancing binary search tree where each node has an extra bit, and that bit is often interpreted as the colour (red or black). These colours are used to ensure that the tree remains balanced during insertions and deletions. Although the balance of the tree is not perfect, it is good enough to reduce the searching time and maintain it around O(log n) time, where n is the total number of elements in the tree. This tree was invented in 1972 by Rudolf Bayer. 
 
 It must be noted that as each node requires only 1 bit of space to store the colour information. 
 
@@ -486,8 +607,11 @@ Every node has a colour either red or black.
 The root of the tree is always black.
 There are no two adjacent red nodes (A red node cannot have a red parent or red child).
 Every path from a node (including root) to any of its descendants NULL nodes has the same number of black nodes.
- 
- 
+
+### ROTATIONS
+
+### INSERTIONS
+
 ### CODE IN C(INSERTION)
 
  <details>
@@ -718,13 +842,30 @@ int main()
  
  ```
  </details>
- 
- ## DYNAMIC PROGRAMMING
- storing intermediate results and using it for solving further sub problems.ex: fibonacci series.
- 
- ROD CUTTING:Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n. Determine the maximum value obtainable by cutting up the rod and selling the pieces
- 
- ### CODE IN C
+
+
+
+### DELETION
+
+## AUGMENTING DATA STRUCTURES
+
+### DYNAMIC ORDER STATISTICS
+
+### HOW TO AUGMENT A DATA STRUCTURE
+
+### INTERVAL TREES
+
+# ADVANCED DESIGN AND ANALYSIS TECHNIQUES
+
+## DYNAMIC PROGRAMMING
+
+storing intermediate results and using it for solving further sub problems.ex: fibonacci series.
+
+### ROD CUTTING
+
+Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n. Determine the maximum value obtainable by cutting up the rod and selling the pieces
+
+### CODE IN C
   <details>
 <summary>Answer</summary>
  
@@ -764,7 +905,15 @@ int main()
  ```
  </details> 
  
- LONGEST COMMON SUBSEQUENCE:given two sequenceS, find the longest common terms between them.
+
+
+### MATRIX-CHAIN MULTIPLICATION
+
+### ELEMENTS OF DYNAMIC PROGRAMMING
+
+### LONGEST COMMON SUBSEQUENCE
+
+given two sequenceS, find the longest common terms between them.
  Example: ABCDEF & ABC
  Answer: ABC
  
@@ -810,10 +959,19 @@ int main()
  
  ```
  </details>
+
+### OPTIMAL BINARY SEARCH TREE
+
+ 
  ## GREEDY ALGORITHM
+ 
  Used for solving optimizing problems which either require max result or min result.
-1.AN ACTIVITY SELECTION PROBLEM:You are given n activities with their start and finish times. Select the maximum number of activities that can be performed by a single person, assuming that a person can only work on a single activity at a time.
-  ### CODE IN C:
+ 
+### AN ACTIVITY SELECTION PROBLEM
+
+You are given n activities with their start and finish times. Select the maximum number of activities that can be performed by a single person, assuming that a person can only work on a single activity at a time.
+
+ ### CODE IN C:
    <details>
 <summary>Answer</summary>
  
@@ -853,9 +1011,39 @@ int main()
 ```
 </details>
 
+### ELEMENTS OF THE GREEDY STRATEGY
+
+### HUFFMAN CODES
+
+### MATROIDS AND GREEDY METHODS
+
+### A TASK-SCHEDULING PROBLEM AS A MATROID
+
+## AMORTIZED ALGORITHM
+
+### AGGREGATE ANALYSIS
+
+### THE ACCOUNTING METHOD
+
+### THE POTENTIAL METHOD
+
+### DYNAMIC TABLES
+
+
+# ADVANCED DATA STRUCTURES
+
 ## B-TREES
-Balanced tree: guidelines to make m-way search trees are known as b-trees.(dynamic multilevel index).
+
+### DEFINITION OF B-TREES
+
+ guidelines to make m-way search trees are known as b-trees.(dynamic multilevel index).
 {B-tree is a special type of self-balancing search tree in which each node can contain more than one key and can have more than two children. It is a generalized form of the binary search tree.}
+
+### BASIC OPERATIONS ON B-TREES
+
+### DELETING A TREE FROM A B-TREE
+
+
 ### CODE IN C
 <details>
 <summary>Answer</summary>
@@ -1302,9 +1490,22 @@ void printMaxLevel(node *ptr) {
 }
 ```
 </details>
-FIBONACCI HEAPS:linked list of heap ordered trees.(min heap)
+
+## FIBONACCI HEAPS
+
+linked list of heap ordered trees.(min heap)
 Fibonacci Heap is a collection of trees with min-heap or max-heap property. In Fibonacci Heap, trees can can have any shape even all trees can be single nodes.
- ### CODE IN C
+
+### STRUCTURE OF FIBONACCI HEAPS
+
+### MERGEABLE-HEAP OPERATIONS
+
+### DECREASING A TREE AND DELETING A NODE
+
+### BOUNDING THE MAXIMUM DEGREE
+
+
+### CODE IN C
  
  <details>
 <summary>Answer</summary>
@@ -1769,9 +1970,36 @@ int main(int argc, char **argv) {
 }
 ```
 </details>
- 
- ## ELEMENTARY GRAPH ALGORITHMS
- BREADTH FIRST SEARCH:first we will visit the vertex,explore it and then MOVE ON to another vertex then explore it.
+
+## VAN EMDE BOAS TREES
+
+### PRELIMINARY APPROACHES
+
+### A RECURSIVE STRUCTURE
+
+### THE VAN EMDE BOAS TREE
+
+## DATA STRUCTURES FOR DISJOINT SETS
+
+### DISJOINT-SETS OPERATION
+
+### LINKED LIST REPRESENTATION OF DISJOINT SETS
+
+### DISJOINT-SET FORESTS
+
+### ANALYSIS OF UNION BY RANK WITH PATH COMPRESSION
+
+
+
+# GRAPH ALGORITHMS
+
+## ELEMENTARY GRAPH ALGORITHMS
+
+### REPRESENTATIONS OF GRAPHS
+
+### BREADTH-FIRST SEARCH
+
+first we will visit the vertex,explore it and then MOVE ON to another vertex then explore it.
 (level order on a binary tree.)
  
  ### CODE IN  C
@@ -1950,9 +2178,12 @@ int main() {
 }
 ```
 </details>
+
+### DEPTH-FIRST SEARCH
  
- DEPTH FIRST SEARCH:first visit all the vertex then explore it.
+first visit all the vertex then explore it.
  (preorder traversal of the graph.)
+ 
 ### CODE IN C
  <details>
 <summary>Answer</summary>
@@ -1997,11 +2228,24 @@ void main() {
 	
 ```
 </details>
+
+### TOPOLOGICAL SORT
+
+### STRONGLY CONNECTED COMPONENTS
+
+
+## MINIMUM SPANNING TREE
+
+Sub graph of graphs having n elements but {n-1} edges.
+
+### GROWING A MINIMUM SPANNING TREE
+
  
- MINIMUM SPANNING TREE: Sub graph of graphs having n elements but {n-1} edges.
+ ### KRUSKAL ALGORITHM
  
- KRUSKAL ALGORITHM:Kruskal's algorithm finds a minimum spanning forest of an undirected edge-weighted graph. If the graph is connected, it finds a minimum spanning tree.
+ Kruskal's algorithm finds a minimum spanning forest of an undirected edge-weighted graph. If the graph is connected, it finds a minimum spanning tree.
  It is a greedy algorithm in graph theory as in each step it adds the next lowest-weight edge that will not form a cycle to the minimum spanning forest.
+ 
  ### CODE IN C
   <details>
 <summary>Answer</summary>
@@ -2077,7 +2321,10 @@ int uni(int i,int j)
 ```
 </details>
  
- PRIM'S ALGORITHM:Prim's Algorithm is a famous greedy algorithm. It is used for finding the Minimum Spanning Tree (MST) of a given graph. To apply Prim's algorithm, the given graph must be weighted, connected and undirected.
+ ### PRIM'S ALGORITHM
+ 
+ Prim's Algorithm is a famous greedy algorithm. It is used for finding the Minimum Spanning Tree (MST) of a given graph. To apply Prim's algorithm, the given graph must be weighted, connected and undirected.
+ 
  ### CODE IN C
   <details>
 <summary>Answer</summary>
@@ -2169,9 +2416,14 @@ void main()
 
  ```
 </details>
+
+## SINGLE-SOURCE SHORTEST PATHS
  
- THE BELLMAN-FORD ALGORITHM:gives shortest path from one node to all other nodes. works on negative edge weights.
+### THE BELLMAN-FORD ALGORITHM
+ 
+ gives shortest path from one node to all other nodes. works on negative edge weights.
  ( works by overestimating the length of the path from the starting vertex to all other vertices. )
+ 
  ### CODE IN C
  
    <details>
@@ -2322,10 +2574,15 @@ void display(int arr[], int size) {
  
 ```
 </details>
+
+### SINGLE-SOURCE SHORTEST PATHS IN DIRECTED ACYCLIC GRAPHS
  
- DIJKSTRA'S ALGORITHM: Single source shortest path algorithm. does not works on negative weights.
+ #### DIJKSTRA'S ALGORITHM:
+
+Single source shortest path algorithm. does not works on negative weights.
 {minimization problem-optimization problem-greedy method-solved in stages by taking one step at a time and considering one input
 at a time to get an optimal solution}
+
 ### CODE IN  C
    <details>
 <summary>Answer</summary>
@@ -2410,9 +2667,38 @@ void dijikstra(int G[MAX][MAX], int n, int startnode)
  ```
  </details>
  
- MAXIMUM BIPARTITE ALGORITHM:
+ ### DIFFERENCE CONSTRAINTS AND SHORTEST PATHS
+ 
+ ### PROOFS OF SHORTEST PATHS PROPERTIES
+ 
+ ## ALL-PAIRS SHORTEST PATHS
+ 
+ ### SHORTEST PATH AND MATRIX MULTIPLICATION
+ 
+ ### THE FLOYD-WARSHELL ALGORITHM
+ 
+ ### JOHNSON'S ALGORITHM FOR SPARSE GRAPHS
+ 
+ 
+ ## MAXIMUM FLOW
+ 
+ ### FLOW NETWORKS
+ 
+ 
+ ### THE FORD-FULKERSON METHOD
+ 
+ 
+ ### MAXIMUM BIPARTITE ALGORITHM
+ 
  an undirected graph is bipartite if there exists partition into left and right such that every edge has one vertex in left and one in right.
 (no odd length cycles,2 colors).
+
+
+### PUSH-RELABLE ALGORITHM
+
+
+### THE RELABEL-TO-FRONT ALGORITHM
+
  
  SIMPLEX ALGORITHM:To find the maximum solution of the linear program.
 linear program-standard form-slack form-simplex algorithm-solution.

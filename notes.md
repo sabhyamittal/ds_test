@@ -1,20 +1,20 @@
 # Introduction to Algorithms
-##  FOUNDATIONS
+##  Foundations
 
-## The role of algorithm in computing
+### The role of algorithm in computing
 
-### Algorithms
+#### Algorithms
 
  Algorithms are definite number of steps to solve a given problem in definite amount of time.For example:The travelling salesman problem,
  which finds out the shortest path /route between two cities hence it is used by GPS which is used all over globe.
  
-### Algorithms as a technology
+#### Algorithms as a technology
 
 
 
-## Getting Started
+### Getting Started
 
-### INSERTION SORT
+#### Insertion Sort
 
 Efficient algorithm for sorting small number of elements.EX: sorting a deck of cards.
 

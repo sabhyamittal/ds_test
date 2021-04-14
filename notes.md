@@ -161,6 +161,7 @@ int main(void)
 Heap sort can be understood as the improved version of the binary search tree. It does not create a node as in case of binary search tree instead it builds the heap by adjusting the position of elements within the array itself.
 
 #### Maintaining the heap property
+
 <details>
 <summary>Answer</summary>
 	
@@ -199,7 +200,7 @@ while largest != root
         largest = -1
 	
 ```
-</detail>
+</details>
 
 
 #### Building a heap

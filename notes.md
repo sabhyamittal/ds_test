@@ -218,7 +218,7 @@ BUILD-MAX-HEAP(A)
 ### The heapsort algorithm
 
 
-### PRIORITY QUEUES
+### Priority queues
 
 
 ### CODE IN C:

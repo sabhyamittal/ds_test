@@ -162,7 +162,7 @@ Heap sort can be understood as the improved version of the binary search tree. I
 
 #### Maintaining the heap property
 <details>
-<summary>pseudo code</summary>
+<summary>Answer</summary>
 	
 ```
 MIN-HEAPIFY(A, i)
@@ -201,10 +201,10 @@ while largest != root
 ```
 </detail>
 
-### Building a heap
+#### Building a heap
 
 <details>
-<summary>pseudo code</summary>
+<summary>Answer</summary>
 
 ```
 BUILD-MAX-HEAP(A)
@@ -215,13 +215,13 @@ BUILD-MAX-HEAP(A)
 ```
 </details>
 
-### The heapsort algorithm
+#### The heapsort algorithm
 
 
-### Priority queues
+#### Priority queues
 
 
-### CODE IN C:
+#### CODE IN C:
 <details>
 <summary>Answer</summary>
  

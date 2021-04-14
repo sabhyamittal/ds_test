@@ -152,19 +152,71 @@ int main(void)
 ### PROBABILISTIC ANALYSIS AND FURTHER USES OF INDICATOR RANDOM VARIABLES
 
 
-# SORTING AND ORDER STATISTICS
+## SORTING AND ORDER STATISTICS
 
-## HEAP SORT
+### Heap Sort
 
-### HEAPS
+#### Heaps
 
 Heap sort can be understood as the improved version of the binary search tree. It does not create a node as in case of binary search tree instead it builds the heap by adjusting the position of elements within the array itself.
 
-### MAINTAINING THE HEAP PROPERTY
+#### Maintaining the heap property
+<details>
+<summary>pseudo code</summary>
+	
+```
+MIN-HEAPIFY(A, i)
+l = LEFT(i)
+r = RIGHT(i)
+if l <= A.heap-size and A[l] < A[i]
+    min = l
+else
+    min = i
+if r <= A.heap-size and A[r] < A[min]
+    min = r
+if min != i
+    exchange A[i] with A[min]
+    MIN-HEAPIFY(A, min)
+The running time is still O(log n).
 
-### BUILDING A HEAP
 
-### THE HEAPSORT ALGORITHM
+
+MAX-HEAPIFY(A, i)
+largest = -1
+root = i
+while largest != root
+    l = LEFT(root)
+    r = RIGHT(root)
+    if l <= A.heap-size and A[l] > A[root]
+        largest = l
+    else
+        largest = root
+    if r <= A.heap-size and A[r] > A[largest]
+        largest = r
+    if largest != root:
+        exchange A[root] with A[largest]
+        root = largest
+        largest = -1
+	
+```
+</detail>
+
+### Building a heap
+
+<details>
+<summary>pseudo code</summary>
+
+```
+BUILD-MAX-HEAP(A)
+1.A.heap-size=A.length
+2.for i=A.lengtgh/2 (floor function) down to 1
+3. MAX-HEAPIFY(A,i)
+
+```
+</details>
+
+### The heapsort algorithm
+
 
 ### PRIORITY QUEUES
 

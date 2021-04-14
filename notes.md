@@ -201,6 +201,7 @@ while largest != root
 ```
 </detail>
 
+
 #### Building a heap
 
 <details>

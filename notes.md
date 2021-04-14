@@ -220,8 +220,44 @@ BUILD-MAX-HEAP(A)
 #### The heapsort algorithm
 
 
-#### Priority queues
+#### Priority queues 
 
+Data structure for maintaining a set S of elements,each with an associated value called as key.
+
+<details>
+<summary>Answer</summary>
+
+```
+
+HEAP-MINIMUM(A)
+    return A[1]
+    
+    
+HEAP-EXTRACT-MIN(A)
+    if A.heap-size < 1
+        error "heap underflow"
+    min = A[1]
+    A[1] = A[A.heap-size]
+    A.heap-size = A.heap-size - 1
+    MIN-HEAPIFY(A, 1)
+    return max
+    
+    
+HEAP-DECREASE-KEY(A, i, key)
+    if key > A[i]
+        error "new key is bigger than current key"
+    A[i] = key
+    while i > 1 and A[PARENT(i)] > A[i]
+        exchange A[i] with A[PARENT(i)]
+        i = PARENT(i)
+	
+	
+MIN-HEAP-INSERT(A, key)
+    A.heap-size = A.heap-size + 1
+    A[A.heap-size] = +∞
+    HEAP-DECREASE-KEY(A, A.heap-size, key)
+```
+</details>
 
 #### CODE IN C:
 <details>

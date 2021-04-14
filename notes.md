@@ -219,6 +219,12 @@ BUILD-MAX-HEAP(A)
 
 #### The heapsort algorithm
 
+1.Since the tree satisfies Max-Heap property, then the largest item is stored at the root node.
+2.Swap: Remove the root element and put at the end of the array (nth position) Put the last item of the tree (heap) at the vacant place.
+3.Remove: Reduce the size of the heap by 1.
+4.Heapify: Heapify the root element again so that we have the highest element at root.
+5.The process is repeated until all the items of the list are sorted.
+
 
 #### Priority queues 
 
@@ -331,18 +337,60 @@ MIN-HEAP-INSERT(A, key)
  `````
  </details>
  
- ## QUICK SORT
+ ### Quick sort
  
- ### DESCRIPTION OF QUICKSORT
+ #### Description of quick sort 
  
 follows divide and conquer strategy.
 starting from the first element(pivot);
 It works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays, 
 according to whether they are less than or greater than the pivot. ... The sub-arrays are then sorted recursively.
 
-### PERFORMANCE OF QUICK SORT
+<details>
+<summary>Answer</summary>
+ 
+```
 
-### A RANDOMIZED VERSION OF QUICKSORT
+PARTITION(A, p, r)
+x = A[r]
+i = p - 1
+same_value_count = 0
+for j = p to r - 1
+    if A[j] <= x
+        if A[j] == x
+            same_value_count = same_value_count + 1
+        i = i + 1
+        exchange A[i] with A[j]
+exchange A[i + 1] with A[r]
+if same_value_count = r - p
+    return Math.floor((p + 2) / 2)
+else
+    return i + 1
+    
+    
+    QUICKSORT(A, p, r)
+if p < r
+    q = PARTITION(A, p, r)
+    QUICKSORT(A, p, q - 1)
+    QUICKSORT(A, q + 1, r)
+
+PARTITION(A, p, r)
+x = A[r]
+i = p - 1
+for j = p to r - 1
+    if A[j] >= x
+        i = i + 1
+        exchange A[i] with A[j]
+exchange A[i + 1] with A[r]
+return i + 1
+
+    
+  ```
+  </details>
+
+### Performance of quick sort
+
+### A randomized version of quicksort
 
 ### ANALYSIS OF QUICK SORT
 

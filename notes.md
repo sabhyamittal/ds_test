@@ -265,7 +265,7 @@ MIN-HEAP-INSERT(A, key)
 ```
 </details>
 
-#### CODE IN C:
+#### Code in c
 <details>
 <summary>Answer</summary>
  
@@ -350,30 +350,6 @@ according to whether they are less than or greater than the pivot. ... The sub-a
 <summary>Answer</summary>
  
 ```
-
-PARTITION(A, p, r)
-x = A[r]
-i = p - 1
-same_value_count = 0
-for j = p to r - 1
-    if A[j] <= x
-        if A[j] == x
-            same_value_count = same_value_count + 1
-        i = i + 1
-        exchange A[i] with A[j]
-exchange A[i + 1] with A[r]
-if same_value_count = r - p
-    return Math.floor((p + 2) / 2)
-else
-    return i + 1
-    
-    
-    QUICKSORT(A, p, r)
-if p < r
-    q = PARTITION(A, p, r)
-    QUICKSORT(A, p, q - 1)
-    QUICKSORT(A, q + 1, r)
-
 PARTITION(A, p, r)
 x = A[r]
 i = p - 1
@@ -385,19 +361,68 @@ exchange A[i + 1] with A[r]
 return i + 1
 
     
+    QUICKSORT(A, p, r)
+if p < r
+    q = PARTITION(A, p, r)
+    QUICKSORT(A, p, q - 1)
+    QUICKSORT(A, q + 1, r)
+
+
+    
   ```
   </details>
 
-### Performance of quick sort
+#### Performance of quick sort 
 
-### A randomized version of quicksort
+In this section we will investigate how quick sort performs under the assumptions of balanced versus unbalanced partitioning.
 
-### ANALYSIS OF QUICK SORT
+1. Time Complexities
+Worst Case Complexity [Big-O]: O(n2)
+It occurs when the pivot element picked is either the greatest or the smallest element.
 
-### CODE IN C
+This condition leads to the case in which the pivot element lies in an extreme end of the sorted array. One sub-array is always empty and another sub-array contains n - 1 elements. Thus, quicksort is called only on this sub-array.
+
+However, the quicksort algorithm has better performance for scattered pivots.
+Best Case Complexity [Big-omega]: O(n*log n)
+It occurs when the pivot element is always the middle element or near to the middle element.
+Average Case Complexity [Big-theta]: O(n*log n)
+It occurs when the above conditions do not occur.
+2. Space Complexity
+The space complexity for quicksort is O(log n).
+
+
+
+#### A randomized version of quicksort
+
+An algorithm that uses random numbers to decide what to do next anywhere in its logic is called a Randomized Algorithm. For example, in Randomized Quick Sort, we use a random number to pick the next pivot .
+// Sorts an array arr[low..high]
+randQuickSort(arr[], low, high)
+
+1. If low >= high, then EXIT.
+
+2. While pivot 'x' is not a Central Pivot.
+  (i)   Choose uniformly at random a number from [low..high]. 
+        Let the randomly picked number number be x.
+  (ii)  Count elements in arr[low..high] that are smaller 
+        than arr[x]. Let this count be sc.
+  (iii) Count elements in arr[low..high] that are greater 
+        than arr[x]. Let this count be gc.
+  (iv)  Let n = (high-low+1). If sc >= n/4 and
+        gc >= n/4, then x is a central pivot.
+
+3. Partition arr[low..high] around the pivot x.
+
+4. // Recur for smaller elements
+   randQuickSort(arr, low, sc-1) 
+
+5. // Recur for greater elements
+   randQuickSort(arr, high-gc+1, high) 
+
+
+#### Code in c
 <details>
 <summary>Answer</summary>
-	
+
  ```
 #include<stdio.h>
 void quicksort(int number[25],int first,int last){
@@ -450,15 +475,116 @@ int main(){
 ```
 </details>
 
-## SORTING IN LINEAR TIME
+### Sorting in linear time
 
-### LOWER BOUNDS FOR SORTING
+#### Lower bounds for sorting
 
-### COUNTING SORT
 
-### RADIX SORT
 
-### BUCKET SORT
+#### Counting sort
+
+Counting sort is a sorting technique based on keys between a specific range. It works by counting the number of objects having distinct key values (kind of hashing). 
+Then doing some arithmetic to calculate the position of each object in the output sequence. for example:
+<details>
+<summary>Example</summary>
+
+ ```
+
+For simplicity, consider the data in the range 0 to 9. 
+Input data: 1, 4, 1, 2, 7, 5, 2
+  1) Take a count array to store the count of each unique object.
+  Index:     0  1  2  3  4  5  6  7  8  9
+  Count:     0  2  2  0   1  1  0  1  0  0
+
+  2) Modify the count array such that each element at each index 
+  stores the sum of previous counts. 
+  Index:     0  1  2  3  4  5  6  7  8  9
+  Count:     0  2  4  4  5  6  6  7  7  7
+
+The modified count array indicates the position of each object in 
+the output sequence.
+ 
+  3) Output each object from the input sequence followed by 
+  decreasing its count by 1.
+  Process the input data: 1, 4, 1, 2, 7, 5, 2. Position of 1 is 2.
+  Put data 1 at index 2 in output. Decrease count by 1 to place 
+  next data 1 at an index 1 smaller than this index.
+  
+  ```
+  </details>
+  
+  #### Code in c
+  <details>
+<summary>Answer</summary>
+
+ ```
+  
+  
+  // C Program for counting sort
+#include <stdio.h>
+#include <string.h>
+#define RANGE 255
+ 
+// The main function that sort the given string arr[] in
+// alphabatical order
+void countSort(char arr[])
+{
+    // The output character array that will have sorted arr
+    char output[strlen(arr)];
+ 
+    // Create a count array to store count of inidividul
+    // characters and initialize count array as 0
+    int count[RANGE + 1], i;
+    memset(count, 0, sizeof(count));
+ 
+    // Store count of each character
+    for (i = 0; arr[i]; ++i)
+        ++count[arr[i]];
+ 
+    // Change count[i] so that count[i] now contains actual
+    // position of this character in output array
+    for (i = 1; i <= RANGE; ++i)
+        count[i] += count[i - 1];
+ 
+    // Build the output character array
+    for (i = 0; arr[i]; ++i) {
+        output[count[arr[i]] - 1] = arr[i];
+        --count[arr[i]];
+    }
+ 
+    /*
+     For Stable algorithm
+     for (i = sizeof(arr)-1; i>=0; --i)
+    {
+        output[count[arr[i]]-1] = arr[i];
+        --count[arr[i]];
+    }
+    
+    For Logic : See implementation
+    */
+ 
+    // Copy the output array to arr, so that arr now
+    // contains sorted characters
+    for (i = 0; arr[i]; ++i)
+        arr[i] = output[i];
+}
+ 
+// Driver program to test above function
+int main()
+{
+    char arr[] = "geeksforgeeks"; //"applepp";
+ 
+    countSort(arr);
+ 
+    printf("Sorted character array is %sn", arr);
+    return 0;
+}
+```
+</details>
+
+#### Radix sort
+
+#### Bucket sort
 
 ## MEDIANS AND ORDER STATISTICS
 

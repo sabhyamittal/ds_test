@@ -71,14 +71,14 @@ int main()
 
 ### STANDARD NOTATIONS AND COMMON FUNCTIONS
 
-## DIVIDE AND CONQUER
+### Divide and conquer
 
-### THE MAXIMUM SUBARRAY PROBLEM
+#### The maximum subarray problem
 
 To find a subarray of the given array whose sum is maximum.
 By divide and conquer->find the center indices->max on the LHS and RHS->sum of max.
 
-#### CODE IN C
+#### Code in c
 <details>
 <summary>Answer</summary>
  
@@ -693,26 +693,462 @@ int main() {
 
 #### Bucket sort
 
-## MEDIANS AND ORDER STATISTICS
+Bucket Sort is a sorting technique that sorts the elements by first dividing the elements into several groups called buckets. The elements inside each bucket are sorted using any of the suitable sorting algorithms or recursively calling the same algorithm.
 
-### MINIMUM AND MAXIMUM
+#### Code in c
+<details>
+<summary>Answer</summary>
+
+ ```
+ #include <stdio.h>
+#include <stdlib.h>
+
+#define NARRAY 7   // Array size
+#define NBUCKET 6  // Number of buckets
+#define INTERVAL 10  // Each bucket capacity
+
+struct Node {
+  int data;
+  struct Node *next;
+};
+
+void BucketSort(int arr[]);
+struct Node *InsertionSort(struct Node *list);
+void print(int arr[]);
+void printBuckets(struct Node *list);
+int getBucketIndex(int value);
+
+// Sorting function
+void BucketSort(int arr[]) {
+  int i, j;
+  struct Node **buckets;
+
+  // Create buckets and allocate memory size
+  buckets = (struct Node **)malloc(sizeof(struct Node *) * NBUCKET);
+
+  // Initialize empty buckets
+  for (i = 0; i < NBUCKET; ++i) {
+    buckets[i] = NULL;
+  }
+
+  // Fill the buckets with respective elements
+  for (i = 0; i < NARRAY; ++i) {
+    struct Node *current;
+    int pos = getBucketIndex(arr[i]);
+    current = (struct Node *)malloc(sizeof(struct Node));
+    current->data = arr[i];
+    current->next = buckets[pos];
+    buckets[pos] = current;
+  }
+
+  // Print the buckets along with their elements
+  for (i = 0; i < NBUCKET; i++) {
+    printf("Bucket[%d]: ", i);
+    printBuckets(buckets[i]);
+    printf("\n");
+  }
+
+  // Sort the elements of each bucket
+  for (i = 0; i < NBUCKET; ++i) {
+    buckets[i] = InsertionSort(buckets[i]);
+  }
+
+  printf("-------------\n");
+  printf("Bucktets after sorting\n");
+  for (i = 0; i < NBUCKET; i++) {
+    printf("Bucket[%d]: ", i);
+    printBuckets(buckets[i]);
+    printf("\n");
+  }
+
+  // Put sorted elements on arr
+  for (j = 0, i = 0; i < NBUCKET; ++i) {
+    struct Node *node;
+    node = buckets[i];
+    while (node) {
+      arr[j++] = node->data;
+      node = node->next;
+    }
+  }
+
+  return;
+}
+
+// Function to sort the elements of each bucket
+struct Node *InsertionSort(struct Node *list) {
+  struct Node *k, *nodeList;
+  if (list == 0 || list->next == 0) {
+    return list;
+  }
+
+  nodeList = list;
+  k = list->next;
+  nodeList->next = 0;
+  while (k != 0) {
+    struct Node *ptr;
+    if (nodeList->data > k->data) {
+      struct Node *tmp;
+      tmp = k;
+      k = k->next;
+      tmp->next = nodeList;
+      nodeList = tmp;
+      continue;
+    }
+
+    for (ptr = nodeList; ptr->next != 0; ptr = ptr->next) {
+      if (ptr->next->data > k->data)
+        break;
+    }
+
+    if (ptr->next != 0) {
+      struct Node *tmp;
+      tmp = k;
+      k = k->next;
+      tmp->next = ptr->next;
+      ptr->next = tmp;
+      continue;
+    } else {
+      ptr->next = k;
+      k = k->next;
+      ptr->next->next = 0;
+      continue;
+    }
+  }
+  return nodeList;
+}
+
+int getBucketIndex(int value) {
+  return value / INTERVAL;
+}
+
+void print(int ar[]) {
+  int i;
+  for (i = 0; i < NARRAY; ++i) {
+    printf("%d ", ar[i]);
+  }
+  printf("\n");
+}
+
+// Print buckets
+void printBuckets(struct Node *list) {
+  struct Node *cur = list;
+  while (cur) {
+    printf("%d ", cur->data);
+    cur = cur->next;
+  }
+}
+
+// Driver code
+int main(void) {
+  int array[NARRAY] = {42, 32, 33, 52, 37, 47, 51};
+
+  printf("Initial array: ");
+  print(array);
+  printf("-------------\n");
+
+  BucketSort(array);
+  printf("-------------\n");
+  printf("Sorted array: ");
+  print(array);
+  return 0;
+}
+ ```
+ </details>
+
+### Medians and order statistics
+
+#### Minimum and maximum
 
 
-### SELECTION IN EXPECTED LINEAR TIME
+#### Selection in expected linear time
 
 
-### SELECTION IN WORST-CASE LINEAR TIME
+### Selection in worst-case linear time
 
 
-# DATA STRUCTURES
+## Data structures
 
-## ELEMENTARY DATA STRUCTURES
+Data Structure is a way to store and organize data so that it can be used efficiently. Data Structure includes topics such as Array, Pointer, Structure, Linked List, Stack, Queue, Graph, Searching, Sorting, Programs, etc.
 
-### STACKS AND QUEUES
+### Elementary data structures
 
-### LINKED LIST
+#### Stacks and queues
+A stack is a useful data structure in programming. It is just like a pile of plates kept on top of each other.
+If you want the plate at the bottom, you must first remove all the plates on top. Such an arrangement is called Last In First Out - the last item that is the first item to go out.
+In programming terms, putting an item on top of the stack is called push and removing an item is called pop.
 
-### IMPLEMENTING POINTERS AND OBJECTS
+##### Working of Stack Data Structure
+<details>
+<summary>Answer</summary>
+
+ ```
+
+The operations work as follows:
+
+A pointer called TOP is used to keep track of the top element in the stack.
+When initializing the stack, we set its value to -1 so that we can check if the stack is empty by comparing TOP == -1.
+On pushing an element, we increase the value of TOP and place the new element in the position pointed to by TOP.
+On popping an element, we return the element pointed to by TOP and reduce its value.
+Before pushing, we check if the stack is already full
+Before popping, we check if the stack is already empty
+```
+</details>
+
+#### Code in c
+<details>
+<summary>Answer</summary>
+
+ ```
+ #include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 10
+
+int count = 0;
+
+// Creating a stack
+struct stack {
+  int items[MAX];
+  int top;
+};
+typedef struct stack st;
+
+void createEmptyStack(st *s) {
+  s->top = -1;
+}
+
+// Check if the stack is full
+int isfull(st *s) {
+  if (s->top == MAX - 1)
+    return 1;
+  else
+    return 0;
+}
+
+// Check if the stack is empty
+int isempty(st *s) {
+  if (s->top == -1)
+    return 1;
+  else
+    return 0;
+}
+
+// Add elements into stack
+void push(st *s, int newitem) {
+  if (isfull(s)) {
+    printf("STACK FULL");
+  } else {
+    s->top++;
+    s->items[s->top] = newitem;
+  }
+  count++;
+}
+
+// Remove element from stack
+void pop(st *s) {
+  if (isempty(s)) {
+    printf("\n STACK EMPTY \n");
+  } else {
+    printf("Item popped= %d", s->items[s->top]);
+    s->top--;
+  }
+  count--;
+  printf("\n");
+}
+
+// Print elements of stack
+void printStack(st *s) {
+  printf("Stack: ");
+  for (int i = 0; i < count; i++) {
+    printf("%d ", s->items[i]);
+  }
+  printf("\n");
+}
+
+// Driver code
+int main() {
+  int ch;
+  st *s = (st *)malloc(sizeof(st));
+
+  createEmptyStack(s);
+
+  push(s, 1);
+  push(s, 2);
+  push(s, 3);
+  push(s, 4);
+
+  printStack(s);
+
+  pop(s);
+
+  printf("\nAfter popping out\n");
+  printStack(s);
+}
+ ```
+ </details>
+ 
+ Queues:Queue follows the First In First Out (FIFO) rule - the item that goes in first is the item that comes out first.
+ 
+ In programming terms, putting items in the queue is called enqueue, and removing items from the queue is called dequeue.
+ 
+ Working of Queue
+Queue operations work as follows:
+
+two pointers FRONT and REAR
+FRONT track the first element of the queue
+REAR track the last element of the queue
+initially, set value of FRONT and REAR to -1
+
+Enqueue Operation
+check if the queue is full
+for the first element, set the value of FRONT to 0
+increase the REAR index by 1
+add the new element in the position pointed to by REAR
+
+Dequeue Operation
+check if the queue is empty
+return the value pointed by FRONT
+increase the FRONT index by 1
+for the last element, reset the values of FRONT and REAR to -1
+
+
+ #### Code in c
+ <details>
+<summary>Answer</summary>
+
+ ```
+ 
+ 
+ #include <stdio.h>
+#define SIZE 5
+
+void enQueue(int);
+void deQueue();
+void display();
+
+int items[SIZE], front = -1, rear = -1;
+
+int main() {
+  //deQueue is not possible on empty queue
+  deQueue();
+
+  //enQueue 5 elements
+  enQueue(1);
+  enQueue(2);
+  enQueue(3);
+  enQueue(4);
+  enQueue(5);
+
+  // 6th element can't be added to because the queue is full
+  enQueue(6);
+
+  display();
+
+  //deQueue removes element entered first i.e. 1
+  deQueue();
+
+  //Now we have just 4 elements
+  display();
+
+  return 0;
+}
+
+void enQueue(int value) {
+  if (rear == SIZE - 1)
+    printf("\nQueue is Full!!");
+  else {
+    if (front == -1)
+      front = 0;
+    rear++;
+    items[rear] = value;
+    printf("\nInserted -> %d", value);
+  }
+}
+
+void deQueue() {
+  if (front == -1)
+    printf("\nQueue is Empty!!");
+  else {
+    printf("\nDeleted : %d", items[front]);
+    front++;
+    if (front > rear)
+      front = rear = -1;
+  }
+}
+
+// Function to print the queue
+void display() {
+  if (rear == -1)
+    printf("\nQueue is Empty!!!");
+  else {
+    int i;
+    printf("\nQueue elements are:\n");
+    for (i = front; i <= rear; i++)
+      printf("%d  ", items[i]);
+  }
+  printf("\n");
+}
+```
+</details>
+
+### Linked list
+
+In computer science, a linked list is a linear collection of data elements whose order is not given by their physical placement in memory. Instead, each element points to the next. It is a data structure consisting of a collection of nodes which together represent a sequence.
+
+#### Code in c
+ <details>
+<summary>Answer</summary>
+
+ ```
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Creating a node
+struct node {
+  int value;
+  struct node *next;
+};
+
+// print the linked list value
+void printLinkedlist(struct node *p) {
+  while (p != NULL) {
+    printf("%d ", p->value);
+    p = p->next;
+  }
+}
+
+int main() {
+  // Initialize nodes
+  struct node *head;
+  struct node *one = NULL;
+  struct node *two = NULL;
+  struct node *three = NULL;
+
+  // Allocate memory
+  one = malloc(sizeof(struct node));
+  two = malloc(sizeof(struct node));
+  three = malloc(sizeof(struct node));
+
+  // Assign value values
+  one->value = 1;
+  two->value = 2;
+  three->value = 3;
+
+  // Connect nodes
+  one->next = two;
+  two->next = three;
+  three->next = NULL;
+
+  // printing node-value
+  head = one;
+  printLinkedlist(head);
+}
+```
+</details>
+
+### Implementing pointers and objects
+
 
 ### REPRESENTING  ROOTED TREES
 

@@ -514,70 +514,70 @@ the output sequence.
   </details>
   
   #### Code in c
-  <details>
+<details>
 <summary>Answer</summary>
 
  ```
-  
-  
-  // C Program for counting sort
 #include <stdio.h>
-#include <string.h>
-#define RANGE 255
- 
-// The main function that sort the given string arr[] in
-// alphabatical order
-void countSort(char arr[])
-{
-    // The output character array that will have sorted arr
-    char output[strlen(arr)];
- 
-    // Create a count array to store count of inidividul
-    // characters and initialize count array as 0
-    int count[RANGE + 1], i;
-    memset(count, 0, sizeof(count));
- 
-    // Store count of each character
-    for (i = 0; arr[i]; ++i)
-        ++count[arr[i]];
- 
-    // Change count[i] so that count[i] now contains actual
-    // position of this character in output array
-    for (i = 1; i <= RANGE; ++i)
-        count[i] += count[i - 1];
- 
-    // Build the output character array
-    for (i = 0; arr[i]; ++i) {
-        output[count[arr[i]] - 1] = arr[i];
-        --count[arr[i]];
-    }
- 
-    /*
-     For Stable algorithm
-     for (i = sizeof(arr)-1; i>=0; --i)
-    {
-        output[count[arr[i]]-1] = arr[i];
-        --count[arr[i]];
-    }
-    
-    For Logic : See implementation
-    */
- 
-    // Copy the output array to arr, so that arr now
-    // contains sorted characters
-    for (i = 0; arr[i]; ++i)
-        arr[i] = output[i];
+
+void countingSort(int array[], int size) {
+  int output[10];
+
+  // Find the largest element of the array
+  int max = array[0];
+  for (int i = 1; i < size; i++) {
+    if (array[i] > max)
+      max = array[i];
+  }
+
+  // The size of count must be at least (max+1) but
+  // we cannot declare it as int count(max+1) in C as
+  // it does not support dynamic memory allocation.
+  // So, its size is provided statically.
+  int count[10];
+
+  // Initialize count array with all zeros.
+  for (int i = 0; i <= max; ++i) {
+    count[i] = 0;
+  }
+
+  // Store the count of each element
+  for (int i = 0; i < size; i++) {
+    count[array[i]]++;
+  }
+
+  // Store the cummulative count of each array
+  for (int i = 1; i <= max; i++) {
+    count[i] += count[i - 1];
+  }
+
+  // Find the index of each element of the original array in count array, and
+  // place the elements in output array
+  for (int i = size - 1; i >= 0; i--) {
+    output[count[array[i]] - 1] = array[i];
+    count[array[i]]--;
+  }
+
+  // Copy the sorted elements into original array
+  for (int i = 0; i < size; i++) {
+    array[i] = output[i];
+  }
 }
- 
-// Driver program to test above function
-int main()
-{
-    char arr[] = "geeksforgeeks"; //"applepp";
- 
-    countSort(arr);
- 
-    printf("Sorted character array is %sn", arr);
-    return 0;
+
+// Function to print an array
+void printArray(int array[], int size) {
+  for (int i = 0; i < size; ++i) {
+    printf("%d  ", array[i]);
+  }
+  printf("\n");
+}
+
+// Driver code
+int main() {
+  int array[] = {4, 2, 2, 8, 3, 3, 1};
+  int n = sizeof(array) / sizeof(array[0]);
+  countingSort(array, n);
+  printArray(array, n);
 }
 ```
 </details>
@@ -585,6 +585,111 @@ int main()
 #### Radix sort
 
 The idea of Radix Sort is to do digit by digit sort starting from least significant digit to most significant digit. Radix sort uses counting sort as a subroutine to sort.
+For example: 
+<details>
+<summary>Answer</summary>
+
+ ```
+
+Original, unsorted list:
+170, 45, 75, 90, 802, 24, 2, 66
+
+Sorting by least significant digit (1s place) gives: 
+[*Notice that we keep 802 before 2, because 802 occurred 
+before 2 in the original list, and similarly for pairs 
+170 & 90 and 45 & 75.]
+
+170, 90, 802, 2, 24, 45, 75, 66
+
+Sorting by next digit (10s place) gives: 
+[*Notice that 802 again comes before 2 as 802 comes before 
+2 in the previous list.]
+
+802, 2, 24, 45, 66, 170, 75, 90
+
+Sorting by the most significant digit (100s place) gives:
+2, 24, 45, 66, 75, 90, 170, 802
+```
+</details>
+
+#### Code in c
+
+<details>
+<summary>Answer</summary>
+
+ ```
+// Radix Sort in C Programming
+
+#include <stdio.h>
+
+// Function to get the largest element from an array
+int getMax(int array[], int n) {
+  int max = array[0];
+  for (int i = 1; i < n; i++)
+    if (array[i] > max)
+      max = array[i];
+  return max;
+}
+
+// Using counting sort to sort the elements in the basis of significant places
+void countingSort(int array[], int size, int place) {
+  int output[size + 1];
+  int max = (array[0] / place) % 10;
+
+  for (int i = 1; i < size; i++) {
+    if (((array[i] / place) % 10) > max)
+      max = array[i];
+  }
+  int count[max + 1];
+
+  for (int i = 0; i < max; ++i)
+    count[i] = 0;
+
+  // Calculate count of elements
+  for (int i = 0; i < size; i++)
+    count[(array[i] / place) % 10]++;
+    
+  // Calculate cummulative count
+  for (int i = 1; i < 10; i++)
+    count[i] += count[i - 1];
+
+  // Place the elements in sorted order
+  for (int i = size - 1; i >= 0; i--) {
+    output[count[(array[i] / place) % 10] - 1] = array[i];
+    count[(array[i] / place) % 10]--;
+  }
+
+  for (int i = 0; i < size; i++)
+    array[i] = output[i];
+}
+
+// Main function to implement radix sort
+void radixsort(int array[], int size) {
+  // Get maximum element
+  int max = getMax(array, size);
+
+  // Apply counting sort to sort elements based on place value.
+  for (int place = 1; max / place > 0; place *= 10)
+    countingSort(array, size, place);
+}
+
+// Print an array
+void printArray(int array[], int size) {
+  for (int i = 0; i < size; ++i) {
+    printf("%d  ", array[i]);
+  }
+  printf("\n");
+}
+
+// Driver code
+int main() {
+  int array[] = {121, 432, 564, 23, 1, 45, 788};
+  int n = sizeof(array) / sizeof(array[0]);
+  radixsort(array, n);
+  printArray(array, n);
+}
+```
+</details>
 
 #### Bucket sort
 

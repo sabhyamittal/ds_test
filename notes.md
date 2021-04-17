@@ -5,25 +5,29 @@
 
 #### Algorithms
 
- Algorithms are definite number of steps to solve a given problem in definite amount of time.For example:The travelling salesman problem,
- which finds out the shortest path /route between two cities hence it is used by GPS which is used all over globe.
+ Algorithms are definite number of steps to solve a given problem in definite amount of time.
  
 #### Algorithms as a technology
 
-
-
+ For example:The travelling salesman problem,
+ which finds out the shortest path /route between two cities hence it is used by GPS which is used all over globe.
+ 
 ### Getting Started
 
 #### Insertion Sort
 
 Efficient algorithm for sorting small number of elements.EX: sorting a deck of cards.
 
-### ANALYZING ALGORITHMS
+#### Analyzing insertion sort
 
-### DESIGNING ALGORITHMS
+Consider sorting n numbers stored in array A by first finding the smallest element of A and exchanging it with the element in A[1]. Then find the second smallest 
+element of A, and exchange it with A[2]. Continue in this manner for the first n - 1 elements of A.
+
+#### Designing algorithms
 
 
-#### CODE FOR INSERTION SORT IN C
+
+#### Code in c
 
 <details>
 <summary>Answer</summary>
@@ -1147,24 +1151,29 @@ int main() {
 ```
 </details>
 
-### Implementing pointers and objects
+#### Implementing pointers and objects
+
+Pointers are symbolic representation of addresses. They enable programs to simulate call-by-reference as well as to create and manipulate dynamic data structures. Pointers are symbolic representation of addresses. They enable programs to simulate call-by-reference as well as to create and manipulate dynamic data structures. 
+syntax:
+datatype *var_name; 
+int *ptr;   //ptr can point to an address which holds int data
 
 
-### REPRESENTING  ROOTED TREES
+#### Representing rooted trees
 
-## HASH TABLES
+### Hash tables
 
-### DIRECT-ADDRESS TABLE
+#### DIRECT-ADDRESS TABLE
 
-### HASH TABLES
+#### HASH TABLES
 
-### HASH FUNCTIONS
+#### HASH FUNCTIONS
 
-### OPEN ADRESSING
+#### OPEN ADRESSING
 
-### PERFECT HASHING
+#### PERFECT HASHING
  
-## BINARY SEARCH TREE
+### Binary search tree
 
 it is a binary tree in which each node is having value lesser than itself at left side and greater
 than itself at right hand side.

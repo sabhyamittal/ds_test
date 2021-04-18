@@ -3579,11 +3579,29 @@ void dijikstra(int G[MAX][MAX], int n, int startnode)
 
 ### THE RELABEL-TO-FRONT ALGORITHM
 
+### Multithreaded algorithm
+
+#### The basics of dynamic multithreading
+#### Multithreaded matrix multiplication
+#### Multithreaded merge sort
+
+### Matrix operation
+
+#### Solving systems of linear equation
+#### inverting matrices
+#### Symmetric positive definite matrices and least squares approximation
+
+### Linear programming
  
- SIMPLEX ALGORITHM:To find the maximum solution of the linear program.
+#### Standard and slack forms
+#### Formulating problems as linear programs
+
+#### The simplex algorithm
+
+ To find the maximum solution of the linear program.
 linear program-standard form-slack form-simplex algorithm-solution.
  
-### CODE IN C 
+### Code in c
    <details>
 <summary>Answer</summary>
  
@@ -3812,7 +3830,46 @@ int main(int argc, char *argv[]){
 }
  ```
  </details>
- THE RABIN-KARP ALGORITHM:The Rabin-Karp algorithm is a string-searching algorithm that uses hashing to find patterns in strings.
+ 
+ #### Duality
+ 
+ #### The intial basic feasibe solution
+ 
+ ### Polynomials and the fft
+ 
+ #### Representing polynomials
+ 
+ #### The dft and fft
+ 
+ #### Efficient fft implementations
+ 
+ ### Number-therotic algorithms
+ 
+ #### Elementric number theoritic notions
+ 
+ #### Greatest common divisor
+ 
+ #### Modular arithmatic
+ 
+ #### Solving modular linear equations
+ 
+ #### The chinese remainder theoram
+ 
+ #### Powers of an element
+  
+ #### The rsa public key cryptosystem
+ 
+ #### Primality testing
+ 
+ #### Integer factorization
+ 
+ ### String matching
+ 
+ #### The naive string matching algorithm
+
+ #### The rabin karp algorithm
+ 
+ The Rabin-Karp algorithm is a string-searching algorithm that uses hashing to find patterns in strings.
  
 ### CODE IN C
   <details>
@@ -3901,7 +3958,12 @@ int main()
 
 ```
 </details>
-KNUTH-MORRIS-PRATT ALGORITHM: It is based on pattern search. if given a string  and a Pattern, we need to find the presence of pattern in
+
+#### String matching with finite automata
+
+#### The knuth morris pratt algorithm
+
+It is based on pattern search. if given a string  and a Pattern, we need to find the presence of pattern in
 the string and hence find its indices. 
 
 ### CODE IN C
@@ -3964,7 +4026,36 @@ int main() {
 ```
 </details>
 
-THE VERTEX COVER PROBLEM:to find minimum subset of vertices that covers all the edges. 
+### Computational geometry
+
+#### Line segment propeties
+
+#### Determining whether any pair of segment intersects
+
+#### Finding the convex hull
+
+#### Finding the closest pair of points
+
+
+### Np completeness
+
+#### Polynomial time
+
+#### Polynomial time verification
+
+
+#### Np completeness and reducibility
+
+#### Np completeness proofs
+
+#### Np complete problems
+
+### Approximation algorithms
+
+
+#### THE VERTEX COVER PROBLEM
+
+to find minimum subset of vertices that covers all the edges. 
 (remove maximum degree vertices and all its associated edges.)
 The Vertex Cover Problem is to find a subset of the vertices of a graph that contains an endpoint of every edge.
 
@@ -4012,7 +4103,9 @@ int main(void)
 
 ```
 </details>
-THE TRAVELLING SALESMAN PROBLEM:given cities and distance between them.we have to find the shortest route to visit every city only once
+#### THE TRAVELLING SALESMAN PROBLEM
+
+given cities and distance between them.we have to find the shortest route to visit every city only once
 and return to the starting point.
 
 ### CODE IN C
@@ -4111,7 +4204,10 @@ int main()
 
 ```
 </details>
-THE SET COVERING PROBLEM:the set cover problem is to identify the smallest sub-collection of S whose union equals the universe.
+
+#### THE SET COVERING PROBLEM
+
+the set cover problem is to identify the smallest sub-collection of S whose union equals the universe.
  For example, consider the universe U={1,2,3,4,5} and the collection of set S={{1,2,3},{2,4},{3,4},{4,5}. Clearly the union of S is U.
 
 
@@ -4679,6 +4775,11 @@ void sumOfSub(int s,int k,int r)
 	
 ```
 </details.	
+
+####  Randomization and linear programming
+
+#### The subset-sum problem
+
 
 
 

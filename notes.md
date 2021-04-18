@@ -1227,6 +1227,9 @@ int *ptr;   //ptr can point to an address which holds int data
 
 ### Hash tables
 
+ its a searching technique, designed using mathematical model of functions. its fastest searching technique. ideal hashing takes O(1).
+
+
 #### DIRECT-ADDRESS TABLE
 
 #### HASH TABLES
@@ -2851,7 +2854,13 @@ int main(int argc, char **argv) {
 ```
 </details>
 
-## VAN EMDE BOAS TREES
+## Van Emde Boas trees
+
+Van Emde Boas tree (or Van Emde Boas priority queue or vEB tree) is a tree data structure which implements 
+an associative array with m-bit integer keys. 
+It performs all operations  in O(log log M) time, 
+where M is the maximum number of elements that can be stored in the tree.
+
 
 ### PRELIMINARY APPROACHES
 
@@ -3581,7 +3590,11 @@ void dijikstra(int G[MAX][MAX], int n, int startnode)
 
 ### Multithreaded algorithm
 
+Multithreading is a feature that allows concurrent execution of two or more parts of a program for maximum utilization of Resources.
+ Each part of such program is called a thread. So, threads are light-weight processes within a process.
+
 #### The basics of dynamic multithreading
+
 #### Multithreaded matrix multiplication
 #### Multithreaded merge sort
 
@@ -4039,7 +4052,14 @@ int main() {
 
 ### Np completeness
 
+ a problem is NP-complete when: a brute-force search algorithm can solve it, 
+and the correctness of each solution can be verified quickly.
+
+
 #### Polynomial time
+
+An algorithm is said to be of polynomial time if its running time is upper bounded by a polynomial expression in the size of the input for the algorithm.
+
 
 #### Polynomial time verification
 

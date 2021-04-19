@@ -25,7 +25,11 @@ element of A, and exchange it with A[2]. Continue in this manner for the first n
 
 #### Designing algorithms
 
+In designing of Algorithm, complexity analysis of an algorithm is an essential aspect. Mainly, algorithmic complexity is concerned about its performance, how fast or slow it works.
 
+The complexity of an algorithm describes the efficiency of the algorithm in terms of the amount of the memory required to process the data and the processing time.
+
+Complexity of an algorithm is analyzed in two perspectives: Time and Space.
 
 #### Code in c
 
@@ -69,11 +73,94 @@ int main()
 ```
 </details>
 
-## GROWTH OF FUNCTIONS
+### Growth of functions
 
-### ASYMPTOTIC NOTATIONS
+#### Asymtotic notations
 
-### STANDARD NOTATIONS AND COMMON FUNCTIONS
+Execution time of an algorithm depends on the instruction set, processor speed, disk I/O speed, etc. Hence, we estimate the efficiency of an algorithm asymptotically.
+
+Time function of an algorithm is represented by T(n), where n is the input size.
+
+Different types of asymptotic notations are used to represent the complexity of an algorithm. Following asymptotic notations are used to calculate the running time complexity of an algorithm.
+
+O − Big Oh
+
+Ω − Big omega
+
+θ − Big theta
+
+o − Little Oh
+
+ω − Little omega
+
+
+#### Standard notations and common functions
+
+O: Asymptotic Upper Bound
+‘O’ (Big Oh) is the most commonly used notation. A function f(n) can be represented is the order of g(n) that is O(g(n)), if there exists a value of positive integer n as n0 and a positive constant c such that −
+
+f(n)⩽c.g(n) for n>n0 in all case
+
+Hence, function g(n) is an upper bound for function f(n), as g(n) grows faster than f(n).
+
+Example
+Let us consider a given function, f(n)=4.n3+10.n2+5.n+1
+Considering g(n)=n3,
+
+f(n)⩽5.g(n) for all the values of n>2
+Hence, the complexity of f(n) can be represented as O(g(n)), i.e. O(n3)
+Ω: Asymptotic Lower Bound
+We say that f(n)=Ω(g(n)) when there exists constant c that f(n)⩾c.g(n) for all sufficiently large value of n. Here n is a positive integer. It means function g is a lower bound for function f; after a certain value of n, f will never go below g.
+
+Example
+Let us consider a given function, f(n)=4.n3+10.n2+5.n+1.
+
+Considering g(n)=n3, f(n)⩾4.g(n) for all the values of n>0.
+
+Hence, the complexity of f(n) can be represented as Ω(g(n)), i.e. Ω(n3)
+θ: Asymptotic Tight Bound
+We say that f(n)=θ(g(n)) when there exist constants c1 and c2 that c1.g(n)⩽f(n)⩽c2.g(n) for all sufficiently large value of n. Here n is a positive integer.
+
+This means function g is a tight bound for function f.
+
+Example
+Let us consider a given function, f(n)=4.n3+10.n2+5.n+1
+Considering g(n)=n3, 4.g(n)⩽f(n)⩽5.g(n) for all the large values of n.
+
+Hence, the complexity of f(n) can be represented as θ(g(n)), i.e. θ(n3).
+
+O - Notation
+The asymptotic upper bound provided by O-notation may or may not be asymptotically tight. The bound 2.n2=O(n2) is asymptotically tight, but the bound 2.n=O(n2) is not.
+
+We use o-notation to denote an upper bound that is not asymptotically tight.
+
+We formally define o(g(n)) (little-oh of g of n) as the set f(n) = o(g(n)) for any positive constant c>0 and there exists a value n0>0, such that 0⩽f(n)⩽c.g(n).
+
+Intuitively, in the o-notation, the function f(n) becomes insignificant relative to g(n) as n approaches infinity; that is,
+
+limn→∞(f(n)g(n))=0
+Example
+Let us consider the same function, f(n)=4.n3+10.n2+5.n+1
+Considering g(n)=n4,
+
+limn→∞(4.n3+10.n2+5.n+1n4)=0
+Hence, the complexity of f(n) can be represented as o(g(n)), i.e. o(n4).
+
+ω – Notation
+We use ω-notation to denote a lower bound that is not asymptotically tight. Formally, however, we define ω(g(n)) (little-omega of g of n) as the set f(n) = ω(g(n)) for any positive constant C > 0 and there exists a value n0>0, such that 0⩽c.g(n)<f(n).
+
+For example, n22=ω(n), but n22≠ω(n2). The relation f(n)=ω(g(n)) implies that the following limit exists
+
+limn→∞(f(n)g(n))=∞
+That is, f(n) becomes arbitrarily large relative to g(n) as n approaches infinity.
+
+Example
+Let us consider same function, f(n)=4.n3+10.n2+5.n+1
+Considering g(n)=n2,
+
+limn→∞(4.n3+10.n2+5.n+1n2)=∞
+Hence, the complexity of f(n) can be represented as o(g(n)), i.e. ω(n2).
+
 
 ### Divide and conquer
 
@@ -204,7 +291,7 @@ int main(){
 
 #### THE RECURSION-TREE METHOD FOR SOLVING RECURRENCES
 
-### THE MASTER METHOD FOR SOLVING RECURRENCES
+#### THE MASTER METHOD FOR SOLVING RECURRENCES
 
 ### PROOF FOR MASTER'S THEOREM
 

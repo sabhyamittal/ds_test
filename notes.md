@@ -289,25 +289,116 @@ int main(){
 
 #### The substitution method for solving recurrences
 
-#### THE RECURSION-TREE METHOD FOR SOLVING RECURRENCES
+The substitution method is a condensed way of proving an asymptotic bound on a recurrence by induction. In the substitution method, instead of trying to find an exact closed-form solution, we only try to find a closed-form bound on the recurrence.
 
-#### THE MASTER METHOD FOR SOLVING RECURRENCES
+#### The recursion tree method for solving recurrences
 
-### PROOF FOR MASTER'S THEOREM
+In this method, we draw a recurrence tree and calculate the time taken by every level of tree. Finally, we sum the work done at all levels. To draw the recurrence tree, we start from the given recurrence and keep drawing till we find a pattern among levels. The pattern is typically a arithmetic or geometric series.
+
+For example consider the recurrence relation 
+T(n) = T(n/4) + T(n/2) + cn2
+
+           cn2
+         /      \
+     T(n/4)     T(n/2)
+
+If we further break down the expression T(n/4) and T(n/2), 
+we get following recursion tree.
+
+                cn2
+           /           \      
+       c(n2)/16      c(n2)/4
+      /      \          /     \
+  T(n/16)     T(n/8)  T(n/8)    T(n/4) 
+Breaking down further gives us following
+                 cn2
+            /            \      
+       c(n2)/16          c(n2)/4
+       /      \            /      \
+c(n2)/256   c(n2)/64  c(n2)/64    c(n2)/16
+ /    \      /    \    /    \       /    \  
+
+To know the value of T(n), we need to calculate sum of tree 
+nodes level by level. If we sum the above tree level by level, 
+we get the following series
+T(n)  = c(n^2 + 5(n^2)/16 + 25(n^2)/256) + ....
+The above series is geometrical progression with ratio 5/16.
+
+To get an upper bound, we can sum the infinite series. 
+We get the sum as (n2)/(1 - 5/16) which is O(n2).
 
 
-## PROBABILISTIC ANALYSIS AND RANDOMIZED ALGORITHMS
 
-### THE HIRING PROBLEM
+#### The master method for solving recurrences
 
-### INDICATOR RANDOM VARIABLES
+Master Method is a direct way to get the solution. The master method works only for following type of recurrences or for recurrences that can be transformed to following type.
 
-### RANDOMIZED ALGORITHMS
+T(n) = aT(n/b) + f(n) where a >= 1 and b > 1
+There are following three cases:
+1. If f(n) = Θ(nc) where c < Logba then T(n) = Θ(nLogba)
 
-### PROBABILISTIC ANALYSIS AND FURTHER USES OF INDICATOR RANDOM VARIABLES
+2. If f(n) = Θ(nc) where c = Logba then T(n) = Θ(ncLog n)
+
+3.If f(n) = Θ(nc) where c > Logba then T(n) = Θ(f(n))
+
+#### Proof for master's theorem
+From above function, we have:
+T(n) = aT(n-b) + f(n)
+T(n-b) = aT(n-2b) + f(n-b)
+T(n-2b) = aT(n-3b) + f(n-2b)
+
+Now,
+T(n-b) = a2T(n-3b) + af(n-2b) + f(n-b)
+T(n) = a3T(n-3b) + a2f(n-2b) + af(n-b) + f(n)
+T(n) = Σi=0 to n ai f(n-ib) + constant, where f(n-ib) is O(n-ib)
+T(n) = O(nk Σi=0 to n/b ai )
+
+Where,
+If a<1 then Σi=0 to n/b ai = O(1), T(n) = O(nk)
+
+If a=1 then Σi=0 to n/b ai = O(n), T(n) = O(nk+1)
+
+If a>1 then Σi=0 to n/b ai = O(an/b), T(n) = O(nkan/b)
 
 
-## SORTING AND ORDER STATISTICS
+
+### Probabilistic analysis and randomized theorem
+
+#### The hiring problem
+
+Suppose that you need to hire a new office assistant. Your previous attempts at hiring have been unsuccessful, and you decide to use an employment agency. The employment agency will send you one candidate each day. You will interview that person and then decide to either hire that person or not. You must pay the employment agency a small fee to interview an applicant. To actually hire an applicant is more costly, however, since you must fire your current office assistant and pay a large hiring fee to the employment agency. You are committed to having, at all times, the best possible person for the job. Therefore, you decide that, after interviewing each applicant, if that applicant is better qualified than the current office assistant, you will fire the current office assistant and hire the new applicant. You are willing to pay the resulting price of this strategy, but you wish to estimate what that price will be.
+
+The procedure HIRE-ASSISTANT, given below, expresses this strategy for hiring in pseudocode. It assumes that the candidates for the office assistant job are numbered 1 through n. The procedure assumes that you are able to, after interviewing candidate i, determine if candidate i is the best candidate you have seen so far. To initialize, the procedure creates a dummy candidate, numbered 0, who is less qualified than each of the other candidates.
+
+HIRE-ASSISTANT(n)
+1  best ← 0     ® candidate 0 is a least-qualified dummy candidate
+2  for i ← 1 to n
+3       do interview candidate i
+4          if candidate i is better than candidate best
+5             then best ← i
+6                  hire candidate i
+
+#### Indicator random variables
+
+#### Randomized algorithms
+
+We might not know the distribution of inputs or be able to model it.
+
+However, uniform random distributions are easier to analyze than unknown distributions.
+
+To obtain such a distribution regardless of input distribution, we can randomize within the algorithm to impose a distribution on the inputs. Then it is easier to analzye expected behavior.
+
+An algorithm is randomized if its behavior is determined in parts by values provided by a random number generator.
+
+This requires a change in the hiring problem scenario:
+
+The employment agency sends us a list of n candidates in advance and lets us choose the interview order.
+We choose randomly.
+
+#### PROBABILISTIC ANALYSIS AND FURTHER USES OF INDICATOR RANDOM VARIABLES
+
+
+## Sorting and order statistics
 
 ### Heap Sort
 
@@ -1014,11 +1105,29 @@ int main(void) {
 
 #### Minimum and maximum
 
+How many comparisons are necessary to determine the minimum of a set of n elements? We can easily obtain an upper bound of n - 1 comparisons: examine each element of the set in turn and keep track of the smallest element seen so far. In the following procedure, we assume that the set resides in array A, where length[A] = n.
+
+
+MINIMUM (A)
+
+1  min  A[1]
+
+2  for i  2 to length[A]
+
+3        do if min > A[i]
+
+4              then min  A[i]
+
+5  return min
 
 #### Selection in expected linear time
 
+The general selection problem appears more difficult than the simple problem of finding a minimum, yet, surprisingly, the asymptotic running time for both problems is the same: (n). In this section, we present a divide-and-conquer algorithm for the selection problem. The algorithm RANDOMIZED-SELECT is modeled after the quicksort algorithm of Chapter 8. As in quicksort, the idea is to partition the input array recursively. But unlike quicksort, which recursively processes both sides of the partition, RANDOMIZED-SELECT only works on one side of the partition. This difference shows up in the analysis: whereas quicksort has an expected running time of (n lg n), the expected time of RANDOMIZED-SELECT is (n).
 
-### Selection in worst-case linear time
+
+#### Selection in worst-case linear time
+
+We now examine a selection algorithm whose running time is O(n) in the worst case. Like RANDOMIZED-SELECT, the algorithm SELECT finds the desired element by recursively partitioning the input array. The idea behind the algorithm, however, is to guarantee a good split when the array is partitioned. SELECT uses the deterministic partitioning algorithm PARTITION from quicksort (see Section 8.1), modified to take the element to partition around as an input parameter.
 
 
 ## Data structures
@@ -1246,7 +1355,7 @@ void display() {
 ```
 </details>
 
-### Linked list
+#### Linked list
 
 In computer science, a linked list is a linear collection of data elements whose order is not given by their physical placement in memory. Instead, each element points to the next. It is a data structure consisting of a collection of nodes which together represent a sequence.
 
@@ -1312,20 +1421,35 @@ int *ptr;   //ptr can point to an address which holds int data
 
 #### Representing rooted trees
 
+• A direct way to represent a tree is to use a data structure
+where every node has three references:
+o one reference to the object stored at that node,
+o one reference to the node's parent, and
+o one reference to the node's children.
+• The child-sibling (CS) representation is another popular tree
+representation. It spurns separately encapsulated linked lists
+so that siblings are directly linked.
+o It retains the item and parent references, but instead of
+referencing a list of children, each node references just its
+leftmost child.
+o Each node also references its next sibling to the right.
+o These nextSibling references are used to join the children of a
+node in a singly-linked list, whose head is the node's firstChild. 
+
 ### Hash tables
 
  its a searching technique, designed using mathematical model of functions. its fastest searching technique. ideal hashing takes O(1).
 
 
-#### DIRECT-ADDRESS TABLE
+#### Direct address table
 
-#### HASH TABLES
+#### Hash tables
 
-#### HASH FUNCTIONS
+#### Hash functions
 
-#### OPEN ADRESSING
+#### Open addressing
 
-#### PERFECT HASHING
+#### Perfect hashing
  
 ### Binary search tree
 
@@ -1564,9 +1688,9 @@ int main()
  ```
  </details>
  
- ## RED-BLACK TREES
+ ### Red black trees
  
- ### PROPERTIES OF RED-BLACK TREE
+ #### PROPERTIES OF RED-BLACK TREE
  
  A red-black tree is a kind of self-balancing binary search tree where each node has an extra bit, and that bit is often interpreted as the colour (red or black). These colours are used to ensure that the tree remains balanced during insertions and deletions. Although the balance of the tree is not perfect, it is good enough to reduce the searching time and maintain it around O(log n) time, where n is the total number of elements in the tree. This tree was invented in 1972 by Rudolf Bayer. 
 
@@ -4442,7 +4566,7 @@ int main(int argc, char **argv) {
     return 0;
 }
  ```
- </deatils>
+ </details>
  
  #### Efficient fft implementations
  

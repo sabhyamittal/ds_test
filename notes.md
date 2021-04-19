@@ -3574,16 +3574,130 @@ void dijikstra(int G[MAX][MAX], int n, int startnode)
  ### FLOW NETWORKS
  
  
- ### THE FORD-FULKERSON METHOD
+ #### The ford fulkerson algorithm
+ Ford-Fulkerson algorithm is a greedy approach for calculating the maximum possible flow in a network or a graph.
  
+ #### Code in c
  
- ### MAXIMUM BIPARTITE ALGORITHM
+  <details>
+<summary>Answer</summary>
+ 
+```
+
+ 
+ #include <stdio.h>
+
+#define A 0
+#define B 1
+#define C 2
+#define MAX_NODES 1000
+#define O 1000000000
+
+int n;
+int e;
+int capacity[MAX_NODES][MAX_NODES];
+int flow[MAX_NODES][MAX_NODES];
+int color[MAX_NODES];
+int pred[MAX_NODES];
+
+int min(int x, int y) {
+  return x < y ? x : y;
+}
+
+int head, tail;
+int q[MAX_NODES + 2];
+
+void enqueue(int x) {
+  q[tail] = x;
+  tail++;
+  color[x] = B;
+}
+
+int dequeue() {
+  int x = q[head];
+  head++;
+  color[x] = C;
+  return x;
+}
+
+// Using BFS as a searching algorithm
+int bfs(int start, int target) {
+  int u, v;
+  for (u = 0; u < n; u++) {
+    color[u] = A;
+  }
+  head = tail = 0;
+  enqueue(start);
+  pred[start] = -1;
+  while (head != tail) {
+    u = dequeue();
+    for (v = 0; v < n; v++) {
+      if (color[v] == A && capacity[u][v] - flow[u][v] > 0) {
+        enqueue(v);
+        pred[v] = u;
+      }
+    }
+  }
+  return color[target] == C;
+}
+
+// Applying fordfulkerson algorithm
+int fordFulkerson(int source, int sink) {
+  int i, j, u;
+  int max_flow = 0;
+  for (i = 0; i < n; i++) {
+    for (j = 0; j < n; j++) {
+      flow[i][j] = 0;
+    }
+  }
+
+  // Updating the residual values of edges
+  while (bfs(source, sink)) {
+    int increment = O;
+    for (u = n - 1; pred[u] >= 0; u = pred[u]) {
+      increment = min(increment, capacity[pred[u]][u] - flow[pred[u]][u]);
+    }
+    for (u = n - 1; pred[u] >= 0; u = pred[u]) {
+      flow[pred[u]][u] += increment;
+      flow[u][pred[u]] -= increment;
+    }
+    // Adding the path flows
+    max_flow += increment;
+  }
+  return max_flow;
+}
+
+int main() {
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      capacity[i][j] = 0;
+    }
+  }
+  n = 6;
+  e = 7;
+
+  capacity[0][1] = 8;
+  capacity[0][4] = 3;
+  capacity[1][2] = 9;
+  capacity[2][4] = 7;
+  capacity[2][5] = 2;
+  capacity[3][5] = 5;
+  capacity[4][2] = 7;
+  capacity[4][3] = 4;
+
+  int s = 0, t = 5;
+  printf("Max Flow: %d\n", fordFulkerson(s, t));
+}
+ ```
+ </details>
+ 
+ #### Maximum bipartite algorithm
  
  an undirected graph is bipartite if there exists partition into left and right such that every edge has one vertex in left and one in right.
 (no odd length cycles,2 colors).
 
 
-### PUSH-RELABLE ALGORITHM
+#### PUSH-RELABLE ALGORITHM
 
 
 ### THE RELABEL-TO-FRONT ALGORITHM
@@ -3595,8 +3709,342 @@ Multithreading is a feature that allows concurrent execution of two or more part
 
 #### The basics of dynamic multithreading
 
+Threads are popular way to improve application through parallelism. For example, in a browser, multiple tabs can be different threads. MS word uses multiple threads, one thread to format the text, other thread to process inputs, etc.
+Threads operate faster than processes due to following reasons:
+1) Thread creation is much faster.
+2) Context switching between threads is much faster.
+3) Threads can be terminated easily
+4) Communication between threads is faster.
+
+  <details>
+<summary>Answer</summary>
+ 
+```
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>  //Header file for sleep(). man 3 sleep for details.
+#include <pthread.h>
+  
+// A normal C function that is executed as a thread 
+// when its name is specified in pthread_create()
+void *myThreadFun(void *vargp)
+{
+    sleep(1);
+    printf("Printing GeeksQuiz from Thread \n");
+    return NULL;
+}
+   
+int main()
+{
+    pthread_t thread_id;
+    printf("Before Thread\n");
+    pthread_create(&thread_id, NULL, myThreadFun, NULL);
+    pthread_join(thread_id, NULL);
+    printf("After Thread\n");
+    exit(0);
+}
+```
+</details>
+
 #### Multithreaded matrix multiplication
+
+ In multi-threading, instead of utilizing a single core of your processor, we utilizes all or more core to solve the problem.
+
+We create different threads, each thread evaluating some part of matrix multiplication.
+Depending upon the number of cores your processor has, you can create the number of threads required. Although you can create as many threads as you need, a better way is to create each thread for one core.
+
+In second approach,we create a separate thread for each element in resultant matrix. Using pthread_exit() we return computed value from each thread which is collected by pthread_join(). This approach does not make use of any global variables.
+
+#### Code in c
+
+  <details>
+<summary>Answer</summary>
+ 
+```
+// C Program to multiply two matrix using pthreads without 
+// use of global variables 
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+#include<stdlib.h>
+#define MAX 4
+  
+  
+//Each thread computes single element in the resultant matrix
+void *mult(void* arg)
+{
+    int *data = (int *)arg;
+    int k = 0, i = 0;
+      
+    int x = data[0];
+    for (i = 1; i <= x; i++)
+           k += data[i]*data[i+x];
+      
+    int *p = (int*)malloc(sizeof(int));
+         *p = k;
+      
+//Used to terminate a thread and the return value is passed as a pointer
+    pthread_exit(p);
+}
+  
+//Driver code
+int main()
+{
+  
+    int matA[MAX][MAX]; 
+    int matB[MAX][MAX]; 
+      
+      
+    int r1=MAX,c1=MAX,r2=MAX,c2=MAX,i,j,k;
+  
+  
+    // Generating random values in matA
+    for (i = 0; i < r1; i++) 
+            for (j = 0; j < c1; j++) 
+                   matA[i][j] = rand() % 10; 
+            
+        // Generating random values in matB 
+    for (i = 0; i < r1; i++) 
+            for (j = 0; j < c1; j++) 
+                   matB[i][j] = rand() % 10; 
+     
+    // Displaying matA         
+    for (i = 0; i < r1; i++){
+        for(j = 0; j < c1; j++)
+            printf("%d ",matA[i][j]);
+        printf("\n");
+    }
+              
+    // Displaying matB                
+    for (i = 0; i < r2; i++){
+        for(j = 0; j < c2; j++)
+            printf("%d ",matB[i][j]);
+        printf("\n");    
+    }
+      
+      
+    int max = r1*c2;
+      
+      
+    //declaring array of threads of size r1*c2        
+    pthread_t *threads;
+    threads = (pthread_t*)malloc(max*sizeof(pthread_t));
+      
+    int count = 0;
+    int* data = NULL;
+    for (i = 0; i < r1; i++)
+        for (j = 0; j < c2; j++)
+               {
+                 
+               //storing row and column elements in data 
+            data = (int *)malloc((20)*sizeof(int));
+            data[0] = c1;
+      
+            for (k = 0; k < c1; k++)
+                data[k+1] = matA[i][k];
+      
+            for (k = 0; k < r2; k++)
+                data[k+c1+1] = matB[k][j];
+               
+             //creating threads
+                pthread_create(&threads[count++], NULL, 
+                               mult, (void*)(data));
+                  
+                    }
+      
+    printf("RESULTANT MATRIX IS :- \n");
+    for (i = 0; i < max; i++) 
+    {
+      void *k;
+        
+      //Joining all threads and collecting return value 
+      pthread_join(threads[i], &k);
+             
+            
+          int *p = (int *)k;
+      printf("%d ",*p);
+      if ((i + 1) % c2 == 0)
+          printf("\n");
+    }
+  
+      
+  
+  return 0;
+}
+```
+</details>
+
+
+
 #### Multithreaded merge sort
+
+Merge Sort is a popular sorting technique which divides an array or list into two halves and then start merging them when sufficient depth is reached. Time complexity of merge sort is O(nlogn).
+
+Threads are lightweight processes and threads shares with other threads their code section, data section and OS resources like open files and signals. But, like process, a thread has its own program counter (PC), a register set, and a stack space.
+
+Multi-threading is way to improve parallelism by running the threads simultaneously in different cores of your processor. In this program, we’ll use 4 threads but you may change it according to the number of cores your processor has.
+
+Examples:
+
+Input :  83, 86, 77, 15, 93, 35, 86, 92, 49, 21, 
+         62, 27, 90, 59, 63, 26, 40, 26, 72, 36
+Output : 15, 21, 26, 26, 27, 35, 36, 40, 49, 59, 
+         62, 63, 72, 77, 83, 86, 86, 90, 92, 93
+
+Input :  6, 5, 4, 3, 2, 1
+Output : 1, 2, 3, 4, 5, 6
+
+#### Code in c
+   <details>
+<summary>Answer</summary>
+ 
+```
+#include <pthread.h>
+#include <time.h>
+#include <stdlib.h>
+
+// number of elements in array
+#define MAX 15
+
+// number of threads
+#define THREAD_MAX 4
+
+//using namespace std;
+
+// array of size MAX
+int a[MAX];
+int part = 0;
+
+// merge function for merging two parts
+void merge(int low, int mid, int high)
+{   
+    int* left = (int*) malloc( (mid - low + 1) * sizeof(int));
+    int* right = (int*) malloc( (high - mid) * sizeof(int));
+
+
+    // n1 is size of left part and n2 is size
+    // of right part
+    int n1 = mid - low + 1,
+    n2 = high - mid,
+    i, j;
+
+    // storing values in left part
+    for (i = 0; i < n1; i++)
+        left[i] = a[i + low];
+
+    // storing values in right part
+    for (i = 0; i < n2; i++)
+        right[i] = a[i + mid + 1];
+
+    int k = low;
+    i = j = 0;
+
+    // merge left and right in ascending order
+    while (i < n1 && j < n2) {
+        if (left[i] <= right[j])
+            a[k++] = left[i++];
+        else
+            a[k++] = right[j++];
+    }
+
+    // insert remaining values from left
+    while (i < n1) {
+        a[k++] = left[i++];
+    }
+
+    // insert remaining values from right
+    while (j < n2) {
+        a[k++] = right[j++];
+    }
+
+    free(left);
+    free(right);
+}
+
+// merge sort function
+void merge_sort(int low, int high)
+{
+    // calculating mid point of array
+    int mid = low + (high - low) / 2;
+    if (low < high) {
+
+        // calling first half
+        merge_sort(low, mid);
+
+        // calling second half
+        merge_sort(mid + 1, high);
+
+        // merging the two halves
+        merge(low, mid, high);
+    }
+}
+
+// thread function for multi-threading
+void* merge_sort123(void* arg)
+{
+    // which part out of 4 parts
+    int thread_part = part++;
+
+    // calculating low and high
+    int low = thread_part * (MAX / THREAD_MAX);
+    int high = (thread_part + 1) * (MAX / THREAD_MAX) - 1;
+
+    // evaluating mid point
+    int mid = low + (high - low) / 2;
+    if (low < high) {
+        merge_sort(low, mid);
+        merge_sort(mid + 1, high);
+        merge(low, mid, high);
+    }
+    return 0;
+}
+
+
+
+// Driver Code
+int main()
+{
+    // generating random values in array
+    for (int i = 0; i < MAX; i++){
+        a[i] = rand() % 100;
+    //        printf("%d ", a[i]);
+    }
+
+
+    pthread_t threads[THREAD_MAX];
+
+    // creating 4 threads
+    for (int i = 0; i < THREAD_MAX; i++)
+        pthread_create(&threads[i], NULL, merge_sort123,
+                       (void*)NULL);
+
+    // joining all 4 threads
+    for (int i = 0; i < THREAD_MAX; i++)
+        pthread_join(threads[i], NULL);
+
+
+    ///////////////////////////////////////////////////////////////
+    // --- THIS MAY BE THE PART WHERE THE MERGING IS INVALID --- //
+    ///////////////////////////////////////////////////////////////
+    // merging the final 4 parts
+    merge(0, (MAX / 2 - 1) / 2, MAX / 2 - 1);
+    merge(MAX / 2, MAX/2 + (MAX-1-MAX/2)/2, MAX - 1);
+    merge(0, (MAX - 1)/2, MAX - 1);
+
+
+    // displaying sorted array
+    printf("\n\nSorted array: ");
+    for (int i = 0; i < MAX; i++)
+        printf ("%d ", a[i]);
+
+
+    printf("\n");
+    return 0;
+}
+
+```
+</details>
 
 ### Matrix operation
 
@@ -3854,6 +4302,61 @@ int main(int argc, char *argv[]){
  
  #### The dft and fft
  
+ The discrete Fourier transform (DFT) converts a finite list of equally spaced samples of a function into the list of coefficients of a finite combination of complex sinusoids, ordered by their frequencies, that has those same sample values. It can be said to convert the sampled function from its original domain (often time or position along a line) to the frequency domain.
+ 
+ #### Code in c (naive approach)
+  <details>
+<summary>Answer</summary>
+ 
+```
+ 
+ 
+ #include<stdio.h>
+#include<math.h>
+#define PI 3.14159265
+int k = 20;
+ 
+struct DFT_Coefficient {
+    double real, img;
+};
+ 
+int main(int argc, char **argv) {
+    int N = 10;
+    float a, b, c;
+    int i, j;
+    struct DFT_Coefficient dft_val[k];
+    double cosine[N];
+    double sine[N];
+ 
+    printf("Discrete Fourier Transform using naive method\n");
+    printf("Enter the coefficient of simple linear function:\n");
+    printf("ax + by = c\n");
+    scanf("%f", &a);
+    scanf("%f", &b);
+    scanf("%f", &c);
+    double function[N];
+    for (i = 0; i < N; i++) {
+        function[i] = (((a * (double) i) + (b * (double) i)) - c);
+        //System.out.print( "  "+function[i] + "  ");
+    }
+    for (i = 0; i < N; i++) {
+        cosine[i] = cos((2 * i * k * PI) / N);
+        sine[i] = sin((2 * i * k * PI) / N);
+    }
+ 
+    printf("The coefficients are: ");
+    for (j = 0; j < k; j++) {
+        for (i = 0; i < N; i++) {
+            dft_val[j].real += function[i] * cosine[i];
+            dft_val[j].img += function[i] * sine[i];
+        }
+        printf("( %e ) - ( %e i)\n", dft_val[j].real, dft_val[j].img);
+    }
+    return 0;
+}
+ ```
+ </deatils>
+ 
  #### Efficient fft implementations
  
  ### Number-therotic algorithms
@@ -3861,6 +4364,36 @@ int main(int argc, char *argv[]){
  #### Elementric number theoritic notions
  
  #### Greatest common divisor
+ 
+ The HCF or GCD of two integers is the largest integer that can exactly divide both numbers (without a remainder).
+ 
+ #### Code in c
+ 
+   <details>
+<summary>Answer</summary>
+ 
+```
+#include <stdio.h>
+int main()
+{
+    int n1, n2, i, gcd;
+
+    printf("Enter two integers: ");
+    scanf("%d %d", &n1, &n2);
+
+    for(i=1; i <= n1 && i <= n2; ++i)
+    {
+        // Checks if i is factor of both integers
+        if(n1%i==0 && n2%i==0)
+            gcd = i;
+    }
+
+    printf("G.C.D of %d and %d is %d", n1, n2, gcd);
+
+    return 0;
+}
+ ```
+ </details>
  
  #### Modular arithmatic
  
@@ -3879,12 +4412,65 @@ int main(int argc, char *argv[]){
  ### String matching
  
  #### The naive string matching algorithm
+ Given a text txt[0..n-1] and a pattern pat[0..m-1], write a function search(char pat[], char txt[]) that prints all occurrences of pat[] in txt[]. You may assume that n > m.
+
+Examples:
+
+Input:  txt[] = "THIS IS A TEST TEXT"
+        pat[] = "TEST"
+Output: Pattern found at index 10
+
+Input:  txt[] =  "AABAACAADAABAABA"
+        pat[] =  "AABA"
+Output: Pattern found at index 0
+        Pattern found at index 9
+        Pattern found at index 12
+
+ 
+ #### Code in c
+  <details>
+<summary>Answer</summary>
+ 
+```
+// C program for Naive Pattern Searching algorithm
+#include <stdio.h>
+#include <string.h>
+  
+void search(char* pat, char* txt)
+{
+    int M = strlen(pat);
+    int N = strlen(txt);
+  
+    /* A loop to slide pat[] one by one */
+    for (int i = 0; i <= N - M; i++) {
+        int j;
+  
+        /* For current index i, check for pattern match */
+        for (j = 0; j < M; j++)
+            if (txt[i + j] != pat[j])
+                break;
+  
+        if (j == M) // if pat[0...M-1] = txt[i, i+1, ...i+M-1]
+            printf("Pattern found at index %d \n", i);
+    }
+}
+  
+/* Driver program to test above function */
+int main()
+{
+    char txt[] = "AABAACAADAABAAABAA";
+    char pat[] = "AABA";
+    search(pat, txt);
+    return 0;
+}
+```
+</details>
 
  #### The rabin karp algorithm
  
  The Rabin-Karp algorithm is a string-searching algorithm that uses hashing to find patterns in strings.
  
-### CODE IN C
+#### CODE IN C
   <details>
 <summary>Answer</summary>
  
@@ -3974,6 +4560,93 @@ int main()
 
 #### String matching with finite automata
 
+In this post, we will discuss Finite Automata (FA) based pattern searching algorithm. In FA based algorithm, we preprocess the pattern and build a 2D array that represents a Finite Automata. Construction of the FA is the main tricky part of this algorithm. Once the FA is built, the searching is simple. In search, we simply need to start from the first state of the automata and the first character of the text. At every step, we consider next character of text, look for the next state in the built FA and move to a new state. If we reach the final state, then the pattern is found in the text. The time complexity of the search process is O(n).
+
+#### Code in c
+  <details>
+<summary>Answer</summary>
+
+
+````
+// C program for Finite Automata Pattern searching
+// Algorithm
+#include<stdio.h>
+#include<string.h>
+#define NO_OF_CHARS 256
+  
+int getNextState(char *pat, int M, int state, int x)
+{
+    // If the character c is same as next character
+    // in pattern,then simply increment state
+    if (state < M && x == pat[state])
+        return state+1;
+  
+    // ns stores the result which is next state
+    int ns, i;
+  
+    // ns finally contains the longest prefix
+    // which is also suffix in "pat[0..state-1]c"
+  
+    // Start from the largest possible value
+    // and stop when you find a prefix which
+    // is also suffix
+    for (ns = state; ns > 0; ns--)
+    {
+        if (pat[ns-1] == x)
+        {
+            for (i = 0; i < ns-1; i++)
+                if (pat[i] != pat[state-ns+1+i])
+                    break;
+            if (i == ns-1)
+                return ns;
+        }
+    }
+  
+    return 0;
+}
+  
+/* This function builds the TF table which represents4
+    Finite Automata for a given pattern */
+void computeTF(char *pat, int M, int TF[][NO_OF_CHARS])
+{
+    int state, x;
+    for (state = 0; state <= M; ++state)
+        for (x = 0; x < NO_OF_CHARS; ++x)
+            TF[state][x] = getNextState(pat, M, state, x);
+}
+  
+/* Prints all occurrences of pat in txt */
+void search(char *pat, char *txt)
+{
+    int M = strlen(pat);
+    int N = strlen(txt);
+  
+    int TF[M+1][NO_OF_CHARS];
+  
+    computeTF(pat, M, TF);
+  
+    // Process txt over FA.
+    int i, state=0;
+    for (i = 0; i < N; i++)
+    {
+        state = TF[state][txt[i]];
+        if (state == M)
+            printf ("\n Pattern found at index %d",
+                                           i-M+1);
+    }
+}
+  
+// Driver program to test above function
+int main()
+{
+    char *txt = "AABAACAADAABAAABAA";
+    char *pat = "AABA";
+    search(pat, txt);
+    return 0;
+}
+````
+</details>
+
 #### The knuth morris pratt algorithm
 
 It is based on pattern search. if given a string  and a Pattern, we need to find the presence of pattern in
@@ -4041,7 +4714,10 @@ int main() {
 
 ### Computational geometry
 
+Computational geometry is a branch of computer science devoted to the study of algorithms which can be stated in terms of geometry. ... Combinatorial computational geometry, also called algorithmic geometry, which deals with geometric objects as discrete entities.
+
 #### Line segment propeties
+
 
 #### Determining whether any pair of segment intersects
 
@@ -4737,7 +5413,9 @@ void init_args(int argc, char **argv) {
 ```
 </details>
 
-THE SUBSET SUM PROBLEM:to find the subset of given set whose sum is equal to given number.
+#### The subset-sum problem
+
+to find the subset of given set whose sum is equal to given number.
 
 ### CODE IN C
 <details>
@@ -4798,7 +5476,6 @@ void sumOfSub(int s,int k,int r)
 
 ####  Randomization and linear programming
 
-#### The subset-sum problem
 
 
 

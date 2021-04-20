@@ -725,6 +725,8 @@ int main(){
 
 #### Lower bounds for sorting
 
+A lower bound for a problem is the worst-case running time of the best possible algorithm for that problem. To prove a lower bound of Ω(n lg n) for sorting, we would have to prove that no algorithm, however smart, could possibly be faster, in the worst-case, then n lg n.
+
 
 
 #### Counting sort
@@ -1445,27 +1447,142 @@ node in a singly-linked list, whose head is the node's firstChild.
 
 #### Hash tables
 
+In computing, a hash table (hash map) is a data structure which implements an associative array abstract data type, a structure that can map keys to values. A hash table uses a hash function to compute an index into an array of buckets or slots, from which the desired value can be found
+
+Ideally, the hash function will assign each key to a unique bucket, but most hash table designs employ an imperfect hash function, which might cause hash collisions where the hash function generates the same index for more than one key. Such collisions must be accommodated in some way.
+
 #### Hash functions
+
+Earlier when this concept introduced programmers used to create “Direct address table”. Direct address table means, when we have “n” number of unique keys we create an array of length “n” and insert element “i” at ith index of the array. That array is called Hash Table. But due to this method even we have 10 elements of each range 1 lack, we should create table of size 1 lack for only 10 elements. Which is going to be waste of memory.
+
+To avoid this problem we fix the size of hash table (array) and map our elements into that table using a function, called Hash function. This function decides where to put a given element into that table. If we want to search also first apply hash function decide whether the element present in hash table or not.
+
+Example
+
+We have numbers from 1 to 100 and hash table of size 10. Hash function is mod 10. That means number 23 will be mapped to (23 mod 10 = 3) 3rd index of hash table.
 
 #### Open addressing
 
+In case if we have collision we again calculate the hash value using corresponding hash function. But this time we do some minor modifications to that input. This process of searching for empty space to insert element in called Probing.
+
+Probing hash function is: h (k, i)
+
+here k is the key value which is to be inserted. And i is number of collision with that element.
+
+Example: If we are inserting 2, we find its hash value using h (2, 0) because it’s first collision. Suppose the answer (index) to this function index already occupied we again need to apply h (2, 1) to hash function.
+
 #### Perfect hashing
+
+Perfect hashing is defined as a model of hashing in which any set of n elements can be stored in a hash table of equal size and can have lookups performed in constant time. It was specifically invented and discussed by Fredman, Komlos and Szemeredi (1984) and has therefore been nicknamed as "FKS Hashing".
  
 ### Binary search tree
 
 it is a binary tree in which each node is having value lesser than itself at left side and greater
 than itself at right hand side.
 
-### WHAT IS BINARY SEARCH TREE?
+#### What is binary search tree?
 
-### QUERYING IN BINARY SEARCH TREE
+In computer science, binary search trees (BST), sometimes called ordered or sorted binary trees, are a particular type of container: data structures that store "items" (such as numbers, names etc.) in memory. They allow fast lookup, addition and removal of items, and can be used to implement either dynamic sets of items, or lookup tables that allow finding an item by its key (e.g., finding the phone number of a person by name).
 
-### INSERTION AND DELETION
-
-### RANDOMLY BUILT BINARY SEARCH TREES
+Binary search trees keep their keys in sorted order, so that lookup and other operations can use the principle of binary search: when looking for a key in a tree (or a place to insert a new key), they traverse the tree from root to leaf, making comparisons to keys stored in the nodes of the tree and deciding, on the basis of the comparison, to continue searching in the left or right subtrees. On average, this means that each comparison allows the operations to skip about half of the tree, so that each lookup, insertion or deletion takes time proportional to the logarithm of the number of items stored in the tree. This is much better than the linear time required to find items by key in an (unsorted) array, but slower than the corresponding operations on hash tables.
 
 
-### CODE IN C
+#### Querying in binary search tree
+
+A common operation performed on a binary search tree is searching for a key stored in the tree. Besides the SEARCH operation, binary search trees can support such queries as MINIMUM, MAXIMUM, SUCCESSOR, and PREDECESSOR. In this section, we shall examine these operations and show that each can be supported in time O(h) on a binary search tree of height h.
+
+#### Insertion and deletion
+#### pseudo code for insertion and deletion
+
+<details>
+<summary>Answer</summary>
+ 
+```
+
+insert(value)
+  Pre: value has passed custom type checks for type T
+  Post: value has been placed in the correct location in the tree
+  if root = ø
+    root ← node(value)
+  else
+    insertNode(root, value)
+  end if
+end insert
+insertNode(current, value)
+  Pre: current is the node to start from
+  Post: value has been placed in the correct location in the tree
+  if value < current.value
+    if current.left = ø
+      current.left ← node(value)
+    else
+      InsertNode(current.left, value)
+    end if
+  else
+    if current.right = ø
+      current.right ← node(value)
+    else
+      InsertNode(current.right, value)
+    end if
+  end if
+end insertNode
+
+
+remove(value)
+  Pre: value is the value of the node to remove, root is the node of the BST
+      count is the number of items in the BST
+  Post: node with value is removed if found in which case yields true, otherwise false
+  nodeToRemove ← findNode(value)
+  if nodeToRemove = ø
+    return false
+  end if
+  parent ← findParent(value)
+  if count = 1
+    root ← ø
+  else if nodeToRemove.left = ø and nodeToRemove.right = ø
+    if nodeToRemove.value < parent.value
+      parent.left ←  nodeToRemove.right
+    else
+      parent.right ← nodeToRemove.right
+    end if
+  else if nodeToRemove.left != ø and nodeToRemove.right != ø
+    next ← nodeToRemove.right
+    while next.left != ø
+      next ← next.left
+    end while
+    if next != nodeToRemove.right
+      remove(next.value)
+      nodeToRemove.value ← next.value
+    else
+      nodeToRemove.value ← next.value
+      nodeToRemove.right ← nodeToRemove.right.right
+    end if
+  else
+    if nodeToRemove.left = ø
+      next ← nodeToRemove.right
+    else
+      next ← nodeToRemove.left
+    end if
+    if root = nodeToRemove
+      root = next
+    else if parent.left = nodeToRemove
+      parent.left = next
+    else if parent.right = nodeToRemove
+      parent.right = next
+    end if
+  end if
+  count ← count - 1
+  return true
+end remove
+
+
+```
+</details>
+
+#### Randomly built binary search trees
+
+
+#### Code in c
+
 <details>
 <summary>Answer</summary>
  
@@ -1690,7 +1807,7 @@ int main()
  
  ### Red black trees
  
- #### PROPERTIES OF RED-BLACK TREE
+ #### Properties of red black trees
  
  A red-black tree is a kind of self-balancing binary search tree where each node has an extra bit, and that bit is often interpreted as the colour (red or black). These colours are used to ensure that the tree remains balanced during insertions and deletions. Although the balance of the tree is not perfect, it is good enough to reduce the searching time and maintain it around O(log n) time, where n is the total number of elements in the tree. This tree was invented in 1972 by Rudolf Bayer. 
 
@@ -1702,11 +1819,21 @@ The root of the tree is always black.
 There are no two adjacent red nodes (A red node cannot have a red parent or red child).
 Every path from a node (including root) to any of its descendants NULL nodes has the same number of black nodes.
 
-### ROTATIONS
 
-### INSERTIONS
+#### Rotations
 
-### CODE IN C(INSERTION)
+In rotation operation, the positions of the nodes of a subtree are interchanged.
+
+Rotation operation is used for maintaining the properties of a red-black tree when they are violated by other operations such as insertion and deletion.
+
+#### Insertions
+
+While inserting a new node, the new node is always inserted as a RED node. After insertion of a new node, if the tree is violating the properties of the red-black tree then, we do the following operations.
+
+Recolor
+Rotation
+
+#### Code in c (Insertions)
 
  <details>
 <summary>Answer</summary>
@@ -1939,27 +2066,407 @@ int main()
 
 
 
-### DELETION
+#### Deletion
 
-## AUGMENTING DATA STRUCTURES
+Algorithm to delete a node
+Save the color of nodeToBeDeleted in origrinalColor.
+If the left child of nodeToBeDeleted is NULL
+Assign the right child of nodeToBeDeleted to x.
+Transplant nodeToBeDeleted with x.
+Else if the right child of nodeToBeDeleted is NULL
+Assign the left child of nodeToBeDeleted into x.
+Transplant nodeToBeDeleted with x.
+Else
+Assign the minimum of right subtree of noteToBeDeleted into y.
+Save the color of y in originalColor.
+Assign the rightChild of y into x.
+If y is a child of nodeToBeDeleted, then set the parent of x as y.
+Else, transplant y with rightChild of y.
+Transplant nodeToBeDeleted with y.
+Set the color of y with originalColor.
+If the originalColor is BLACK, call DeleteFix(x).
 
-### DYNAMIC ORDER STATISTICS
 
-### HOW TO AUGMENT A DATA STRUCTURE
+#### Code in c
+  <details>
+<summary>Answer</summary>
+ 
+```
+ 
 
-### INTERVAL TREES
+// Implementing Red-Black Tree in C
 
-# ADVANCED DESIGN AND ANALYSIS TECHNIQUES
+#include <stdio.h>
+#include <stdlib.h>
 
-## DYNAMIC PROGRAMMING
+enum nodeColor {
+  RED,
+  BLACK
+};
+
+struct rbNode {
+  int data, color;
+  struct rbNode *link[2];
+};
+
+struct rbNode *root = NULL;
+
+// Create a red-black tree
+struct rbNode *createNode(int data) {
+  struct rbNode *newnode;
+  newnode = (struct rbNode *)malloc(sizeof(struct rbNode));
+  newnode->data = data;
+  newnode->color = RED;
+  newnode->link[0] = newnode->link[1] = NULL;
+  return newnode;
+}
+
+// Insert an node
+void insertion(int data) {
+  struct rbNode *stack[98], *ptr, *newnode, *xPtr, *yPtr;
+  int dir[98], ht = 0, index;
+  ptr = root;
+  if (!root) {
+    root = createNode(data);
+    return;
+  }
+
+  stack[ht] = root;
+  dir[ht++] = 0;
+  while (ptr != NULL) {
+    if (ptr->data == data) {
+      printf("Duplicates Not Allowed!!\n");
+      return;
+    }
+    index = (data - ptr->data) > 0 ? 1 : 0;
+    stack[ht] = ptr;
+    ptr = ptr->link[index];
+    dir[ht++] = index;
+  }
+  stack[ht - 1]->link[index] = newnode = createNode(data);
+  while ((ht >= 3) && (stack[ht - 1]->color == RED)) {
+    if (dir[ht - 2] == 0) {
+      yPtr = stack[ht - 2]->link[1];
+      if (yPtr != NULL && yPtr->color == RED) {
+        stack[ht - 2]->color = RED;
+        stack[ht - 1]->color = yPtr->color = BLACK;
+        ht = ht - 2;
+      } else {
+        if (dir[ht - 1] == 0) {
+          yPtr = stack[ht - 1];
+        } else {
+          xPtr = stack[ht - 1];
+          yPtr = xPtr->link[1];
+          xPtr->link[1] = yPtr->link[0];
+          yPtr->link[0] = xPtr;
+          stack[ht - 2]->link[0] = yPtr;
+        }
+        xPtr = stack[ht - 2];
+        xPtr->color = RED;
+        yPtr->color = BLACK;
+        xPtr->link[0] = yPtr->link[1];
+        yPtr->link[1] = xPtr;
+        if (xPtr == root) {
+          root = yPtr;
+        } else {
+          stack[ht - 3]->link[dir[ht - 3]] = yPtr;
+        }
+        break;
+      }
+    } else {
+      yPtr = stack[ht - 2]->link[0];
+      if ((yPtr != NULL) && (yPtr->color == RED)) {
+        stack[ht - 2]->color = RED;
+        stack[ht - 1]->color = yPtr->color = BLACK;
+        ht = ht - 2;
+      } else {
+        if (dir[ht - 1] == 1) {
+          yPtr = stack[ht - 1];
+        } else {
+          xPtr = stack[ht - 1];
+          yPtr = xPtr->link[0];
+          xPtr->link[0] = yPtr->link[1];
+          yPtr->link[1] = xPtr;
+          stack[ht - 2]->link[1] = yPtr;
+        }
+        xPtr = stack[ht - 2];
+        yPtr->color = BLACK;
+        xPtr->color = RED;
+        xPtr->link[1] = yPtr->link[0];
+        yPtr->link[0] = xPtr;
+        if (xPtr == root) {
+          root = yPtr;
+        } else {
+          stack[ht - 3]->link[dir[ht - 3]] = yPtr;
+        }
+        break;
+      }
+    }
+  }
+  root->color = BLACK;
+}
+
+// Delete a node
+void deletion(int data) {
+  struct rbNode *stack[98], *ptr, *xPtr, *yPtr;
+  struct rbNode *pPtr, *qPtr, *rPtr;
+  int dir[98], ht = 0, diff, i;
+  enum nodeColor color;
+
+  if (!root) {
+    printf("Tree not available\n");
+    return;
+  }
+
+  ptr = root;
+  while (ptr != NULL) {
+    if ((data - ptr->data) == 0)
+      break;
+    diff = (data - ptr->data) > 0 ? 1 : 0;
+    stack[ht] = ptr;
+    dir[ht++] = diff;
+    ptr = ptr->link[diff];
+  }
+
+  if (ptr->link[1] == NULL) {
+    if ((ptr == root) && (ptr->link[0] == NULL)) {
+      free(ptr);
+      root = NULL;
+    } else if (ptr == root) {
+      root = ptr->link[0];
+      free(ptr);
+    } else {
+      stack[ht - 1]->link[dir[ht - 1]] = ptr->link[0];
+    }
+  } else {
+    xPtr = ptr->link[1];
+    if (xPtr->link[0] == NULL) {
+      xPtr->link[0] = ptr->link[0];
+      color = xPtr->color;
+      xPtr->color = ptr->color;
+      ptr->color = color;
+
+      if (ptr == root) {
+        root = xPtr;
+      } else {
+        stack[ht - 1]->link[dir[ht - 1]] = xPtr;
+      }
+
+      dir[ht] = 1;
+      stack[ht++] = xPtr;
+    } else {
+      i = ht++;
+      while (1) {
+        dir[ht] = 0;
+        stack[ht++] = xPtr;
+        yPtr = xPtr->link[0];
+        if (!yPtr->link[0])
+          break;
+        xPtr = yPtr;
+      }
+
+      dir[i] = 1;
+      stack[i] = yPtr;
+      if (i > 0)
+        stack[i - 1]->link[dir[i - 1]] = yPtr;
+
+      yPtr->link[0] = ptr->link[0];
+
+      xPtr->link[0] = yPtr->link[1];
+      yPtr->link[1] = ptr->link[1];
+
+      if (ptr == root) {
+        root = yPtr;
+      }
+
+      color = yPtr->color;
+      yPtr->color = ptr->color;
+      ptr->color = color;
+    }
+  }
+
+  if (ht < 1)
+    return;
+
+  if (ptr->color == BLACK) {
+    while (1) {
+      pPtr = stack[ht - 1]->link[dir[ht - 1]];
+      if (pPtr && pPtr->color == RED) {
+        pPtr->color = BLACK;
+        break;
+      }
+
+      if (ht < 2)
+        break;
+
+      if (dir[ht - 2] == 0) {
+        rPtr = stack[ht - 1]->link[1];
+
+        if (!rPtr)
+          break;
+
+        if (rPtr->color == RED) {
+          stack[ht - 1]->color = RED;
+          rPtr->color = BLACK;
+          stack[ht - 1]->link[1] = rPtr->link[0];
+          rPtr->link[0] = stack[ht - 1];
+
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          dir[ht] = 0;
+          stack[ht] = stack[ht - 1];
+          stack[ht - 1] = rPtr;
+          ht++;
+
+          rPtr = stack[ht - 1]->link[1];
+        }
+
+        if ((!rPtr->link[0] || rPtr->link[0]->color == BLACK) &&
+          (!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+          rPtr->color = RED;
+        } else {
+          if (!rPtr->link[1] || rPtr->link[1]->color == BLACK) {
+            qPtr = rPtr->link[0];
+            rPtr->color = RED;
+            qPtr->color = BLACK;
+            rPtr->link[0] = qPtr->link[1];
+            qPtr->link[1] = rPtr;
+            rPtr = stack[ht - 1]->link[1] = qPtr;
+          }
+          rPtr->color = stack[ht - 1]->color;
+          stack[ht - 1]->color = BLACK;
+          rPtr->link[1]->color = BLACK;
+          stack[ht - 1]->link[1] = rPtr->link[0];
+          rPtr->link[0] = stack[ht - 1];
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          break;
+        }
+      } else {
+        rPtr = stack[ht - 1]->link[0];
+        if (!rPtr)
+          break;
+
+        if (rPtr->color == RED) {
+          stack[ht - 1]->color = RED;
+          rPtr->color = BLACK;
+          stack[ht - 1]->link[0] = rPtr->link[1];
+          rPtr->link[1] = stack[ht - 1];
+
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          dir[ht] = 1;
+          stack[ht] = stack[ht - 1];
+          stack[ht - 1] = rPtr;
+          ht++;
+
+          rPtr = stack[ht - 1]->link[0];
+        }
+        if ((!rPtr->link[0] || rPtr->link[0]->color == BLACK) &&
+          (!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+          rPtr->color = RED;
+        } else {
+          if (!rPtr->link[0] || rPtr->link[0]->color == BLACK) {
+            qPtr = rPtr->link[1];
+            rPtr->color = RED;
+            qPtr->color = BLACK;
+            rPtr->link[1] = qPtr->link[0];
+            qPtr->link[0] = rPtr;
+            rPtr = stack[ht - 1]->link[0] = qPtr;
+          }
+          rPtr->color = stack[ht - 1]->color;
+          stack[ht - 1]->color = BLACK;
+          rPtr->link[0]->color = BLACK;
+          stack[ht - 1]->link[0] = rPtr->link[1];
+          rPtr->link[1] = stack[ht - 1];
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          break;
+        }
+      }
+      ht--;
+    }
+  }
+}
+
+// Print the inorder traversal of the tree
+void inorderTraversal(struct rbNode *node) {
+  if (node) {
+    inorderTraversal(node->link[0]);
+    printf("%d  ", node->data);
+    inorderTraversal(node->link[1]);
+  }
+  return;
+}
+
+// Driver code
+int main() {
+  int ch, data;
+  while (1) {
+    printf("1. Insertion\t2. Deletion\n");
+    printf("3. Traverse\t4. Exit");
+    printf("\nEnter your choice:");
+    scanf("%d", &ch);
+    switch (ch) {
+      case 1:
+        printf("Enter the element to insert:");
+        scanf("%d", &data);
+        insertion(data);
+        break;
+      case 2:
+        printf("Enter the element to delete:");
+        scanf("%d", &data);
+        deletion(data);
+        break;
+      case 3:
+        inorderTraversal(root);
+        printf("\n");
+        break;
+      case 4:
+        exit(0);
+      default:
+        printf("Not available\n");
+        break;
+    }
+    printf("\n");
+  }
+  return 0;
+}
+```
+</details>
+
+### Augumenting data structures
+
+#### Dynamic order statistics
+
+
+#### HOW TO AUGMENT A DATA STRUCTURE
+
+#### INTERVAL TREES
+
+## ADVANCED DESIGN AND ANALYSIS TECHNIQUES
+
+### Dynamic programming
 
 storing intermediate results and using it for solving further sub problems.ex: fibonacci series.
 
-### ROD CUTTING
+#### Rod cutting
 
 Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n. Determine the maximum value obtainable by cutting up the rod and selling the pieces
 
-### CODE IN C
+#### Code in c
   <details>
 <summary>Answer</summary>
  

@@ -3137,12 +3137,374 @@ A, B ∈ I, |A| < |B| ⇒ ∃e ∈ B\A such that A ∪ {e} ∈ I
  guidelines to make m-way search trees are known as b-trees.(dynamic multilevel index).
 {B-tree is a special type of self-balancing search tree in which each node can contain more than one key and can have more than two children. It is a generalized form of the binary search tree.}
 
-#### BASIC OPERATIONS ON B-TREES
+#### Basic operations on b tree
 
-#### DELETING A TREE FROM A B-TREE
+Algorithm for Searching an Element
+BtreeSearch(x, k)
+ i = 1
+ while i ≤ n[x] and k ≥ keyi[x]        // n[x] means number of keys in x node
+    do i = i + 1
+if i  n[x] and k = keyi[x]
+    then return (x, i)
+if leaf [x]
+    then return NIL
+else
+    return BtreeSearch(ci[x], k)
+
+#### Deleting a tree from a b tree
+
+Before going through the steps below, one must know these facts about a B tree of degree m.
+
+A node can have a maximum of m children. (i.e. 3)
+A node can contain a maximum of m - 1 keys. (i.e. 2)
+A node should have a minimum of ⌈m/2⌉ children. (i.e. 2)
+A node (except root node) should contain a minimum of ⌈m/2⌉ - 1 keys. (i.e. 1)
+There are three main cases for deletion operation in a B tree.
+
+#### code in c(deletion)
+
+<details>
+<summary>Answer</summary>
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 3
+#define MIN 2
+
+struct BTreeNode {
+  int item[MAX + 1], count;
+  struct BTreeNode *linker[MAX + 1];
+};
+
+struct BTreeNode *root;
+
+// Node creation
+struct BTreeNode *createNode(int item, struct BTreeNode *child) {
+  struct BTreeNode *newNode;
+  newNode = (struct BTreeNode *)malloc(sizeof(struct BTreeNode));
+  newNode->item[1] = item;
+  newNode->count = 1;
+  newNode->linker[0] = root;
+  newNode->linker[1] = child;
+  return newNode;
+}
+
+// Add value to the node
+void addValToNode(int item, int pos, struct BTreeNode *node,
+          struct BTreeNode *child) {
+  int j = node->count;
+  while (j > pos) {
+    node->item[j + 1] = node->item[j];
+    node->linker[j + 1] = node->linker[j];
+    j--;
+  }
+  node->item[j + 1] = item;
+  node->linker[j + 1] = child;
+  node->count++;
+}
+
+// Split the node
+void splitNode(int item, int *pval, int pos, struct BTreeNode *node,
+         struct BTreeNode *child, struct BTreeNode **newNode) {
+  int median, j;
+
+  if (pos > MIN)
+    median = MIN + 1;
+  else
+    median = MIN;
+
+  *newNode = (struct BTreeNode *)malloc(sizeof(struct BTreeNode));
+  j = median + 1;
+  while (j <= MAX) {
+    (*newNode)->item[j - median] = node->item[j];
+    (*newNode)->linker[j - median] = node->linker[j];
+    j++;
+  }
+  node->count = median;
+  (*newNode)->count = MAX - median;
+
+  if (pos <= MIN) {
+    addValToNode(item, pos, node, child);
+  } else {
+    addValToNode(item, pos - median, *newNode, child);
+  }
+  *pval = node->item[node->count];
+  (*newNode)->linker[0] = node->linker[node->count];
+  node->count--;
+}
+
+// Set the value in the node
+int setValueInNode(int item, int *pval,
+           struct BTreeNode *node, struct BTreeNode **child) {
+  int pos;
+  if (!node) {
+    *pval = item;
+    *child = NULL;
+    return 1;
+  }
+
+  if (item < node->item[1]) {
+    pos = 0;
+  } else {
+    for (pos = node->count;
+       (item < node->item[pos] && pos > 1); pos--)
+      ;
+    if (item == node->item[pos]) {
+      printf("Duplicates not allowed\n");
+      return 0;
+    }
+  }
+  if (setValueInNode(item, pval, node->linker[pos], child)) {
+    if (node->count < MAX) {
+      addValToNode(*pval, pos, node, *child);
+    } else {
+      splitNode(*pval, pval, pos, node, *child, child);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+// Insertion operation
+void insertion(int item) {
+  int flag, i;
+  struct BTreeNode *child;
+
+  flag = setValueInNode(item, &i, root, &child);
+  if (flag)
+    root = createNode(i, child);
+}
+
+// Copy the successor
+void copySuccessor(struct BTreeNode *myNode, int pos) {
+  struct BTreeNode *dummy;
+  dummy = myNode->linker[pos];
+
+  for (; dummy->linker[0] != NULL;)
+    dummy = dummy->linker[0];
+  myNode->item[pos] = dummy->item[1];
+}
+
+// Remove the value
+void removeVal(struct BTreeNode *myNode, int pos) {
+  int i = pos + 1;
+  while (i <= myNode->count) {
+    myNode->item[i - 1] = myNode->item[i];
+    myNode->linker[i - 1] = myNode->linker[i];
+    i++;
+  }
+  myNode->count--;
+}
+
+// Do right shift
+void rightShift(struct BTreeNode *myNode, int pos) {
+  struct BTreeNode *x = myNode->linker[pos];
+  int j = x->count;
+
+  while (j > 0) {
+    x->item[j + 1] = x->item[j];
+    x->linker[j + 1] = x->linker[j];
+  }
+  x->item[1] = myNode->item[pos];
+  x->linker[1] = x->linker[0];
+  x->count++;
+
+  x = myNode->linker[pos - 1];
+  myNode->item[pos] = x->item[x->count];
+  myNode->linker[pos] = x->linker[x->count];
+  x->count--;
+  return;
+}
+
+// Do left shift
+void leftShift(struct BTreeNode *myNode, int pos) {
+  int j = 1;
+  struct BTreeNode *x = myNode->linker[pos - 1];
+
+  x->count++;
+  x->item[x->count] = myNode->item[pos];
+  x->linker[x->count] = myNode->linker[pos]->linker[0];
+
+  x = myNode->linker[pos];
+  myNode->item[pos] = x->item[1];
+  x->linker[0] = x->linker[1];
+  x->count--;
+
+  while (j <= x->count) {
+    x->item[j] = x->item[j + 1];
+    x->linker[j] = x->linker[j + 1];
+    j++;
+  }
+  return;
+}
+
+// Merge the nodes
+void mergeNodes(struct BTreeNode *myNode, int pos) {
+  int j = 1;
+  struct BTreeNode *x1 = myNode->linker[pos], *x2 = myNode->linker[pos - 1];
+
+  x2->count++;
+  x2->item[x2->count] = myNode->item[pos];
+  x2->linker[x2->count] = myNode->linker[0];
+
+  while (j <= x1->count) {
+    x2->count++;
+    x2->item[x2->count] = x1->item[j];
+    x2->linker[x2->count] = x1->linker[j];
+    j++;
+  }
+
+  j = pos;
+  while (j < myNode->count) {
+    myNode->item[j] = myNode->item[j + 1];
+    myNode->linker[j] = myNode->linker[j + 1];
+    j++;
+  }
+  myNode->count--;
+  free(x1);
+}
+
+// Adjust the node
+void adjustNode(struct BTreeNode *myNode, int pos) {
+  if (!pos) {
+    if (myNode->linker[1]->count > MIN) {
+      leftShift(myNode, 1);
+    } else {
+      mergeNodes(myNode, 1);
+    }
+  } else {
+    if (myNode->count != pos) {
+      if (myNode->linker[pos - 1]->count > MIN) {
+        rightShift(myNode, pos);
+      } else {
+        if (myNode->linker[pos + 1]->count > MIN) {
+          leftShift(myNode, pos + 1);
+        } else {
+          mergeNodes(myNode, pos);
+        }
+      }
+    } else {
+      if (myNode->linker[pos - 1]->count > MIN)
+        rightShift(myNode, pos);
+      else
+        mergeNodes(myNode, pos);
+    }
+  }
+}
+
+// Delete a value from the node
+int delValFromNode(int item, struct BTreeNode *myNode) {
+  int pos, flag = 0;
+  if (myNode) {
+    if (item < myNode->item[1]) {
+      pos = 0;
+      flag = 0;
+    } else {
+      for (pos = myNode->count; (item < myNode->item[pos] && pos > 1); pos--)
+        ;
+      if (item == myNode->item[pos]) {
+        flag = 1;
+      } else {
+        flag = 0;
+      }
+    }
+    if (flag) {
+      if (myNode->linker[pos - 1]) {
+        copySuccessor(myNode, pos);
+        flag = delValFromNode(myNode->item[pos], myNode->linker[pos]);
+        if (flag == 0) {
+          printf("Given data is not present in B-Tree\n");
+        }
+      } else {
+        removeVal(myNode, pos);
+      }
+    } else {
+      flag = delValFromNode(item, myNode->linker[pos]);
+    }
+    if (myNode->linker[pos]) {
+      if (myNode->linker[pos]->count < MIN)
+        adjustNode(myNode, pos);
+    }
+  }
+  return flag;
+}
+
+// Delete operaiton
+void delete (int item, struct BTreeNode *myNode) {
+  struct BTreeNode *tmp;
+  if (!delValFromNode(item, myNode)) {
+    printf("Not present\n");
+    return;
+  } else {
+    if (myNode->count == 0) {
+      tmp = myNode;
+      myNode = myNode->linker[0];
+      free(tmp);
+    }
+  }
+  root = myNode;
+  return;
+}
+
+void searching(int item, int *pos, struct BTreeNode *myNode) {
+  if (!myNode) {
+    return;
+  }
+
+  if (item < myNode->item[1]) {
+    *pos = 0;
+  } else {
+    for (*pos = myNode->count;
+       (item < myNode->item[*pos] && *pos > 1); (*pos)--)
+      ;
+    if (item == myNode->item[*pos]) {
+      printf("%d present in B-tree", item);
+      return;
+    }
+  }
+  searching(item, pos, myNode->linker[*pos]);
+  return;
+}
+
+void traversal(struct BTreeNode *myNode) {
+  int i;
+  if (myNode) {
+    for (i = 0; i < myNode->count; i++) {
+      traversal(myNode->linker[i]);
+      printf("%d ", myNode->item[i + 1]);
+    }
+    traversal(myNode->linker[i]);
+  }
+}
+
+int main() {
+  int item, ch;
+
+  insertion(8);
+  insertion(9);
+  insertion(10);
+  insertion(11);
+  insertion(15);
+  insertion(16);
+  insertion(17);
+  insertion(18);
+  insertion(20);
+  insertion(23);
+
+  traversal(root);
+
+  delete (20, root);
+  printf("\n");
+  traversal(root);
+}
 
 
-### CODE IN C
+```
+</details>
+
+#### Code in c
 <details>
 <summary>Answer</summary>
  
@@ -3589,21 +3951,569 @@ void printMaxLevel(node *ptr) {
 ```
 </details>
 
-## FIBONACCI HEAPS
+### Fibonacci heaps
 
 linked list of heap ordered trees.(min heap)
 Fibonacci Heap is a collection of trees with min-heap or max-heap property. In Fibonacci Heap, trees can can have any shape even all trees can be single nodes.
 
-### STRUCTURE OF FIBONACCI HEAPS
+#### Structure of fibonacci heaps
 
-### MERGEABLE-HEAP OPERATIONS
+Important properties of a Fibonacci heap are:
 
-### DECREASING A TREE AND DELETING A NODE
+It is a set of min heap-ordered trees. (i.e. The parent is always smaller than the children.)
+A pointer is maintained at the minimum element node.
+It consists of a set of marked nodes. (Decrease key operation)
+The trees within a Fibonacci heap are unordered but rooted.
 
-### BOUNDING THE MAXIMUM DEGREE
+
+#### Mergeable heap operations
+
+Any data structure representing a set of ordered elements that can support the insertion and deletion of elements as well as the set operation of union and the calculation of the minimum elements in a set.
+
+A mergeable heap supports the usual heap operations: Make-Heap() , create an empty heap. Insert(H,x) , insert an element x into the heap H . Min(H) , return the minimum element, or Nil if no such element exists.
+
+#### Decreasing a tree and deleting a node
+
+<details>
+<summary>Answer</summary>
+	
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+
+typedef struct _NODE
+{
+  int key;
+  int degree;
+  struct _NODE *left_sibling;
+  struct _NODE *right_sibling;
+  struct _NODE *parent;
+  struct _NODE *child;
+  bool mark;
+  bool visited;
+} NODE;
+
+typedef struct fibanocci_heap
+{
+  int n;
+  NODE *min;
+  int phi;
+  int degree;
+} FIB_HEAP;
+
+FIB_HEAP *make_fib_heap();
+void insertion(FIB_HEAP *H, NODE *new, int val);
+NODE *extract_min(FIB_HEAP *H);
+void consolidate(FIB_HEAP *H);
+void fib_heap_link(FIB_HEAP *H, NODE *y, NODE *x);
+NODE *find_min_node(FIB_HEAP *H);
+void decrease_key(FIB_HEAP *H, NODE *node, int key);
+void cut(FIB_HEAP *H, NODE *node_to_be_decrease, NODE *parent_node);
+void cascading_cut(FIB_HEAP *H, NODE *parent_node);
+void Delete_Node(FIB_HEAP *H, int dec_key);
+
+FIB_HEAP *make_fib_heap()
+{
+  FIB_HEAP *H;
+  H = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
+  H->n = 0;
+  H->min = NULL;
+  H->phi = 0;
+  H->degree = 0;
+  return H;
+}
+void new_print_heap(NODE *n)
+{
+  NODE *x;
+  for (x = n;; x = x->right_sibling)
+  {
+
+    if (x->child == NULL)
+    {
+      printf("node with no child (%d) \n", x->key);
+    }
+    else
+    {
+
+      printf("NODE(%d) with child (%d)\n", x->key, x->child->key);
+      new_print_heap(x->child);
+    }
+    if (x->right_sibling == n)
+    {
+      break;
+    }
+  }
+}
+
+void insertion(FIB_HEAP *H, NODE *new, int val)
+{
+  new = (NODE *)malloc(sizeof(NODE));
+  new->key = val;
+  new->degree = 0;
+  new->mark = false;
+  new->parent = NULL;
+  new->child = NULL;
+  new->visited = false;
+  new->left_sibling = new;
+  new->right_sibling = new;
+  if (H->min == NULL)
+  {
+    H->min = new;
+  }
+  else
+  {
+    H->min->left_sibling->right_sibling = new;
+    new->right_sibling = H->min;
+    new->left_sibling = H->min->left_sibling;
+    H->min->left_sibling = new;
+    if (new->key < H->min->key)
+    {
+      H->min = new;
+    }
+  }
+  (H->n)++;
+}
+
+NODE *find_min_node(FIB_HEAP *H)
+{
+  if (H == NULL)
+  {
+    printf(" \n Fibonacci heap not yet created \n");
+    return NULL;
+  }
+  else
+    return H->min;
+}
+
+FIB_HEAP *unionHeap(FIB_HEAP *H1, FIB_HEAP *H2)
+{
+  FIB_HEAP *Hnew;
+  Hnew = make_fib_heap();
+  Hnew->min = H1->min;
+
+  NODE *temp1, *temp2;
+  temp1 = Hnew->min->right_sibling;
+  temp2 = H2->min->left_sibling;
+
+  Hnew->min->right_sibling->left_sibling = H2->min->left_sibling;
+  Hnew->min->right_sibling = H2->min;
+  H2->min->left_sibling = Hnew->min;
+  temp2->right_sibling = temp1;
+
+  if ((H1->min == NULL) || (H2->min != NULL && H2->min->key < H1->min->key))
+    Hnew->min = H2->min;
+  Hnew->n = H1->n + H2->n;
+  return Hnew;
+}
+
+int cal_degree(int n)
+{
+  int count = 0;
+  while (n > 0)
+  {
+    n = n / 2;
+    count++;
+  }
+  return count;
+}
+void consolidate(FIB_HEAP *H)
+{
+  int degree, i, d;
+  degree = cal_degree(H->n);
+  NODE *A[degree], *x, *y, *z;
+  for (i = 0; i <= degree; i++)
+  {
+    A[i] = NULL;
+  }
+  x = H->min;
+  do
+  {
+    d = x->degree;
+    while (A[d] != NULL)
+    {
+      y = A[d];
+      if (x->key > y->key)
+      {
+        NODE *exchange_help;
+        exchange_help = x;
+        x = y;
+        y = exchange_help;
+      }
+      if (y == H->min)
+        H->min = x;
+      fib_heap_link(H, y, x);
+      if (y->right_sibling == x)
+        H->min = x;
+      A[d] = NULL;
+      d++;
+    }
+    A[d] = x;
+    x = x->right_sibling;
+  } while (x != H->min);
+
+  H->min = NULL;
+  for (i = 0; i < degree; i++)
+  {
+    if (A[i] != NULL)
+    {
+      A[i]->left_sibling = A[i];
+      A[i]->right_sibling = A[i];
+      if (H->min == NULL)
+      {
+        H->min = A[i];
+      }
+      else
+      {
+        H->min->left_sibling->right_sibling = A[i];
+        A[i]->right_sibling = H->min;
+        A[i]->left_sibling = H->min->left_sibling;
+        H->min->left_sibling = A[i];
+        if (A[i]->key < H->min->key)
+        {
+          H->min = A[i];
+        }
+      }
+      if (H->min == NULL)
+      {
+        H->min = A[i];
+      }
+      else if (A[i]->key < H->min->key)
+      {
+        H->min = A[i];
+      }
+    }
+  }
+}
+
+void fib_heap_link(FIB_HEAP *H, NODE *y, NODE *x)
+{
+  y->right_sibling->left_sibling = y->left_sibling;
+  y->left_sibling->right_sibling = y->right_sibling;
+
+  if (x->right_sibling == x)
+    H->min = x;
+
+  y->left_sibling = y;
+  y->right_sibling = y;
+  y->parent = x;
+
+  if (x->child == NULL)
+  {
+    x->child = y;
+  }
+  y->right_sibling = x->child;
+  y->left_sibling = x->child->left_sibling;
+  x->child->left_sibling->right_sibling = y;
+  x->child->left_sibling = y;
+  if ((y->key) < (x->child->key))
+    x->child = y;
+
+  (x->degree)++;
+}
+NODE *extract_min(FIB_HEAP *H)
+{
+
+  if (H->min == NULL)
+    printf("\n The heap is empty");
+  else
+  {
+    NODE *temp = H->min;
+    NODE *pntr;
+    pntr = temp;
+    NODE *x = NULL;
+    if (temp->child != NULL)
+    {
+
+      x = temp->child;
+      do
+      {
+        pntr = x->right_sibling;
+        (H->min->left_sibling)->right_sibling = x;
+        x->right_sibling = H->min;
+        x->left_sibling = H->min->left_sibling;
+        H->min->left_sibling = x;
+        if (x->key < H->min->key)
+          H->min = x;
+        x->parent = NULL;
+        x = pntr;
+      } while (pntr != temp->child);
+    }
+
+    (temp->left_sibling)->right_sibling = temp->right_sibling;
+    (temp->right_sibling)->left_sibling = temp->left_sibling;
+    H->min = temp->right_sibling;
+
+    if (temp == temp->right_sibling && temp->child == NULL)
+      H->min = NULL;
+    else
+    {
+      H->min = temp->right_sibling;
+      consolidate(H);
+    }
+    H->n = H->n - 1;
+    return temp;
+  }
+  return H->min;
+}
+
+void cut(FIB_HEAP *H, NODE *node_to_be_decrease, NODE *parent_node)
+{
+  NODE *temp_parent_check;
+
+  if (node_to_be_decrease == node_to_be_decrease->right_sibling)
+    parent_node->child = NULL;
+
+  node_to_be_decrease->left_sibling->right_sibling = node_to_be_decrease->right_sibling;
+  node_to_be_decrease->right_sibling->left_sibling = node_to_be_decrease->left_sibling;
+  if (node_to_be_decrease == parent_node->child)
+    parent_node->child = node_to_be_decrease->right_sibling;
+  (parent_node->degree)--;
+
+  node_to_be_decrease->left_sibling = node_to_be_decrease;
+  node_to_be_decrease->right_sibling = node_to_be_decrease;
+  H->min->left_sibling->right_sibling = node_to_be_decrease;
+  node_to_be_decrease->right_sibling = H->min;
+  node_to_be_decrease->left_sibling = H->min->left_sibling;
+  H->min->left_sibling = node_to_be_decrease;
+
+  node_to_be_decrease->parent = NULL;
+  node_to_be_decrease->mark = false;
+}
+
+void cascading_cut(FIB_HEAP *H, NODE *parent_node)
+{
+  NODE *aux;
+  aux = parent_node->parent;
+  if (aux != NULL)
+  {
+    if (parent_node->mark == false)
+    {
+      parent_node->mark = true;
+    }
+    else
+    {
+      cut(H, parent_node, aux);
+      cascading_cut(H, aux);
+    }
+  }
+}
+
+void decrease_key(FIB_HEAP *H, NODE *node_to_be_decrease, int new_key)
+{
+  NODE *parent_node;
+  if (H == NULL)
+  {
+    printf("\n FIbonacci heap not created ");
+    return;
+  }
+  if (node_to_be_decrease == NULL)
+  {
+    printf("Node is not in the heap");
+  }
+
+  else
+  {
+    if (node_to_be_decrease->key < new_key)
+    {
+      printf("\n Invalid new key for decrease key operation \n ");
+    }
+    else
+    {
+      node_to_be_decrease->key = new_key;
+      parent_node = node_to_be_decrease->parent;
+      if ((parent_node != NULL) && (node_to_be_decrease->key < parent_node->key))
+      {
+        printf("\n cut called");
+        cut(H, node_to_be_decrease, parent_node);
+        printf("\n cascading cut called");
+        cascading_cut(H, parent_node);
+      }
+      if (node_to_be_decrease->key < H->min->key)
+      {
+        H->min = node_to_be_decrease;
+      }
+    }
+  }
+}
+
+void *find_node(FIB_HEAP *H, NODE *n, int key, int new_key)
+{
+  NODE *find_use = n;
+  NODE *f = NULL;
+  find_use->visited = true;
+  if (find_use->key == key)
+  {
+    find_use->visited = false;
+    f = find_use;
+    decrease_key(H, f, new_key);
+  }
+  if (find_use->child != NULL)
+  {
+    find_node(H, find_use->child, key, new_key);
+  }
+  if ((find_use->right_sibling->visited != true))
+  {
+    find_node(H, find_use->right_sibling, key, new_key);
+  }
+
+  find_use->visited = false;
+}
+
+FIB_HEAP *insertion_procedure()
+{
+  FIB_HEAP *temp;
+  int no_of_nodes, ele, i;
+  NODE *new_node;
+  temp = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
+  temp = NULL;
+  if (temp == NULL)
+  {
+    temp = make_fib_heap();
+  }
+  printf(" \n enter number of nodes to be insert = ");
+  scanf("%d", &no_of_nodes);
+  for (i = 1; i <= no_of_nodes; i++)
+  {
+    printf("\n node %d and its key value = ", i);
+    scanf("%d", &ele);
+    insertion(temp, new_node, ele);
+  }
+  return temp;
+}
+void Delete_Node(FIB_HEAP *H, int dec_key)
+{
+  NODE *p = NULL;
+  find_node(H, H->min, dec_key, -5000);
+  p = extract_min(H);
+  if (p != NULL)
+    printf("\n Node deleted");
+  else
+    printf("\n Node not deleted:some error");
+}
+
+int main(int argc, char **argv)
+{
+  NODE *new_node, *min_node, *extracted_min, *node_to_be_decrease, *find_use;
+  FIB_HEAP *heap, *h1, *h2;
+  int operation_no, new_key, dec_key, ele, i, no_of_nodes;
+  heap = (FIB_HEAP *)malloc(sizeof(FIB_HEAP));
+  heap = NULL;
+  while (1)
+  {
+
+    printf(" \n choose below operations \n 1. Create Fibonacci heap \n 2. Insert nodes into fibonacci heap \n 3. Find min \n 4. Union \n 5. Extract min \n 6. Decrease key \n 7.Delete node \n 8. print heap \n 9. exit \n enter operation_no = ");
+    scanf("%d", &operation_no);
+
+    switch (operation_no)
+    {
+    case 1:
+      heap = make_fib_heap();
+      break;
+
+    case 2:
+      if (heap == NULL)
+      {
+        heap = make_fib_heap();
+      }
+      printf(" enter number of nodes to be insert = ");
+      scanf("%d", &no_of_nodes);
+      for (i = 1; i <= no_of_nodes; i++)
+      {
+        printf("\n node %d and its key value = ", i);
+        scanf("%d", &ele);
+        insertion(heap, new_node, ele);
+      }
+      break;
+
+    case 3:
+      min_node = find_min_node(heap);
+      if (min_node == NULL)
+        printf("No minimum value");
+      else
+        printf("\n min value = %d", min_node->key);
+      break;
+
+    case 4:
+      if (heap == NULL)
+      {
+        printf("\n no FIbonacci heap is created please create fibonacci heap \n ");
+        break;
+      }
+      h1 = insertion_procedure();
+      heap = unionHeap(heap, h1);
+      printf("Unified Heap:\n");
+      new_print_heap(heap->min);
+      break;
+
+    case 5:
+      if (heap == NULL)
+        printf("Fibonacci heap is empty");
+      else
+      {
+        extracted_min = extract_min(heap);
+        printf("\n min value = %d", extracted_min->key);
+        printf("\n Updated heap: \n");
+        new_print_heap(heap->min);
+      }
+      break;
+
+    case 6:
+      if (heap == NULL)
+        printf("Fibonacci heap is empty");
+      else
+      {
+        printf(" \n node to be decreased = ");
+        scanf("%d", &dec_key);
+        printf(" \n enter the new key = ");
+        scanf("%d", &new_key);
+        find_use = heap->min;
+        find_node(heap, find_use, dec_key, new_key);
+        printf("\n Key decreased- Corresponding heap:\n");
+        new_print_heap(heap->min);
+      }
+      break;
+    case 7:
+      if (heap == NULL)
+        printf("Fibonacci heap is empty");
+      else
+      {
+        printf(" \n Enter node key to be deleted = ");
+        scanf("%d", &dec_key);
+        Delete_Node(heap, dec_key);
+        printf("\n Node Deleted- Corresponding heap:\n");
+        new_print_heap(heap->min);
+        break;
+      }
+    case 8:
+      new_print_heap(heap->min);
+      break;
+
+    case 9:
+      free(new_node);
+      free(heap);
+      exit(0);
+
+    default:
+      printf("Invalid choice ");
+    }
+  }
+}
+
+```
+
+</details>
 
 
-### CODE IN C
+#### Bounding the maximum degree
+
+To prove that the amortized time of FIB-HEAP-EXTRACT-MIN and FIB-HEAP-DELETE is O(lg n), we must show that the upper bound D(n) on the degree of any node of an n-node Fibonacci heap is O(lg n). By Exercise 20.2-3, when all trees in the Fibonacci heap are unordered binomial trees, D(n) = ⌊lg n⌋. The cuts that occur in FIB-HEAP-DECREASE-KEY, however, may cause trees within the Fibonacci heap to violate the unordered binomial tree properties. In this section, we shall show that because we cut a node from its parent as soon as it loses two children, D(n) is O(lg n). In particular, we shall show that D(n) ≤ ⌊logφn⌋, where .
+
+The key to the analysis is as follows. For each node x within a Fibonacci heap, define size(x) to be the number of nodes, including x itself, in the subtree rooted at x. (Note that x need not be in the root list-it can be any node at all.) We shall show that size(x) is exponential in degree[x]. Bear in mind that degree[x] is always maintained as an accurate count of the degree of x.
+
+
+#### Code in c
  
  <details>
 <summary>Answer</summary>
@@ -4069,7 +4979,7 @@ int main(int argc, char **argv) {
 ```
 </details>
 
-## Van Emde Boas trees
+### Van Emde Boas trees
 
 Van Emde Boas tree (or Van Emde Boas priority queue or vEB tree) is a tree data structure which implements 
 an associative array with m-bit integer keys. 
@@ -4077,31 +4987,441 @@ It performs all operations  in O(log log M) time,
 where M is the maximum number of elements that can be stored in the tree.
 
 
-### PRELIMINARY APPROACHES
+#### Preliminary approaches
 
-### A RECURSIVE STRUCTURE
+#### A recursive structure
 
-### THE VAN EMDE BOAS TREE
+Van Emde Boas Tree is a recursively defined structure.
 
-## DATA STRUCTURES FOR DISJOINT SETS
+u: Number of keys present in the VEB Tree.
+Minimum: Contains the minimum key present in the VEB Tree.
+Maximum: Contains the maximum key present in the VEB Tree.
+Summary: Points to new VEB(\sqrt{u}) Tree which contains overview of keys present in clusters array.
+Clusters: An array of size \sqrt{u} each place in the array points to new VEB(\sqrt{u}) Tree.
 
-### DISJOINT-SETS OPERATION
+#### The Van Emde Boas trees
 
-### LINKED LIST REPRESENTATION OF DISJOINT SETS
+Van Emde Boas Tree supports search, successor, predecessor, insert and delete operations in O(lglgN) time which is faster than any of related data structures like priority queue, binary search tree, etc. Van Emde Boas Tree works with O(1) time-complexity for minimum and maximum query. Here N is the size of the universe over which tree is defined and lg is log base 2.
 
-### DISJOINT-SET FORESTS
+Note: Van Emde Boas Data Structure’s key set must be defined over a range of 0 to n(n is positive integer of the form 2k) and it works when duplicate keys are not allowed.
 
-### ANALYSIS OF UNION BY RANK WITH PATH COMPRESSION
+Abbreviations:
+
+VEB is an abbreviation of Van Emde Boas tree.
+VEB(\sqrt{u}) is an abbreviation for VEB containing u number of keys.
+
+#### Code in cpp
+<details>
+<summary>Answer</summary>
+
+```
+// C++ implementation of the approach
+#include <bits/stdc++.h>
+using namespace std;
+  
+class Van_Emde_Boas {
+  
+public:
+    int universe_size;
+    int minimum;
+    int maximum;
+    Van_Emde_Boas* summary;
+    vector<Van_Emde_Boas*> clusters;
+  
+    // Function to return cluster numbers
+    // in which key is present
+    int high(int x)
+    {
+        int div = ceil(sqrt(universe_size));
+        return x / div;
+    }
+  
+    // Function to return position of x in cluster
+    int low(int x)
+    {
+        int mod = ceil(sqrt(universe_size));
+        return x % mod;
+    }
+  
+    // Function to return the index from
+    // cluster number and position
+    int generate_index(int x, int y)
+    {
+        int ru = ceil(sqrt(universe_size));
+        return x * ru + y;
+    }
+  
+    // Constructor
+    Van_Emde_Boas(int size)
+    {
+        universe_size = size;
+        minimum = -1;
+        maximum = -1;
+  
+        // Base case
+        if (size <= 2) {
+            summary = nullptr;
+            clusters = vector<Van_Emde_Boas*>(0, nullptr);
+        }
+        else {
+            int no_clusters = ceil(sqrt(size));
+  
+            // Assigning VEB(sqrt(u)) to summary
+            summary = new Van_Emde_Boas(no_clusters);
+  
+            // Creating array of VEB Tree pointers of size sqrt(u)
+            clusters = vector<Van_Emde_Boas*>(no_clusters, nullptr);
+  
+            // Assigning VEB(sqrt(u)) to all of its clusters
+            for (int i = 0; i < no_clusters; i++) {
+                clusters[i] = new Van_Emde_Boas(ceil(sqrt(size)));
+            }
+        }
+    }
+};
+  
+// Driver code
+int main()
+{
+    // New Van_Emde_Boas tree with u = 16
+    Van_Emde_Boas* akp = new Van_Emde_Boas(4);
+}
+
+```
+</details>
+
+
+### Data structures for disjoint set
+
+#### Disjoint set operation
+
+Consider a situation with a number of persons and following tasks to be performed on them.
+
+Add a new friendship relation, i.e., a person x becomes friend of another person y.
+Find whether individual x is a friend of individual y (direct or indirect friend)
+Example:
+
+We are given 10 individuals say,
+a, b, c, d, e, f, g, h, i, j
+
+Following are relationships to be added.
+a <-> b  
+b <-> d
+c <-> f
+c <-> i
+j <-> e
+g <-> j
+
+And given queries like whether a is a friend of d
+or not.
+
+We basically need to create following 4 groups
+and maintain a quickly accessible connection
+among group items:
+G1 = {a, b, d}
+G2 = {c, f, i}
+G3 = {e, g, j}
+G4 = {h}
+
+#### Linked list representation of disjoint sets
+
+<details>
+<summary>Answer</summary>
+
+```
+// C++ program for implementation of disjoint
+// set data structure using linked list
+#include <bits/stdc++.h>
+using namespace std;
+  
+// to represent linked list which is a set
+struct Item;
+  
+// to represent Node of linked list. Every
+// node has a pointer to representative
+struct Node
+{
+    int val;
+    Node *next;
+    Item *itemPtr;
+};
+  
+// A list has a pointer to head and tail
+struct Item
+{
+    Node *hd, *tl;
+};
+  
+// To represent union set
+class ListSet
+{
+private:
+  
+    // Hash to store addresses of set representatives
+    // for given values. It is made global for ease of
+    // implementation. And second part of hash is actually
+    // address of Nodes. We typecast addresses to long
+    // before storing them.
+    unordered_map<int, Node *> nodeAddress;
+  
+public:
+    void makeset(int a);
+    Item* find(int key);
+    void Union(Item *i1, Item *i2);
+};
+  
+// To make a set with one object
+// with its representative
+void ListSet::makeset(int a)
+{
+    // Create a new Set
+    Item *newSet = new Item;
+  
+    // Create a new linked list node
+    // to store given key
+    newSet->hd = new Node;
+  
+    // Initialize head and tail
+    newSet->tl = newSet->hd;
+    nodeAddress[a] = newSet->hd;
+  
+    // Create a new set
+    newSet->hd->val = a;
+    newSet->hd->itemPtr = newSet;
+    newSet->hd->next = NULL;
+}
+  
+// To find representative address of a
+// key
+Item *ListSet::find(int key)
+{
+    Node *ptr = nodeAddress[key];
+    return (ptr->itemPtr);
+}
+  
+// union function for joining two subsets
+// of a universe.  Mergese set2 into set1
+// and deletes set1.
+void ListSet::Union(Item *set1, Item *set2)
+{
+    Node *cur = set2->hd;
+    while (cur != 0)
+    {
+        cur->itemPtr = set1;
+        cur = cur->next;
+    }
+  
+    // Join the tail of the set to head
+    // of the input set
+    (set1->tl)->next = set2->hd;
+    set1->tl = set2->tl;
+  
+    delete set2;
+}
+  
+// Driver code
+int main()
+{
+    ListSet a;
+    a.makeset(13);  //a new set is made with one object only
+    a.makeset(25);
+    a.makeset(45);
+    a.makeset(65);
+  
+    cout << "find(13): " << a.find(13) << endl;
+    cout << "find(25): "
+         << a.find(25) << endl;
+    cout << "find(65): "
+         << a.find(65) << endl;
+    cout << "find(45): "
+         << a.find(45) << endl << endl;
+    cout << "Union(find(65), find(45)) \n";
+  
+    a.Union(a.find(65), a.find(45));
+  
+    cout << "find(65]): "
+         << a.find(65) << endl;
+    cout << "find(45]): "
+         << a.find(45) << endl;
+    return 0;
+}
+
+```
+</details>
+
+#### Disjoint set forests
+
+In a faster implementation of disjoint sets, we represent sets by rooted trees, with each node containing one member and each tree representing one set. In a disjoint-set forest, illustrated in Figure 21.4(a), each member points only to its parent. The root of each tree contains the representative and is its own parent. As we shall see, although the straightforward algorithms that use this representation are no faster than ones that use the linked-list representation, by introducing two heuristics-"union by rank" and "path compression"-we can achieve the asymptotically fastest disjoint-set data structure known.
 
 
 
-# GRAPH ALGORITHMS
+#### Analysis of union by rank compression
 
-## ELEMENTARY GRAPH ALGORITHMS
+Union by Rank: First of all, we need a new array of integers called rank[]. Size of this array is same as the parent array. If i is a representative of a set, rank[i] is the height of the tree representing the set.
+Now recall that, in the Union operation, it doesn’t matter which of the two trees is moved under the other (see last two image examples above). Now what we want to do is minimize the height of the resulting tree. If we are uniting two trees (or sets), let’s call them left and right, then it all depends on the rank of left and the rank of right.
 
-### REPRESENTATIONS OF GRAPHS
+If the rank of left is less than the rank of right, then it’s best to move left under right, because that won’t change the rank of right (while moving right under left would increase the height). In the same way, if the rank of right is less than the rank of left, then we should move right under left.
+If the ranks are equal, it doesn’t matter which tree goes under the other, but the rank of the result will always be one greater than the rank of the trees.
+// Unites the set that includes i and the set 
+// that includes j
+void union(int i, int j) 
+{
+    // Find the representatives (or the root nodes) 
+    // for the set that includes i
+    int irep = this.find(i);
 
-### BREADTH-FIRST SEARCH
+    // And do the same for the set that includes j
+    int jrep = this.Find(j);
+
+    // Elements are in same set, no need to 
+    // unite anything.    
+    if (irep == jrep)
+        return;
+
+    // Get the rank of i’s tree
+    irank = Rank[irep],
+
+    // Get the rank of j’s tree
+    jrank = Rank[jrep];
+
+    // If i’s rank is less than j’s rank
+    if (irank < jrank) 
+    {
+        // Then move i under j
+        this.parent[irep] = jrep;
+    } 
+
+    // Else if j’s rank is less than i’s rank
+    else if (jrank < irank) 
+    {
+        // Then move j under i
+        this.Parent[jrep] = irep;
+    } 
+
+    // Else if their ranks are the same
+    else
+    {
+
+        // Then move i under j (doesn’t matter
+        // which one goes where)
+        this.Parent[irep] = jrep;
+
+        // And increment the result tree’s 
+        // rank by 1
+        Rank[jrep]++;
+    }
+}
+
+#### Code in cpp
+<details>
+<summary>Answer</summary>
+ 
+
+```
+// C++ implementation of disjoint set
+#include <iostream>
+using namespace std;
+class DisjSet {
+    int *rank, *parent, n;
+  
+public:
+    // Constructor to create and
+    // initialize sets of n items
+    DisjSet(int n)
+    {
+        rank = new int[n];
+        parent = new int[n];
+        this->n = n;
+        makeSet();
+    }
+  
+    // Creates n single item sets
+    void makeSet()
+    {
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+    }
+  
+    // Finds set of given item x
+    int find(int x)
+    {
+        // Finds the representative of the set
+        // that x is an element of
+        if (parent[x] != x) {
+  
+            // if x is not the parent of itself
+            // Then x is not the representative of
+            // his set,
+            parent[x] = find(parent[x]);
+  
+            // so we recursively call Find on its parent
+            // and move i's node directly under the
+            // representative of this set
+        }
+  
+        return parent[x];
+    }
+  
+    // Do union of two sets represented
+    // by x and y.
+    void Union(int x, int y)
+    {
+        // Find current sets of x and y
+        int xset = find(x);
+        int yset = find(y);
+  
+        // If they are already in same set
+        if (xset == yset)
+            return;
+  
+        // Put smaller ranked item under
+        // bigger ranked item if ranks are
+        // different
+        if (rank[xset] < rank[yset]) {
+            parent[xset] = yset;
+        }
+        else if (rank[xset] > rank[yset]) {
+            parent[yset] = xset;
+        }
+  
+        // If ranks are same, then increment
+        // rank.
+        else {
+            parent[yset] = xset;
+            rank[xset] = rank[xset] + 1;
+        }
+    }
+};
+  
+int main()
+{
+    DisjSet obj(5);
+    obj.Union(0, 2);
+    obj.Union(4, 2);
+    obj.Union(3, 1);
+    if (obj.find(4) == obj.find(0))
+        cout << "Yes\n";
+    else
+        cout << "No\n";
+    if (obj.find(1) == obj.find(0))
+        cout << "Yes\n";
+    else
+        cout << "No\n";
+  
+    return 0;
+}
+```
+</details>
+
+
+## GRAPH ALGORITHMS
+
+### ELEMENTARY GRAPH ALGORITHMS
+
+#### REPRESENTATIONS OF GRAPHS
+
+#### BREADTH-FIRST SEARCH
 
 first we will visit the vertex,explore it and then MOVE ON to another vertex then explore it.
 (level order on a binary tree.)
@@ -4333,24 +5653,25 @@ void main() {
 ```
 </details>
 
-### TOPOLOGICAL SORT
+#### Topological sort
 
-### STRONGLY CONNECTED COMPONENTS
+#### Strongly connected components
 
 
-## MINIMUM SPANNING TREE
+### Minimum spanning trees
 
 Sub graph of graphs having n elements but {n-1} edges.
 
-### GROWING A MINIMUM SPANNING TREE
+#### Growing a Minimum spanning trees
 
  
- ### KRUSKAL ALGORITHM
+ #### Kruskal algorithm
  
  Kruskal's algorithm finds a minimum spanning forest of an undirected edge-weighted graph. If the graph is connected, it finds a minimum spanning tree.
  It is a greedy algorithm in graph theory as in each step it adds the next lowest-weight edge that will not form a cycle to the minimum spanning forest.
  
- ### CODE IN C
+ #### Code in c
+ 
   <details>
 <summary>Answer</summary>
  
@@ -4425,11 +5746,11 @@ int uni(int i,int j)
 ```
 </details>
  
- ### PRIM'S ALGORITHM
+ #### PRIM'S ALGORITHM
  
  Prim's Algorithm is a famous greedy algorithm. It is used for finding the Minimum Spanning Tree (MST) of a given graph. To apply Prim's algorithm, the given graph must be weighted, connected and undirected.
  
- ### CODE IN C
+ #### Code in c
   <details>
 <summary>Answer</summary>
  

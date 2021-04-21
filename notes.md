@@ -2508,11 +2508,66 @@ int main()
  
 
 
-### MATRIX-CHAIN MULTIPLICATION
+#### Matrix chain multiplication
 
-### ELEMENTS OF DYNAMIC PROGRAMMING
+Given a sequence of matrices, find the most efficient way to multiply these matrices together. The problem is not actually to perform the multiplications, but merely to decide in which order to perform the multiplications.
 
-### LONGEST COMMON SUBSEQUENCE
+ <details>
+<summary>Answer</summary>
+ 
+```
+/* A naive recursive implementation that simply
+  follows the above optimal substructure property */
+#include <limits.h>
+#include <stdio.h>
+  
+// Matrix Ai has dimension p[i-1] x p[i] for i = 1..n
+int MatrixChainOrder(int p[], int i, int j)
+{
+    if (i == j)
+        return 0;
+    int k;
+    int min = INT_MAX;
+    int count;
+  
+    // place parenthesis at different places between first
+    // and last matrix, recursively calculate count of
+    // multiplications for each parenthesis placement and
+    // return the minimum count
+    for (k = i; k < j; k++) {
+        count = MatrixChainOrder(p, i, k) + 
+                MatrixChainOrder(p, k + 1, j) + 
+                p[i - 1] * p[k] * p[j];
+  
+        if (count < min)
+            min = count;
+    }
+  
+    // Return minimum count
+    return min;
+}
+  
+// Driver program to test above function
+int main()
+{
+    int arr[] = { 1, 2, 3, 4, 3 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+  
+    printf("Minimum number of multiplications is %d ",
+           MatrixChainOrder(arr, 1, n - 1));
+  
+    getchar();
+    return 0;
+}
+
+```
+</details>
+
+#### Elements of dynamic programming
+
+Substructure: Decompose the given problem into smaller subproblems. Express the solution of the original problem in terms of the solution for smaller problems. Table Structure: After solving the sub-problems, store the results to the sub problems in a table.
+
+#### Longest common subsequence
 
 given two sequenceS, find the longest common terms between them.
  Example: ABCDEF & ABC
@@ -2561,18 +2616,126 @@ int main()
  ```
  </details>
 
-### OPTIMAL BINARY SEARCH TREE
+#### Optimal binary search tree
 
+Given a sorted array keys[0.. n-1] of search keys and an array freq[0.. n-1] of frequency counts, where freq[i] is the number of searches to keys[i]. Construct a binary search tree of all keys such that the total cost of all the searches is as small as possible.
+
+Let us first define the cost of a BST. The cost of a BST node is level of that node multiplied by its frequency. Level of root is 1.
+
+Examples:
+
+Input:  keys[] = {10, 12}, freq[] = {34, 50}
+There can be following two possible BSTs 
+        10                       12
+          \                     / 
+           12                 10
+          I                     II
+Frequency of searches of 10 and 12 are 34 and 50 respectively.
+The cost of tree I is 34*1 + 50*2 = 134
+The cost of tree II is 50*1 + 34*2 = 118 
+
+
+Input:  keys[] = {10, 12, 20}, freq[] = {34, 8, 50}
+There can be following possible BSTs
+    10                12                 20         10              20
+      \             /    \              /             \            /
+      12          10     20           12               20         10  
+        \                            /                 /           \
+         20                        10                12             12  
+     I               II             III             IV             V
+Among all possible BSTs, cost of the fifth BST is minimum.  
+Cost of the fifth BST is 1*50 + 2*34 + 3*8 = 142
+
+#### Code in c
+   <details>
+<summary>Answer</summary>
  
- ## GREEDY ALGORITHM
+```
+// A naive recursive implementation of optimal binary 
+// search tree problem
+#include <stdio.h>
+#include <limits.h>
+  
+// A utility function to get sum of array elements 
+// freq[i] to freq[j]
+int sum(int freq[], int i, int j);
+  
+// A recursive function to calculate cost of optimal 
+// binary search tree
+int optCost(int freq[], int i, int j)
+{
+   // Base cases
+   if (j < i)      // no elements in this subarray
+     return 0;
+   if (j == i)     // one element in this subarray
+     return freq[i];
+  
+   // Get sum of freq[i], freq[i+1], ... freq[j]
+   int fsum = sum(freq, i, j);
+  
+   // Initialize minimum value
+   int min = INT_MAX;
+  
+   // One by one consider all elements as root and
+   // recursively find cost of the BST, compare the
+   // cost with min and update min if needed
+   for (int r = i; r <= j; ++r)
+   {
+       int cost = optCost(freq, i, r-1) + 
+                  optCost(freq, r+1, j);
+       if (cost < min)
+          min = cost;
+   }
+  
+   // Return minimum value
+   return min + fsum;
+}
+  
+// The main function that calculates minimum cost of
+// a Binary Search Tree. It mainly uses optCost() to 
+// find the optimal cost.
+int optimalSearchTree(int keys[], int freq[], int n)
+{
+     // Here array keys[] is assumed to be sorted in 
+     // increasing order. If keys[] is not sorted, then 
+     // add code to sort keys, and rearrange freq[] 
+     // accordingly.
+     return optCost(freq, 0, n-1);
+}
+  
+// A utility function to get sum of array elements 
+// freq[i] to freq[j]
+int sum(int freq[], int i, int j)
+{
+    int s = 0;
+    for (int k = i; k <=j; k++)
+       s += freq[k];
+    return s;
+}
+  
+// Driver program to test above functions
+int main()
+{
+    int keys[] = {10, 12, 20};
+    int freq[] = {34, 8, 50};
+    int n = sizeof(keys)/sizeof(keys[0]);
+    printf("Cost of Optimal BST is %d ", 
+               optimalSearchTree(keys, freq, n));
+    return 0;
+}
+
+```
+</details>
+ 
+ ### Greedy algorithm
  
  Used for solving optimizing problems which either require max result or min result.
  
-### AN ACTIVITY SELECTION PROBLEM
+#### An activity selection problem
 
 You are given n activities with their start and finish times. Select the maximum number of activities that can be performed by a single person, assuming that a person can only work on a single activity at a time.
 
- ### CODE IN C:
+ #### Code in c
    <details>
 <summary>Answer</summary>
  
@@ -2612,37 +2775,371 @@ int main()
 ```
 </details>
 
-### ELEMENTS OF THE GREEDY STRATEGY
+#### Elements of the Greedy Strategy
 
-### HUFFMAN CODES
+Elements of the Greedy Strategy
+Optimal Substructure: An optimal solution to the problem contains within it optimal solutions to sub-problems. ...
+The 0 - 1 knapsack problem: A thief has a knapsack that holds at most W pounds. ...
+Fractional knapsack problem: takes parts, as well as wholes.
 
-### MATROIDS AND GREEDY METHODS
+#### Huffman codes
 
-### A TASK-SCHEDULING PROBLEM AS A MATROID
+Huffman coding is a lossless data compression algorithm. The idea is to assign variable-length codes to input characters, lengths of the assigned codes are based on the frequencies of corresponding characters. The most frequent character gets the smallest code and the least frequent character gets the largest code.
 
-## AMORTIZED ALGORITHM
+ #### Code in c
+   <details>
+<summary>Answer</summary>
+ 
+```
+// C program for Huffman Coding
+#include <stdio.h>
+#include <stdlib.h>
+ 
+// This constant can be avoided by explicitly
+// calculating height of Huffman Tree
+#define MAX_TREE_HT 100
+ 
+// A Huffman tree node
+struct MinHeapNode {
+ 
+    // One of the input characters
+    char data;
+ 
+    // Frequency of the character
+    unsigned freq;
+ 
+    // Left and right child of this node
+    struct MinHeapNode *left, *right;
+};
+ 
+// A Min Heap:  Collection of
+// min-heap (or Huffman tree) nodes
+struct MinHeap {
+ 
+    // Current size of min heap
+    unsigned size;
+ 
+    // capacity of min heap
+    unsigned capacity;
+ 
+    // Array of minheap node pointers
+    struct MinHeapNode** array;
+};
+ 
+// A utility function allocate a new
+// min heap node with given character
+// and frequency of the character
+struct MinHeapNode* newNode(char data, unsigned freq)
+{
+    struct MinHeapNode* temp = (struct MinHeapNode*)malloc(
+        sizeof(struct MinHeapNode));
+ 
+    temp->left = temp->right = NULL;
+    temp->data = data;
+    temp->freq = freq;
+ 
+    return temp;
+}
+ 
+// A utility function to create
+// a min heap of given capacity
+struct MinHeap* createMinHeap(unsigned capacity)
+ 
+{
+ 
+    struct MinHeap* minHeap
+        = (struct MinHeap*)malloc(sizeof(struct MinHeap));
+ 
+    // current size is 0
+    minHeap->size = 0;
+ 
+    minHeap->capacity = capacity;
+ 
+    minHeap->array = (struct MinHeapNode**)malloc(
+        minHeap->capacity * sizeof(struct MinHeapNode*));
+    return minHeap;
+}
+ 
+// A utility function to
+// swap two min heap nodes
+void swapMinHeapNode(struct MinHeapNode** a,
+                     struct MinHeapNode** b)
+ 
+{
+ 
+    struct MinHeapNode* t = *a;
+    *a = *b;
+    *b = t;
+}
+ 
+// The standard minHeapify function.
+void minHeapify(struct MinHeap* minHeap, int idx)
+ 
+{
+ 
+    int smallest = idx;
+    int left = 2 * idx + 1;
+    int right = 2 * idx + 2;
+ 
+    if (left < minHeap->size
+        && minHeap->array[left]->freq
+               < minHeap->array[smallest]->freq)
+        smallest = left;
+ 
+    if (right < minHeap->size
+        && minHeap->array[right]->freq
+               < minHeap->array[smallest]->freq)
+        smallest = right;
+ 
+    if (smallest != idx) {
+        swapMinHeapNode(&minHeap->array[smallest],
+                        &minHeap->array[idx]);
+        minHeapify(minHeap, smallest);
+    }
+}
+ 
+// A utility function to check
+// if size of heap is 1 or not
+int isSizeOne(struct MinHeap* minHeap)
+{
+ 
+    return (minHeap->size == 1);
+}
+ 
+// A standard function to extract
+// minimum value node from heap
+struct MinHeapNode* extractMin(struct MinHeap* minHeap)
+ 
+{
+ 
+    struct MinHeapNode* temp = minHeap->array[0];
+    minHeap->array[0] = minHeap->array[minHeap->size - 1];
+ 
+    --minHeap->size;
+    minHeapify(minHeap, 0);
+ 
+    return temp;
+}
+ 
+// A utility function to insert
+// a new node to Min Heap
+void insertMinHeap(struct MinHeap* minHeap,
+                   struct MinHeapNode* minHeapNode)
+ 
+{
+ 
+    ++minHeap->size;
+    int i = minHeap->size - 1;
+ 
+    while (i
+           && minHeapNode->freq
+                  < minHeap->array[(i - 1) / 2]->freq) {
+ 
+        minHeap->array[i] = minHeap->array[(i - 1) / 2];
+        i = (i - 1) / 2;
+    }
+ 
+    minHeap->array[i] = minHeapNode;
+}
+ 
+// A standard function to build min heap
+void buildMinHeap(struct MinHeap* minHeap)
+ 
+{
+ 
+    int n = minHeap->size - 1;
+    int i;
+ 
+    for (i = (n - 1) / 2; i >= 0; --i)
+        minHeapify(minHeap, i);
+}
+ 
+// A utility function to print an array of size n
+void printArr(int arr[], int n)
+{
+    int i;
+    for (i = 0; i < n; ++i)
+        printf("%d", arr[i]);
+ 
+    printf("\n");
+}
+ 
+// Utility function to check if this node is leaf
+int isLeaf(struct MinHeapNode* root)
+ 
+{
+ 
+    return !(root->left) && !(root->right);
+}
+ 
+// Creates a min heap of capacity
+// equal to size and inserts all character of
+// data[] in min heap. Initially size of
+// min heap is equal to capacity
+struct MinHeap* createAndBuildMinHeap(char data[],
+                                      int freq[], int size)
+ 
+{
+ 
+    struct MinHeap* minHeap = createMinHeap(size);
+ 
+    for (int i = 0; i < size; ++i)
+        minHeap->array[i] = newNode(data[i], freq[i]);
+ 
+    minHeap->size = size;
+    buildMinHeap(minHeap);
+ 
+    return minHeap;
+}
+ 
+// The main function that builds Huffman tree
+struct MinHeapNode* buildHuffmanTree(char data[],
+                                     int freq[], int size)
+ 
+{
+    struct MinHeapNode *left, *right, *top;
+ 
+    // Step 1: Create a min heap of capacity
+    // equal to size.  Initially, there are
+    // modes equal to size.
+    struct MinHeap* minHeap
+        = createAndBuildMinHeap(data, freq, size);
+ 
+    // Iterate while size of heap doesn't become 1
+    while (!isSizeOne(minHeap)) {
+ 
+        // Step 2: Extract the two minimum
+        // freq items from min heap
+        left = extractMin(minHeap);
+        right = extractMin(minHeap);
+ 
+        // Step 3:  Create a new internal
+        // node with frequency equal to the
+        // sum of the two nodes frequencies.
+        // Make the two extracted node as
+        // left and right children of this new node.
+        // Add this node to the min heap
+        // '$' is a special value for internal nodes, not
+        // used
+        top = newNode('$', left->freq + right->freq);
+ 
+        top->left = left;
+        top->right = right;
+ 
+        insertMinHeap(minHeap, top);
+    }
+ 
+    // Step 4: The remaining node is the
+    // root node and the tree is complete.
+    return extractMin(minHeap);
+}
+ 
+// Prints huffman codes from the root of Huffman Tree.
+// It uses arr[] to store codes
+void printCodes(struct MinHeapNode* root, int arr[],
+                int top)
+ 
+{
+ 
+    // Assign 0 to left edge and recur
+    if (root->left) {
+ 
+        arr[top] = 0;
+        printCodes(root->left, arr, top + 1);
+    }
+ 
+    // Assign 1 to right edge and recur
+    if (root->right) {
+ 
+        arr[top] = 1;
+        printCodes(root->right, arr, top + 1);
+    }
+ 
+    // If this is a leaf node, then
+    // it contains one of the input
+    // characters, print the character
+    // and its code from arr[]
+    if (isLeaf(root)) {
+ 
+        printf("%c: ", root->data);
+        printArr(arr, top);
+    }
+}
+ 
+// The main function that builds a
+// Huffman Tree and print codes by traversing
+// the built Huffman Tree
+void HuffmanCodes(char data[], int freq[], int size)
+ 
+{
+    // Construct Huffman Tree
+    struct MinHeapNode* root
+        = buildHuffmanTree(data, freq, size);
+ 
+    // Print Huffman codes using
+    // the Huffman tree built above
+    int arr[MAX_TREE_HT], top = 0;
+ 
+    printCodes(root, arr, top);
+}
+ 
+// Driver code
+int main()
+{
+ 
+    char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+    int freq[] = { 5, 9, 12, 13, 16, 45 };
+ 
+    int size = sizeof(arr) / sizeof(arr[0]);
+ 
+    HuffmanCodes(arr, freq, size);
+ 
+    return 0;
+}
+```
+</details>
 
-### AGGREGATE ANALYSIS
+#### Matroids and greedy strategy
 
-### THE ACCOUNTING METHOD
+Matroid: A matroid consists of a base set U and a collection I of independent
+subsets. Independence will be related to different objects depending on the
+problem - for the minimum spanning tree, an independent subset could be a
+tree. In linear algebra, an independent subset could be linearly independent
+vectors. A matroid’s notion of independence is as follows. A, B ⊆ U satisfy:
+1. If A is a subset of B and B is independent subset, then A is independent
+subset, too. In other words:
+A ⊆ B, B ∈ I ⇒ A ∈ I
+2. The empty set is independent.
+3. Suppose A and B are indepedent sets and A is smaller than B. Then
+there is some element e in B that is not in A such that A plus e is also
+an independent set. In other words:
+A, B ∈ I, |A| < |B| ⇒ ∃e ∈ B\A such that A ∪ {e} ∈ I
 
-### THE POTENTIAL METHOD
+#### A task scheduling problem using matroid
 
-### DYNAMIC TABLES
+### Amortized algorithm
+
+#### Aggregate analysis
+
+#### The accounting method
+
+#### The potential method
+
+#### Dynamic tables
 
 
-# ADVANCED DATA STRUCTURES
+## Advanced data structures
 
-## B-TREES
+### B-trees
 
-### DEFINITION OF B-TREES
+#### Definition of b-trees
 
  guidelines to make m-way search trees are known as b-trees.(dynamic multilevel index).
 {B-tree is a special type of self-balancing search tree in which each node can contain more than one key and can have more than two children. It is a generalized form of the binary search tree.}
 
-### BASIC OPERATIONS ON B-TREES
+#### BASIC OPERATIONS ON B-TREES
 
-### DELETING A TREE FROM A B-TREE
+#### DELETING A TREE FROM A B-TREE
 
 
 ### CODE IN C

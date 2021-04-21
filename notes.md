@@ -2745,7 +2745,7 @@ given two sequenceS, find the longest common terms between them.
  Example: ABCDEF & ABC
  Answer: ABC
  
- ### CODE IN C
+ #### Code in c
   <details>
 <summary>Answer</summary>
  
@@ -6352,6 +6352,161 @@ void display(int arr[], int size) {
 </details>
 
 #### Single source shortest paths in directed acyclic graphs
+
+Given a Weighted Directed Acyclic Graph and a source vertex in the graph, find the shortest paths from given source to all other vertices.
+
+For a general weighted graph, we can calculate single source shortest distances in O(VE) time using Bellman–Ford Algorithm. For a graph with no negative weights, we can do better and calculate single source shortest distances in O(E + VLogV) time using Dijkstra’s algorithm. Can we do even better for Directed Acyclic Graph (DAG)? We can calculate single source shortest distances in O(V+E) time for DAGs. The idea is to use Topological Sorting.
+
+We initialize distances to all vertices as infinite and distance to source as 0, then we find a topological sorting of the graph. Topological Sorting of a graph represents a linear ordering of the graph (See below, figure (b) is a linear representation of figure (a) ). Once we have topological order (or linear representation), we one by one process all vertices in topological order. For every vertex being processed, we update distances of its adjacent using distance of current vertex.
+
+#### Code in cpp
+   <details>
+<summary>Answer</summary>
+ 
+```
+// C++ program to find single source shortest paths for Directed Acyclic Graphs
+#include<iostream>
+#include <bits/stdc++.h>
+#define INF INT_MAX
+using namespace std;
+  
+// Graph is represented using adjacency list. Every node of adjacency list 
+// contains vertex number of the vertex to which edge connects. It also 
+// contains weight of the edge
+class AdjListNode
+{
+    int v;
+    int weight;
+public:
+    AdjListNode(int _v, int _w)  { v = _v;  weight = _w;}
+    int getV()       {  return v;  }
+    int getWeight()  {  return weight; }
+};
+  
+// Class to represent a graph using adjacency list representation
+class Graph
+{
+    int V;    // No. of vertices'
+  
+    // Pointer to an array containing adjacency lists
+    list<AdjListNode> *adj;
+  
+    // A function used by shortestPath
+    void topologicalSortUtil(int v, bool visited[], stack<int> &Stack);
+public:
+    Graph(int V);   // Constructor
+  
+    // function to add an edge to graph
+    void addEdge(int u, int v, int weight);
+  
+    // Finds shortest paths from given source vertex
+    void shortestPath(int s);
+};
+  
+Graph::Graph(int V)
+{
+    this->V = V;
+    adj = new list<AdjListNode>[V];
+}
+  
+void Graph::addEdge(int u, int v, int weight)
+{
+    AdjListNode node(v, weight);
+    adj[u].push_back(node); // Add v to u's list
+}
+  
+// A recursive function used by shortestPath. See below link for details
+// https://www.geeksforgeeks.org/topological-sorting/
+void Graph::topologicalSortUtil(int v, bool visited[], stack<int> &Stack)
+{
+    // Mark the current node as visited
+    visited[v] = true;
+  
+    // Recur for all the vertices adjacent to this vertex
+    list<AdjListNode>::iterator i;
+    for (i = adj[v].begin(); i != adj[v].end(); ++i)
+    {
+        AdjListNode node = *i;
+        if (!visited[node.getV()])
+            topologicalSortUtil(node.getV(), visited, Stack);
+    }
+  
+    // Push current vertex to stack which stores topological sort
+    Stack.push(v);
+}
+  
+// The function to find shortest paths from given vertex. It uses recursive 
+// topologicalSortUtil() to get topological sorting of given graph.
+void Graph::shortestPath(int s)
+{
+    stack<int> Stack;
+    int dist[V];
+  
+    // Mark all the vertices as not visited
+    bool *visited = new bool[V];
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
+  
+    // Call the recursive helper function to store Topological Sort
+    // starting from all vertices one by one
+    for (int i = 0; i < V; i++)
+        if (visited[i] == false)
+            topologicalSortUtil(i, visited, Stack);
+  
+    // Initialize distances to all vertices as infinite and distance
+    // to source as 0
+    for (int i = 0; i < V; i++)
+        dist[i] = INF;
+    dist[s] = 0;
+  
+    // Process vertices in topological order
+    while (Stack.empty() == false)
+    {
+        // Get the next vertex from topological order
+        int u = Stack.top();
+        Stack.pop();
+  
+        // Update distances of all adjacent vertices
+        list<AdjListNode>::iterator i;
+        if (dist[u] != INF)
+        {
+          for (i = adj[u].begin(); i != adj[u].end(); ++i)
+             if (dist[i->getV()] > dist[u] + i->getWeight())
+                dist[i->getV()] = dist[u] + i->getWeight();
+        }
+    }
+  
+    // Print the calculated shortest distances
+    for (int i = 0; i < V; i++)
+        (dist[i] == INF)? cout << "INF ": cout << dist[i] << " ";
+}
+  
+// Driver program to test above functions
+int main()
+{
+    // Create a graph given in the above diagram.  Here vertex numbers are
+    // 0, 1, 2, 3, 4, 5 with following mappings:
+    // 0=r, 1=s, 2=t, 3=x, 4=y, 5=z
+    Graph g(6);
+    g.addEdge(0, 1, 5);
+    g.addEdge(0, 2, 3);
+    g.addEdge(1, 3, 6);
+    g.addEdge(1, 2, 2);
+    g.addEdge(2, 4, 4);
+    g.addEdge(2, 5, 2);
+    g.addEdge(2, 3, 7);
+    g.addEdge(3, 4, -1);
+    g.addEdge(4, 5, -2);
+  
+    int s = 1;
+    cout << "Following are shortest distances from source " << s <<" n";
+    g.shortestPath(s);
+  
+    return 0;
+}
+
+```
+</details>
  
 #### Dijkstra's algorithm
 
@@ -6443,25 +6598,204 @@ void dijikstra(int G[MAX][MAX], int n, int startnode)
  ```
  </details>
  
- #### DIFFERENCE CONSTRAINTS AND SHORTEST PATHS
+ #### difference constraints and shortest paths
  
- #### PROOFS OF SHORTEST PATHS PROPERTIES
+ Because there are edges from the source vertex v0 to all other vertices in the constraint graph, any negative-weight cycle in the constraint graph is reachable from v0. If the Bellman-Ford algorithm returns TRUE, then the shortest-path weights give a feasible solution to the system.
+ 
+ #### Proofs of shortest paths
+ 
+ The proof of this is based on the notion that if there was a shorter path than any sub-path, then the shorter path should replace that sub-path to make the whole path shorter. If s ->.. ... Denote the distance of the shortest path from s to u as delta(s,u).
+
  
  ### All pairs shotest paths
  
- #### SHORTEST PATH AND MATRIX MULTIPLICATION
+ #### Shortest path and matrix multiplication
  
- #### THE FLOYD-WARSHELL ALGORITHM
+ The algorithm is based on dynamic programming, in which each major loop will invoke an operation that is very similar to matrix multiplication. Following the DP strategy, the structure of this problem is, for any two vertices u and v,
+if u=v, then the shortest path p from u to v is 0.
+otherwise, decompose p into u→x→v, where p' is a path from u to x and contains at most k edges and it is the shortest path from u to x.
+A recursive solution for the APSP problem is defined. Let dij (k) be the minimum weight of any path from i to j that contains at most k edges.
+If k=0, then
+
+dij (0) ={ 0 if i=j ∞ if i≠j
+
+Otherwise, for k≥1, dij (k) can be computed from dij (k-1) and the adjacency matrix w.
+dij (k) =min{ dij (k-1) , min1≤l≤n { dil (k-1) + wlj }}= min1≤l≤n { dil (k-1) + wlj }
+SPECIAL-MATRIX-MULTIPLY (A,B)
+ 1     n ←  rows [A]
+ 2     C ← new n×n matrix
+ 3    for  i ←  1 to  n
+ 4             do for  j ←  1 to  n
+ 5                            do  cij ←  ∞
+ 6                                  for  k ←  1 to  n
+ 7                                           do  cij ←  min( cij , aik + bkj )
+ .                                                    /* Here's where this algorithm */
+ .                                                    /* differs from MATRIX-MULTIPLY. */
+ 8    return  C
+The optimal solution can be computed by calling SPECIAL-MATRIX-MULTIPLY ( D(k) ,W) for 1≤k≤n-2. We only need to run to n-2 because that will give us D(n-1) giving us all the shortest path lengths of at most n-1 edges (you only need n-1 edges to connect n vertices). Since SPECIAL-MATRIX-MULTIPLY is called n-2 times, the total running time is O( n4 ).
  
- #### JOHNSON'S ALGORITHM FOR SPARSE GRAPHS
+ 
+ #### The Floyd Warshall Algorithm
+ 
+The Floyd Warshall Algorithm is for solving the All Pairs Shortest Path problem. The problem is to find shortest distances between every pair of vertices in a given edge weighted directed Graph. 
+Example: 
+
+Input:
+       graph[][] = { {0,   5,  INF, 10},
+                    {INF,  0,  3,  INF},
+                    {INF, INF, 0,   1},
+                    {INF, INF, INF, 0} }
+which represents the following graph
+             10
+       (0)------->(3)
+        |         /|\
+      5 |          |
+        |          | 1
+       \|/         |
+       (1)------->(2)
+            3       
+Note that the value of graph[i][j] is 0 if i is equal to j 
+And graph[i][j] is INF (infinite) if there is no edge from vertex i to j.
+
+Output:
+Shortest distance matrix
+      0      5      8      9
+    INF      0      3      4
+    INF    INF      0      1
+    INF    INF    INF      0
+ 
+ #### Code in c
+   <details>
+<summary>Answer</summary>
+ 
+```
+// C Program for Floyd Warshall Algorithm
+#include<stdio.h>
+ 
+// Number of vertices in the graph
+#define V 4
+ 
+/* Define Infinite as a large enough
+  value. This value will be used
+  for vertices not connected to each other */
+#define INF 99999
+ 
+// A function to print the solution matrix
+void printSolution(int dist[][V]);
+ 
+// Solves the all-pairs shortest path
+// problem using Floyd Warshall algorithm
+void floydWarshall (int graph[][V])
+{
+    /* dist[][] will be the output matrix
+      that will finally have the shortest
+      distances between every pair of vertices */
+    int dist[V][V], i, j, k;
+ 
+    /* Initialize the solution matrix
+      same as input graph matrix. Or
+       we can say the initial values of
+       shortest distances are based
+       on shortest paths considering no
+       intermediate vertex. */
+    for (i = 0; i < V; i++)
+        for (j = 0; j < V; j++)
+            dist[i][j] = graph[i][j];
+ 
+    /* Add all vertices one by one to
+      the set of intermediate vertices.
+      ---> Before start of an iteration, we
+      have shortest distances between all
+      pairs of vertices such that the shortest
+      distances consider only the
+      vertices in set {0, 1, 2, .. k-1} as
+      intermediate vertices.
+      ----> After the end of an iteration,
+      vertex no. k is added to the set of
+      intermediate vertices and the set
+      becomes {0, 1, 2, .. k} */
+    for (k = 0; k < V; k++)
+    {
+        // Pick all vertices as source one by one
+        for (i = 0; i < V; i++)
+        {
+            // Pick all vertices as destination for the
+            // above picked source
+            for (j = 0; j < V; j++)
+            {
+                // If vertex k is on the shortest path from
+                // i to j, then update the value of dist[i][j]
+                if (dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+            }
+        }
+    }
+ 
+    // Print the shortest distance matrix
+    printSolution(dist);
+}
+ 
+/* A utility function to print solution */
+void printSolution(int dist[][V])
+{
+    printf ("The following matrix shows the shortest distances"
+            " between every pair of vertices \n");
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+        {
+            if (dist[i][j] == INF)
+                printf("%7s", "INF");
+            else
+                printf ("%7d", dist[i][j]);
+        }
+        printf("\n");
+    }
+}
+ 
+// driver program to test above function
+int main()
+{
+    /* Let us create the following weighted graph
+            10
+       (0)------->(3)
+        |         /|\
+      5 |          |
+        |          | 1
+       \|/         |
+       (1)------->(2)
+            3           */
+    int graph[V][V] = { {0,   5,  INF, 10},
+                        {INF, 0,   3, INF},
+                        {INF, INF, 0,   1},
+                        {INF, INF, INF, 0}
+                      };
+ 
+    // Print the solution
+    floydWarshall(graph);
+    return 0;
+}
+```
+</details>
+ 
+ 
+ #### Johnson’s algorithm for sparse graphs
+ 
+ The problem is to find shortest paths between every pair of vertices in a given weighted directed Graph and weights may be negative. We have discussed Floyd Warshall Algorithm for this problem. Time complexity of Floyd Warshall Algorithm is Θ(V3). Using Johnson’s algorithm, we can find all pair shortest paths in O(V2log V + VE) time. Johnson’s algorithm uses both Dijkstra and Bellman-Ford as subroutines.
+
+If we apply Dijkstra’s Single Source shortest path algorithm for every vertex, considering every vertex as source, we can find all pair shortest paths in O(V*VLogV) time. So using Dijkstra’s single source shortest path seems to be a better option than Floyd Warshell, but the problem with Dijkstra’s algorithm is, it doesn’t work for negative weight edge.
+The idea of Johnson’s algorithm is to re-weight all edges and make them all positive, then apply Dijkstra’s algorithm for every vertex.
  
  
  ### Maximum flow
  
  #### Flow networks
  
+ In graph theory, a flow network (also known as a transportation network) is a directed graph where each edge has a capacity and each edge receives a flow. The amount of flow on an edge cannot exceed the capacity of the edge. Often in operations research, a directed graph is called a network, the vertices are called nodes and the edges are called arcs. A flow must satisfy the restriction that the amount of flow into a node equals the amount of flow out of it, unless it is a source, which has only outgoing flow, or sink, which has only incoming flow. A network can be used to model traffic in a computer network, circulation with demands, fluids in pipes, currents in an electrical circuit, or anything similar in which something travels through a network of nodes.
+ 
  
  #### The ford fulkerson algorithm
+ 
  Ford-Fulkerson algorithm is a greedy approach for calculating the maximum possible flow in a network or a graph.
  
  #### Code in c
@@ -6584,10 +6918,283 @@ int main() {
 (no odd length cycles,2 colors).
 
 
-#### PUSH-RELABLE ALGORITHM
+#### Push relable algorithm
+
+Push-Relabel Algorithm 
+1) Initialize PreFlow : Initialize Flows 
+   and Heights 
+
+2) While it is possible to perform a Push() or 
+   Relablel() on a vertex
+   // Or while there is a vertex that has excess flow
+           Do Push() or Relabel()
+
+// At this point all vertices have Excess Flow as 0 (Except source
+// and sink)
+3) Return flow.
+
+#### Code in cpp
+  <details>
+<summary>Answer</summary>
+ 
+
+```
+// C++ program to implement push-relabel algorithm for
+// getting maximum flow of graph
+#include <bits/stdc++.h>
+using namespace std;
+  
+struct Edge
+{
+    // To store current flow and capacity of edge
+    int flow, capacity;
+  
+    // An edge u--->v has start vertex as u and end
+    // vertex as v.
+    int u, v;
+  
+    Edge(int flow, int capacity, int u, int v)
+    {
+        this->flow = flow;
+        this->capacity = capacity;
+        this->u = u;
+        this->v = v;
+    }
+};
+  
+// Represent a Vertex
+struct Vertex
+{
+    int h, e_flow;
+  
+    Vertex(int h, int e_flow)
+    {
+        this->h = h;
+        this->e_flow = e_flow;
+    }
+};
+  
+// To represent a flow network
+class Graph
+{
+    int V;    // No. of vertices
+    vector<Vertex> ver;
+    vector<Edge> edge;
+  
+    // Function to push excess flow from u
+    bool push(int u);
+  
+    // Function to relabel a vertex u
+    void relabel(int u);
+  
+    // This function is called to initialize
+    // preflow
+    void preflow(int s);
+  
+    // Function to reverse edge
+    void updateReverseEdgeFlow(int i, int flow);
+  
+public:
+    Graph(int V);  // Constructor
+  
+    // function to add an edge to graph
+    void addEdge(int u, int v, int w);
+  
+    // returns maximum flow from s to t
+    int getMaxFlow(int s, int t);
+};
+  
+Graph::Graph(int V)
+{
+    this->V = V;
+  
+    // all vertices are initialized with 0 height
+    // and 0 excess flow
+    for (int i = 0; i < V; i++)
+        ver.push_back(Vertex(0, 0));
+}
+  
+void Graph::addEdge(int u, int v, int capacity)
+{
+    // flow is initialized with 0 for all edge
+    edge.push_back(Edge(0, capacity, u, v));
+}
+  
+void Graph::preflow(int s)
+{
+    // Making h of source Vertex equal to no. of vertices
+    // Height of other vertices is 0.
+    ver[s].h = ver.size();
+  
+    //
+    for (int i = 0; i < edge.size(); i++)
+    {
+        // If current edge goes from source
+        if (edge[i].u == s)
+        {
+            // Flow is equal to capacity
+            edge[i].flow = edge[i].capacity;
+  
+            // Initialize excess flow for adjacent v
+            ver[edge[i].v].e_flow += edge[i].flow;
+  
+            // Add an edge from v to s in residual graph with
+            // capacity equal to 0
+            edge.push_back(Edge(-edge[i].flow, 0, edge[i].v, s));
+        }
+    }
+}
+  
+// returns index of overflowing Vertex
+int overFlowVertex(vector<Vertex>& ver)
+{
+    for (int i = 1; i < ver.size() - 1; i++)
+       if (ver[i].e_flow > 0)
+            return i;
+  
+    // -1 if no overflowing Vertex
+    return -1;
+}
+  
+// Update reverse flow for flow added on ith Edge
+void Graph::updateReverseEdgeFlow(int i, int flow)
+{
+    int u = edge[i].v, v = edge[i].u;
+  
+    for (int j = 0; j < edge.size(); j++)
+    {
+        if (edge[j].v == v && edge[j].u == u)
+        {
+            edge[j].flow -= flow;
+            return;
+        }
+    }
+  
+    // adding reverse Edge in residual graph
+    Edge e = Edge(0, flow, u, v);
+    edge.push_back(e);
+}
+  
+// To push flow from overflowing vertex u
+bool Graph::push(int u)
+{
+    // Traverse through all edges to find an adjacent (of u)
+    // to which flow can be pushed
+    for (int i = 0; i < edge.size(); i++)
+    {
+        // Checks u of current edge is same as given
+        // overflowing vertex
+        if (edge[i].u == u)
+        {
+            // if flow is equal to capacity then no push
+            // is possible
+            if (edge[i].flow == edge[i].capacity)
+                continue;
+  
+            // Push is only possible if height of adjacent
+            // is smaller than height of overflowing vertex
+            if (ver[u].h > ver[edge[i].v].h)
+            {
+                // Flow to be pushed is equal to minimum of
+                // remaining flow on edge and excess flow.
+                int flow = min(edge[i].capacity - edge[i].flow,
+                               ver[u].e_flow);
+  
+                // Reduce excess flow for overflowing vertex
+                ver[u].e_flow -= flow;
+  
+                // Increase excess flow for adjacent
+                ver[edge[i].v].e_flow += flow;
+  
+                // Add residual flow (With capacity 0 and negative
+                // flow)
+                edge[i].flow += flow;
+  
+                updateReverseEdgeFlow(i, flow);
+  
+                return true;
+            }
+        }
+    }
+    return false;
+}
+  
+// function to relabel vertex u
+void Graph::relabel(int u)
+{
+    // Initialize minimum height of an adjacent
+    int mh = INT_MAX;
+  
+    // Find the adjacent with minimum height
+    for (int i = 0; i < edge.size(); i++)
+    {
+        if (edge[i].u == u)
+        {
+            // if flow is equal to capacity then no
+            // relabeling
+            if (edge[i].flow == edge[i].capacity)
+                continue;
+  
+            // Update minimum height
+            if (ver[edge[i].v].h < mh)
+            {
+                mh = ver[edge[i].v].h;
+  
+                // updating height of u
+                ver[u].h = mh + 1;
+            }
+        }
+    }
+}
+  
+// main function for printing maximum flow of graph
+int Graph::getMaxFlow(int s, int t)
+{
+    preflow(s);
+  
+    // loop untill none of the Vertex is in overflow
+    while (overFlowVertex(ver) != -1)
+    {
+        int u = overFlowVertex(ver);
+        if (!push(u))
+            relabel(u);
+    }
+  
+    // ver.back() returns last Vertex, whose
+    // e_flow will be final maximum flow
+    return ver.back().e_flow;
+}
+  
+// Driver program to test above functions
+int main()
+{
+    int V = 6;
+    Graph g(V);
+  
+    // Creating above shown flow network
+    g.addEdge(0, 1, 16);
+    g.addEdge(0, 2, 13);
+    g.addEdge(1, 2, 10);
+    g.addEdge(2, 1, 4);
+    g.addEdge(1, 3, 12);
+    g.addEdge(2, 4, 14);
+    g.addEdge(3, 2, 9);
+    g.addEdge(3, 5, 20);
+    g.addEdge(4, 3, 7);
+    g.addEdge(4, 5, 4);
+  
+    // Initialize source and sink
+    int s = 0, t = 5;
+  
+    cout << "Maximum flow is " << g.getMaxFlow(s, t);
+    return 0;
+}
+```
+</details>
 
 
-### THE RELABEL-TO-FRONT ALGORITHM
+#### The relable to front algorithm
+
 
 ### Multithreaded algorithm
 
@@ -6936,13 +7543,250 @@ int main()
 ### Matrix operation
 
 #### Solving systems of linear equation
-#### inverting matrices
+
+  <details>
+<summary>Answer</summary>
+ 
+```
+#include <stdio.h>
+#include <stdlib.h>
+int main(void) {
+    char var[] = { 'x', 'y', 'z', 'w' };
+    printf("Enter the number of variables in the equations: ");
+    int n;
+    scanf("%d", &n);
+    printf("\nEnter the coefficients of each variable for each equations");
+    printf("\nax + by + cz + ... = d");
+    int mat[n][n];
+    int constants[n][1];
+    int i,j;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &mat[i][j]);
+        }
+        scanf("%d", &constants[i][0]);
+    }
+ 
+    printf("Matrix representation is: ");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            printf(" %f", mat[i][j]);
+        }
+        printf(" %f", var[i]);
+        printf(" = %f", constants[i][0]);
+        printf("\n");
+    }
+    return 0;
+}
+```
+</details>
+
+####  Inverting matrices
+
+steps to find the inverse of a matrix using Gauss-Jordan method:
+Interchange any two row.
+Multiply each element of row by a non-zero integer.
+Replace a row by the sum of itself and a constant multiple of another row of the matrix.
+
+#### Code in cpp
+
+<details>
+<summary>Answer</summary>
+	
+ ```
+ // C++ program to find the inverse of Matrix.
+ 
+#include <iostream>
+#include <vector>
+using namespace std;
+ 
+// Function to Print matrix.
+void PrintMatrix(float** ar, int n, int m)
+{
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cout << ar[i][j] << "  ";
+        }
+        printf("\n");
+    }
+    return;
+}
+ 
+// Function to Print inverse matrix
+void PrintInverse(float** ar, int n, int m)
+{
+    for (int i = 0; i < n; i++) {
+        for (int j = n; j < m; j++) {
+            printf("%.3f  ", ar[i][j]);
+        }
+        printf("\n");
+    }
+    return;
+}
+ 
+// Function to perform the inverse operation on the matrix.
+void InverseOfMatrix(float** matrix, int order)
+{
+    // Matrix Declaration.
+ 
+    float temp;
+ 
+    // PrintMatrix function to print the element
+    // of the matrix.
+    printf("=== Matrix ===\n");
+    PrintMatrix(matrix, order, order);
+ 
+    // Create the augmented matrix
+    // Add the identity matrix
+    // of order at the end of original matrix.
+    for (int i = 0; i < order; i++) {
+ 
+        for (int j = 0; j < 2 * order; j++) {
+ 
+            // Add '1' at the diagonal places of
+            // the matrix to create a identity matirx
+            if (j == (i + order))
+                matrix[i][j] = 1;
+        }
+    }
+ 
+    // Interchange the row of matrix,
+    // interchanging of row will start from the last row
+    for (int i = order - 1; i > 0; i--) {
+ 
+        // Swapping each and every element of the two rows
+        // if (matrix[i - 1][0] < matrix[i][0])
+        // for (int j = 0; j < 2 * order; j++) {
+        //
+        //        // Swapping of the row, if above
+        //        // condition satisfied.
+        // temp = matrix[i][j];
+        // matrix[i][j] = matrix[i - 1][j];
+        // matrix[i - 1][j] = temp;
+        //    }
+ 
+        // Directly swapping the rows using pointers saves
+        // time
+ 
+        if (matrix[i - 1][0] < matrix[i][0]) {
+            float* temp = matrix[i];
+            matrix[i] = matrix[i - 1];
+            matrix[i - 1] = temp;
+        }
+    }
+ 
+    // Print matrix after interchange operations.
+    printf("\n=== Augmented Matrix ===\n");
+    PrintMatrix(matrix, order, order * 2);
+ 
+    // Replace a row by sum of itself and a
+    // constant multiple of another row of the matrix
+    for (int i = 0; i < order; i++) {
+ 
+        for (int j = 0; j < order; j++) {
+ 
+            if (j != i) {
+ 
+                temp = matrix[j][i] / matrix[i][i];
+                for (int k = 0; k < 2 * order; k++) {
+ 
+                    matrix[j][k] -= matrix[i][k] * temp;
+                }
+            }
+        }
+    }
+ 
+    // Multiply each row by a nonzero integer.
+    // Divide row element by the diagonal element
+    for (int i = 0; i < order; i++) {
+ 
+        temp = matrix[i][i];
+        for (int j = 0; j < 2 * order; j++) {
+ 
+            matrix[i][j] = matrix[i][j] / temp;
+        }
+    }
+ 
+    // print the resultant Inverse matrix.
+    printf("\n=== Inverse Matrix ===\n");
+    PrintInverse(matrix, order, 2 * order);
+ 
+    return;
+}
+ 
+// Driver code
+int main()
+{
+    int order;
+ 
+    // Order of the matrix
+    // The matrix must be a square a matrix
+    order = 3;
+    /*
+float matrix[20][20] = { { 5, 7, 9 },
+                         { 4, 3, 8 },
+                         { 7, 5, 6 },
+                         { 0 } };
+*/
+    float** matrix = new float*[20];
+    for (int i = 0; i < 20; i++)
+        matrix[i] = new float[20];
+ 
+    matrix[0][0] = 5;
+    matrix[0][1] = 7;
+    matrix[0][2] = 9;
+    matrix[1][0] = 4;
+    matrix[1][1] = 3;
+    matrix[1][2] = 8;
+    matrix[2][0] = 7;
+    matrix[2][1] = 5;
+    matrix[2][2] = 6;
+ 
+    // Get the inverse of matrix
+    InverseOfMatrix(matrix, order);
+ 
+    return 0;
+}
+ ```
+ </details>
+	
+
+
 #### Symmetric positive definite matrices and least squares approximation
+
+Symmetric positive-definite matrices have many interesting and desirable properties. For example, they are nonsingular, and LU decomposition can be performed on them without our having to worry about dividing by 0. In this section, we shall prove several other important properties of symmetric positive-definite matrices and show an interesting application to curve fitting by a least-squares approximation.
 
 ### Linear programming
  
 #### Standard and slack forms
+
+In standard form, all the constraints are inequalities, whereas in slack form, the constraints are equalities. means that each entry of the vector x must be nonnegative.
+
+
 #### Formulating problems as linear programs
+
+You will recall from the Two Mines example that the conditions for a mathematical model to be a linear program (LP) were:
+
+all variables continuous (i.e. can take fractional values)
+a single objective (minimise or maximise)
+the objective and constraints are linear i.e. any term is either a constant or a constant multiplied by an unknown.
+LP's are important - this is because:
+
+many practical problems can be formulated as LP's
+there exists an algorithm (called the simplex algorithm) which enables us to solve LP's numerically relatively easily.
+We will return later to the simplex algorithm for solving LP's but for the moment we will concentrate upon formulating LP's.
+
+Some of the major application areas to which LP can be applied are:
+
+Blending
+Production planning
+Oil refinery management
+Distribution
+Financial and economic planning
+Manpower planning
+Blast furnace burdening
+Farm planning
+
 
 #### The simplex algorithm
 

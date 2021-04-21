@@ -2470,6 +2470,164 @@ Develop new operations that can be performed on the new data structure depending
 
 #### Interval trees
 
+Consider a situation where we have a set of intervals and we need following operations to be implemented efficiently.
+1) Add an interval
+2) Remove an interval
+3) Given an interval x, find if x overlaps with any of the existing intervals.
+
+Interval Tree: The idea is to augment a self-balancing Binary Search Tree (BST) like Red Black Tree, AVL Tree, etc to maintain set of intervals so that all operations can be done in O(Logn) time.
+
+Every node of Interval Tree stores following information.
+a) i: An interval which is represented as a pair [low, high]
+b) max: Maximum high value in subtree rooted with this node.
+
+The low value of an interval is used as key to maintain order in BST. The insert and delete operations are same as insert and delete in self-balancing BST used.
+
+
+#### Code in c++
+
+ <details>
+<summary>Answer</summary>
+</details>
+
+```
+#include <iostream>
+using namespace std;
+  
+// Structure to represent an interval
+struct Interval
+{
+    int low, high;
+};
+  
+// Structure to represent a node in Interval Search Tree
+struct ITNode
+{
+    Interval *i;  // 'i' could also be a normal variable
+    int max;
+    ITNode *left, *right;
+};
+  
+// A utility function to create a new Interval Search Tree Node
+ITNode * newNode(Interval i)
+{
+    ITNode *temp = new ITNode;
+    temp->i = new Interval(i);
+    temp->max = i.high;
+    temp->left = temp->right = NULL;
+    return temp;
+};
+  
+// A utility function to insert a new Interval Search Tree Node
+// This is similar to BST Insert.  Here the low value of interval
+// is used tomaintain BST property
+ITNode *insert(ITNode *root, Interval i)
+{
+    // Base case: Tree is empty, new node becomes root
+    if (root == NULL)
+        return newNode(i);
+  
+    // Get low value of interval at root
+    int l = root->i->low;
+  
+    // If root's low value is smaller, then new interval goes to
+    // left subtree
+    if (i.low < l)
+        root->left = insert(root->left, i);
+  
+    // Else, new node goes to right subtree.
+    else
+        root->right = insert(root->right, i);
+  
+    // Update the max value of this ancestor if needed
+    if (root->max < i.high)
+        root->max = i.high;
+  
+    return root;
+}
+  
+// A utility function to check if given two intervals overlap
+bool doOVerlap(Interval i1, Interval i2)
+{
+    if (i1.low <= i2.high && i2.low <= i1.high)
+        return true;
+    return false;
+}
+  
+// The main function that searches a given interval i in a given
+// Interval Tree.
+Interval *overlapSearch(ITNode *root, Interval i)
+{
+    // Base Case, tree is empty
+    if (root == NULL) return NULL;
+  
+    // If given interval overlaps with root
+    if (doOVerlap(*(root->i), i))
+        return root->i;
+  
+    // If left child of root is present and max of left child is
+    // greater than or equal to given interval, then i may
+    // overlap with an interval is left subtree
+    if (root->left != NULL && root->left->max >= i.low)
+        return overlapSearch(root->left, i);
+  
+    // Else interval can only overlap with right subtree
+    return overlapSearch(root->right, i);
+}
+  
+void inorder(ITNode *root)
+{
+    if (root == NULL) return;
+  
+    inorder(root->left);
+  
+    cout << "[" << root->i->low << ", " << root->i->high << "]"
+         << " max = " << root->max << endl;
+  
+    inorder(root->right);
+}
+  
+// Driver program to test above functions
+int main()
+{
+    // Let us create interval tree shown in above figure
+    Interval ints[] = {{15, 20}, {10, 30}, {17, 19},
+        {5, 20}, {12, 15}, {30, 40}
+    };
+    int n = sizeof(ints)/sizeof(ints[0]);
+    ITNode *root = NULL;
+    for (int i = 0; i < n; i++)
+        root = insert(root, ints[i]);
+  
+    cout << "Inorder traversal of constructed Interval Tree is\n";
+    inorder(root);
+  
+    Interval x = {6, 7};
+  
+    cout << "\nSearching for interval [" << x.low << "," << x.high << "]";
+    Interval *res = overlapSearch(root, x);
+    if (res == NULL)
+        cout << "\nNo Overlapping Interval";
+    else
+        cout << "\nOverlaps with [" << res->low << ", " << res->high << "]";
+    return 0;
+}
+Output:
+
+Inorder traversal of constructed Interval Tree is
+[5, 20] max = 20
+[10, 30] max = 30
+[12, 15] max = 15
+[15, 20] max = 40
+[17, 19] max = 40
+[30, 40] max = 40
+
+Searching for interval [6,7]
+Overlaps with [5, 20]
+
+```
+</details>
+
 ## Advanced design and analysis techniques
 
 ### Dynamic programming
@@ -2800,7 +2958,8 @@ Fractional knapsack problem: takes parts, as well as wholes.
 
 Huffman coding is a lossless data compression algorithm. The idea is to assign variable-length codes to input characters, lengths of the assigned codes are based on the frequencies of corresponding characters. The most frequent character gets the smallest code and the least frequent character gets the largest code.
 
- #### Code in c
+ 
+#### Code in c
    <details>
 <summary>Answer</summary>
  
@@ -3131,15 +3290,57 @@ A, B ∈ I, |A| < |B| ⇒ ∃e ∈ B\A such that A ∪ {e} ∈ I
 
 #### A task scheduling problem using matroid
 
+An interesting problem that can be solved using matroid is the problem of optimally scheduling unit-time tasks on a single processor, where each task has a deadline, along with a penalty paid if the task misses its deadline.
+
 ### Amortized algorithm
+
+is used for algorithms where an occasional operation is very slow, but most of the other operations are faster. In Amortized Analysis, we analyze a sequence of operations and guarantee a worst case average time which is lower than the worst case time of a particular expensive operation. 
+The example data structures whose operations are analyzed using Amortized Analysis are Hash Tables, Disjoint Sets and Splay Trees. 
 
 #### Aggregate analysis
 
+In fact, a sequence of n operations on an initially empty stack cost at most O(n).
+
+ 
+
+·        Each object can be POP only once (including in MULTIPOP) for each time it is PUSHed. #POPs is at most #PUSHs, which is at most n.
+
+ 
+
+·        Thus the average cost of an operation is O(n)/n = O(1).
+
+ 
+
+·        Amortized cost in aggregate analysis is defined to be average cost.
+
+ 
+
 #### The accounting method
+
+An accounting method consists of the rules and procedures a company follows in reporting its revenues and expenses. The two main accounting methods are cash accounting and accrual accounting. Cash accounting records revenues and expenses when they are received and paid.
+
+Types of Accounting Methods
+Cash Accounting
+Cash accounting is an accounting method that is relatively simple and is commonly used by small businesses. In cash accounting, transactions are only recorded when cash is spent or received.
+
+In cash accounting, a sale is recorded when the payment is received and an expense is recorded only when a bill is paid. The cash accounting method is, of course, the method most people use in managing their personal finances and it is appropriate for businesses up to a certain size.
+
+If a business generates more than $25 million in average annual gross receipts for the preceding three years, however, it must use the accrual method, according to Internal Revenue Service rules.1﻿
+
+Accrual Accounting
+Accrual accounting is based on the matching principle, which is intended to match the timing of revenue and expense recognition. By matching revenues with expenses, the accrual method gives a more accurate picture of a company's true financial condition.
+
+Under the accrual method, transactions are recorded when they are incurred rather than awaiting payment. This means a purchase order is recorded as revenue even though the funds are not received immediately. The same goes for expenses in that they are recorded even though no payment has been made.
+
+
 
 #### The potential method
 
+In computational complexity theory, the potential method is a method used to analyze the amortized time and space complexity of a data structure, a measure of its performance over sequences of operations that smooths out the cost of infrequent but expensive operations.
+
+
 #### Dynamic tables
+
 
 
 ## Advanced data structures
@@ -5429,18 +5630,28 @@ int main()
 </details>
 
 
-## GRAPH ALGORITHMS
+## Graph algorithm
 
-### ELEMENTARY GRAPH ALGORITHMS
+In computational complexity theory, the potential method is a method used to analyze the amortized time and space complexity of a data structure, a measure of its performance over sequences of operations that smooths out the cost of infrequent but expensive operations.
 
-#### REPRESENTATIONS OF GRAPHS
+### Elementary  graph algorithm
 
-#### BREADTH-FIRST SEARCH
+#### Representations of graph
+
+In graph theory, a graph representation is a technique to store graph into the memory of computer.
+
+To represent a graph, we just need the set of vertices, and for each vertex the neighbors of the vertex (vertices which is directly connected to it by an edge). If it is a weighted graph, then the weight will be associated with each edge.
+
+There are different ways to optimally represent a graph, depending on the density of its edges, type of operations to be performed and ease of use.
+
+
+
+#### Breadth first search
 
 first we will visit the vertex,explore it and then MOVE ON to another vertex then explore it.
 (level order on a binary tree.)
  
- ### CODE IN  C
+ #### Code in c
   
  <details>
 <summary>Answer</summary>
@@ -5617,12 +5828,12 @@ int main() {
 ```
 </details>
 
-### DEPTH-FIRST SEARCH
+#### Depth first search
  
 first visit all the vertex then explore it.
  (preorder traversal of the graph.)
  
-### CODE IN C
+#### Code in c
  <details>
 <summary>Answer</summary>
  
@@ -5669,6 +5880,129 @@ void main() {
 
 #### Topological sort
 
+Topological sorting for Directed Acyclic Graph (DAG) is a linear ordering of vertices such that for every directed edge u v, vertex u comes before v in the ordering. Topological Sorting for a graph is not possible if the graph is not a DAG.
+
+For example, a topological sorting of the following graph is “5 4 2 3 1 0”. There can be more than one topological sorting for a graph. For example, another topological sorting of the following graph is “4 5 2 3 1 0”. The first vertex in topological sorting is always a vertex with in-degree as 0 (a vertex with no incoming edges).
+
+
+#### Code in cpp
+
+ <details>
+<summary>Answer</summary>
+
+```
+// A C++ program to print topological
+// sorting of a DAG
+#include <iostream>
+#include <list>
+#include <stack>
+using namespace std;
+ 
+// Class to represent a graph
+class Graph {
+    // No. of vertices'
+    int V;
+ 
+    // Pointer to an array containing adjacency listsList
+    list<int>* adj;
+ 
+    // A function used by topologicalSort
+    void topologicalSortUtil(int v, bool visited[],
+                             stack<int>& Stack);
+ 
+public:
+    // Constructor
+    Graph(int V);
+ 
+    // function to add an edge to graph
+    void addEdge(int v, int w);
+ 
+    // prints a Topological Sort of
+    // the complete graph
+    void topologicalSort();
+};
+ 
+Graph::Graph(int V)
+{
+    this->V = V;
+    adj = new list<int>[V];
+}
+ 
+void Graph::addEdge(int v, int w)
+{
+    // Add w to v’s list.
+    adj[v].push_back(w);
+}
+ 
+// A recursive function used by topologicalSort
+void Graph::topologicalSortUtil(int v, bool visited[],
+                                stack<int>& Stack)
+{
+    // Mark the current node as visited.
+    visited[v] = true;
+ 
+    // Recur for all the vertices
+    // adjacent to this vertex
+    list<int>::iterator i;
+    for (i = adj[v].begin(); i != adj[v].end(); ++i)
+        if (!visited[*i])
+            topologicalSortUtil(*i, visited, Stack);
+ 
+    // Push current vertex to stack
+    // which stores result
+    Stack.push(v);
+}
+ 
+// The function to do Topological Sort.
+// It uses recursive topologicalSortUtil()
+void Graph::topologicalSort()
+{
+    stack<int> Stack;
+ 
+    // Mark all the vertices as not visited
+    bool* visited = new bool[V];
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
+ 
+    // Call the recursive helper function
+    // to store Topological
+    // Sort starting from all
+    // vertices one by one
+    for (int i = 0; i < V; i++)
+        if (visited[i] == false)
+            topologicalSortUtil(i, visited, Stack);
+ 
+    // Print contents of stack
+    while (Stack.empty() == false) {
+        cout << Stack.top() << " ";
+        Stack.pop();
+    }
+}
+ 
+// Driver Code
+int main()
+{
+    // Create a graph given in the above diagram
+    Graph g(6);
+    g.addEdge(5, 2);
+    g.addEdge(5, 0);
+    g.addEdge(4, 0);
+    g.addEdge(4, 1);
+    g.addEdge(2, 3);
+    g.addEdge(3, 1);
+ 
+    cout << "Following is a Topological Sort of the given "
+            "graph \n";
+ 
+    // Function Call
+    g.topologicalSort();
+ 
+    return 0;
+}
+
+```
+</details>
+
 #### Strongly connected components
 
 
@@ -5678,6 +6012,9 @@ Sub graph of graphs having n elements but {n-1} edges.
 
 #### Growing a Minimum spanning trees
 
+Sort the graph edges with respect to their weights.
+Start adding edges to the MST from the edge with the smallest weight until the edge of the largest weight.
+Only add edges which doesn't form a cycle , edges which connect only disconnected components.
  
  #### Kruskal algorithm
  
@@ -5856,14 +6193,14 @@ void main()
  ```
 </details>
 
-## SINGLE-SOURCE SHORTEST PATHS
+### Single source shortest paths
  
-### THE BELLMAN-FORD ALGORITHM
+#### The bellman ford algorithm
  
  gives shortest path from one node to all other nodes. works on negative edge weights.
  ( works by overestimating the length of the path from the starting vertex to all other vertices. )
  
- ### CODE IN C
+ #### Code in c
  
    <details>
 <summary>Answer</summary>
@@ -6014,15 +6351,15 @@ void display(int arr[], int size) {
 ```
 </details>
 
-### SINGLE-SOURCE SHORTEST PATHS IN DIRECTED ACYCLIC GRAPHS
+#### Single source shortest paths in directed acyclic graphs
  
- #### DIJKSTRA'S ALGORITHM:
+#### Dijkstra's algorithm
 
 Single source shortest path algorithm. does not works on negative weights.
 {minimization problem-optimization problem-greedy method-solved in stages by taking one step at a time and considering one input
 at a time to get an optimal solution}
 
-### CODE IN  C
+#### Code in c
    <details>
 <summary>Answer</summary>
  
@@ -6106,22 +6443,22 @@ void dijikstra(int G[MAX][MAX], int n, int startnode)
  ```
  </details>
  
- ### DIFFERENCE CONSTRAINTS AND SHORTEST PATHS
+ #### DIFFERENCE CONSTRAINTS AND SHORTEST PATHS
  
- ### PROOFS OF SHORTEST PATHS PROPERTIES
+ #### PROOFS OF SHORTEST PATHS PROPERTIES
  
- ## ALL-PAIRS SHORTEST PATHS
+ ### All pairs shotest paths
  
- ### SHORTEST PATH AND MATRIX MULTIPLICATION
+ #### SHORTEST PATH AND MATRIX MULTIPLICATION
  
- ### THE FLOYD-WARSHELL ALGORITHM
+ #### THE FLOYD-WARSHELL ALGORITHM
  
- ### JOHNSON'S ALGORITHM FOR SPARSE GRAPHS
+ #### JOHNSON'S ALGORITHM FOR SPARSE GRAPHS
  
  
- ## MAXIMUM FLOW
+ ### Maximum flow
  
- ### FLOW NETWORKS
+ #### Flow networks
  
  
  #### The ford fulkerson algorithm
@@ -8022,7 +8359,7 @@ void sumOfSub(int s,int k,int r)
 }
 	
 ```
-</details.	
+</details>	
 
 ####  Randomization and linear programming
 

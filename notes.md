@@ -395,7 +395,7 @@ This requires a change in the hiring problem scenario:
 The employment agency sends us a list of n candidates in advance and lets us choose the interview order.
 We choose randomly.
 
-#### PROBABILISTIC ANALYSIS AND FURTHER USES OF INDICATOR RANDOM VARIABLES
+#### Probabilistic analysis and further uses of indicator random variables
 
 
 ## Sorting and order statistics
@@ -2449,14 +2449,28 @@ int main() {
 
 ### Augumenting data structures
 
+Augmenting a data structure is the process of taking an existing data structure and customizing it a little bit to fit your needs. This lets you take advantage of a clever stock data structure that almost, but not quite, solves your problem, and add that finishing touch that makes it do the trick.
+
+
 #### Dynamic order statistics
+OS-SELECT(i, S): returns the ith smallest element
+in the dynamic set S.
+OS-RANK(x, S): returns the rank of x  S in the
+sorted order of S’s elements.
+IDEA: Use a red-black tree for the set S, but keep
+subtree sizes in the nodes
 
+#### How to augument a data structure
 
-#### HOW TO AUGMENT A DATA STRUCTURE
+Basic Algorithm for Augmentation of Data Structures
+Choose underlying data structure on which you want to add additional information to make new data structure(Red-Black Tree).
+Add additional information on the selected data structure(Sub-Tree Size).
+Verify that information can be maintained for modifying operations(Insertion,Deletion,Rotation of nodes).
+Develop new operations that can be performed on the new data structure depending on your requirements(OS_Select,OS_Rank).
 
-#### INTERVAL TREES
+#### Interval trees
 
-## ADVANCED DESIGN AND ANALYSIS TECHNIQUES
+## Advanced design and analysis techniques
 
 ### Dynamic programming
 

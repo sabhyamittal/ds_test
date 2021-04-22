@@ -6097,7 +6097,7 @@ int uni(int i,int j)
 ```
 </details>
  
- #### PRIM'S ALGORITHM
+ #### Prim's algorithm
  
  Prim's Algorithm is a famous greedy algorithm. It is used for finding the Minimum Spanning Tree (MST) of a given graph. To apply Prim's algorithm, the given graph must be weighted, connected and undirected.
  
@@ -7195,6 +7195,284 @@ int main()
 
 #### The relable to front algorithm
 
+The relabel-to-front algorithm is used to find the maximum flow in the network.
+First, we need to understand the basic operations i.e. push and relabel:
+Each vertex in the network has 2 variables associated with it which are height variable(h) and excess flow(e).
+
+Push: If a vertex has excess flow and there is an adjacent node with lower height (in the residual graph) then we push flow from the vertex to the lower height node.
+Relabel: If a vertex has excess flow and no adjacent node with lower height are available then we use relabel operation to increase the height of vertex so that it can perform push operation.
+The relabel-to-front algorithm maintains a list of vertices in the network. It starts from the beginning of the list and repeatedly selects an overflowing vertex u and performs discharge operation on it.
+Discharge operation is performing push and relabel operation until vertex u has no positive excess flow(e)
+If a vertex is relabeled, it is moved to the front of the list and algorithm scans again.
+
+Algorithm:
+
+Initialize the preflow and heights to the same values as in the generic push-relabel algorithm.
+Initialize list L which contains all vertices except source and sink.
+Initialize current pointer of each vertex u to the first vertex in u’s neighbour list N. The neighbour list N contains those vertices for which there is a residual edge.
+While algorithm reaches the end of list L.
+Select the vertex u from list L and perform discharge operation.
+If u was relabeled by discharge then move u to the front of the list.
+If u was moved to the front of the list, the vertex in the next iteration is the one following u in its new position in the list.
+
+#### Code in cpp
+
+  <details>
+<summary>Answer</summary>
+ 
+```
+// C++ program to implement push-relabel algorithm for
+// getting maximum flow of graph
+#include <bits/stdc++.h>
+using namespace std;
+  
+struct Edge
+{
+    // To store current flow and capacity of edge
+    int flow, capacity;
+  
+    // An edge u--->v has start vertex as u and end
+    // vertex as v.
+    int u, v;
+  
+    Edge(int flow, int capacity, int u, int v)
+    {
+        this->flow = flow;
+        this->capacity = capacity;
+        this->u = u;
+        this->v = v;
+    }
+};
+  
+// Represent a Vertex
+struct Vertex
+{
+    int h, e_flow;
+  
+    Vertex(int h, int e_flow)
+    {
+        this->h = h;
+        this->e_flow = e_flow;
+    }
+};
+  
+// To represent a flow network
+class Graph
+{
+    int V;    // No. of vertices
+    vector<Vertex> ver;
+    vector<Edge> edge;
+  
+    // Function to push excess flow from u
+    bool push(int u);
+  
+    // Function to relabel a vertex u
+    void relabel(int u);
+  
+    // This function is called to initialize
+    // preflow
+    void preflow(int s);
+  
+    // Function to reverse edge
+    void updateReverseEdgeFlow(int i, int flow);
+  
+public:
+    Graph(int V);  // Constructor
+  
+    // function to add an edge to graph
+    void addEdge(int u, int v, int w);
+  
+    // returns maximum flow from s to t
+    int getMaxFlow(int s, int t);
+};
+  
+Graph::Graph(int V)
+{
+    this->V = V;
+  
+    // all vertices are initialized with 0 height
+    // and 0 excess flow
+    for (int i = 0; i < V; i++)
+        ver.push_back(Vertex(0, 0));
+}
+  
+void Graph::addEdge(int u, int v, int capacity)
+{
+    // flow is initialized with 0 for all edge
+    edge.push_back(Edge(0, capacity, u, v));
+}
+  
+void Graph::preflow(int s)
+{
+    // Making h of source Vertex equal to no. of vertices
+    // Height of other vertices is 0.
+    ver[s].h = ver.size();
+  
+    //
+    for (int i = 0; i < edge.size(); i++)
+    {
+        // If current edge goes from source
+        if (edge[i].u == s)
+        {
+            // Flow is equal to capacity
+            edge[i].flow = edge[i].capacity;
+  
+            // Initialize excess flow for adjacent v
+            ver[edge[i].v].e_flow += edge[i].flow;
+  
+            // Add an edge from v to s in residual graph with
+            // capacity equal to 0
+            edge.push_back(Edge(-edge[i].flow, 0, edge[i].v, s));
+        }
+    }
+}
+  
+// returns index of overflowing Vertex
+int overFlowVertex(vector<Vertex>& ver)
+{
+    for (int i = 1; i < ver.size() - 1; i++)
+       if (ver[i].e_flow > 0)
+            return i;
+  
+    // -1 if no overflowing Vertex
+    return -1;
+}
+  
+// Update reverse flow for flow added on ith Edge
+void Graph::updateReverseEdgeFlow(int i, int flow)
+{
+    int u = edge[i].v, v = edge[i].u;
+  
+    for (int j = 0; j < edge.size(); j++)
+    {
+        if (edge[j].v == v && edge[j].u == u)
+        {
+            edge[j].flow -= flow;
+            return;
+        }
+    }
+  
+    // adding reverse Edge in residual graph
+    Edge e = Edge(0, flow, u, v);
+    edge.push_back(e);
+}
+  
+// To push flow from overflowing vertex u
+bool Graph::push(int u)
+{
+    // Traverse through all edges to find an adjacent (of u)
+    // to which flow can be pushed
+    for (int i = 0; i < edge.size(); i++)
+    {
+        // Checks u of current edge is same as given
+        // overflowing vertex
+        if (edge[i].u == u)
+        {
+            // if flow is equal to capacity then no push
+            // is possible
+            if (edge[i].flow == edge[i].capacity)
+                continue;
+  
+            // Push is only possible if height of adjacent
+            // is smaller than height of overflowing vertex
+            if (ver[u].h > ver[edge[i].v].h)
+            {
+                // Flow to be pushed is equal to minimum of
+                // remaining flow on edge and excess flow.
+                int flow = min(edge[i].capacity - edge[i].flow,
+                               ver[u].e_flow);
+  
+                // Reduce excess flow for overflowing vertex
+                ver[u].e_flow -= flow;
+  
+                // Increase excess flow for adjacent
+                ver[edge[i].v].e_flow += flow;
+  
+                // Add residual flow (With capacity 0 and negative
+                // flow)
+                edge[i].flow += flow;
+  
+                updateReverseEdgeFlow(i, flow);
+  
+                return true;
+            }
+        }
+    }
+    return false;
+}
+  
+// function to relabel vertex u
+void Graph::relabel(int u)
+{
+    // Initialize minimum height of an adjacent
+    int mh = INT_MAX;
+  
+    // Find the adjacent with minimum height
+    for (int i = 0; i < edge.size(); i++)
+    {
+        if (edge[i].u == u)
+        {
+            // if flow is equal to capacity then no
+            // relabeling
+            if (edge[i].flow == edge[i].capacity)
+                continue;
+  
+            // Update minimum height
+            if (ver[edge[i].v].h < mh)
+            {
+                mh = ver[edge[i].v].h;
+  
+                // updating height of u
+                ver[u].h = mh + 1;
+            }
+        }
+    }
+}
+  
+// main function for printing maximum flow of graph
+int Graph::getMaxFlow(int s, int t)
+{
+    preflow(s);
+  
+    // loop untill none of the Vertex is in overflow
+    while (overFlowVertex(ver) != -1)
+    {
+        int u = overFlowVertex(ver);
+        if (!push(u))
+            relabel(u);
+    }
+  
+    // ver.back() returns last Vertex, whose
+    // e_flow will be final maximum flow
+    return ver.back().e_flow;
+}
+  
+// Driver program to test above functions
+int main()
+{
+    int V = 6;
+    Graph g(V);
+  
+    // Creating above shown flow network
+    g.addEdge(0, 1, 16);
+    g.addEdge(0, 2, 13);
+    g.addEdge(1, 2, 10);
+    g.addEdge(2, 1, 4);
+    g.addEdge(1, 3, 12);
+    g.addEdge(2, 4, 14);
+    g.addEdge(3, 2, 9);
+    g.addEdge(3, 5, 20);
+    g.addEdge(4, 3, 7);
+    g.addEdge(4, 5, 4);
+  
+    // Initialize source and sink
+    int s = 0, t = 5;
+  
+    cout << "Maximum flow is " << g.getMaxFlow(s, t);
+    return 0;
+}
+```
+</details>
 
 ### Multithreaded algorithm
 
@@ -8031,6 +8309,9 @@ int main(int argc, char *argv[]){
  
  #### Representing polynomials
  
+ The simple way is to represent a polynomial with degree 'n' and store the coefficient of n+1 terms of the polynomial in the array. So every array element will consist of two values: Coefficient and. Exponent.
+ 
+ 
  #### The dft and fft
  
  The discrete Fourier transform (DFT) converts a finite list of equally spaced samples of a function into the list of coefficients of a finite combination of complex sinusoids, ordered by their frequencies, that has those same sample values. It can be said to convert the sampled function from its original domain (often time or position along a line) to the frequency domain.
@@ -8094,6 +8375,16 @@ int main(int argc, char **argv) {
  
  #### Elementric number theoritic notions
  
+ Divisibility and divisors.
+Prime and composite numbers.
+The division theorem, remainders, and modular equivalence.
+Common divisors and greatest common divisors.
+Relatively prime integers.
+Unique factorization.
+Exercises.
+Euclid's algorithm.
+ 
+ 
  #### Greatest common divisor
  
  The HCF or GCD of two integers is the largest integer that can exactly divide both numbers (without a remainder).
@@ -8128,14 +8419,86 @@ int main()
  
  #### Modular arithmatic
  
+ Informally, we can think of modular arithmetic as arithmetic as usual over the integers, except that if we are working modulo n, then every result x is replaced by the element of {0, 1, . . . , n - 1} that is equivalent to x, modulo n (that is, x is replaced by x mod n). This informal model is sufficient if we stick to the operations of addition, subtraction, and multiplication. A more formal model for modular arithmetic, which we now give, is best described within the framework of group theory.
+ 
  #### Solving modular linear equations
  
  #### The chinese remainder theoram
+ 
+ In number theory, the Chinese remainder theorem states that if one knows the remainders of the Euclidean division of an integer n by several integers, then one can determine uniquely the remainder of the division of n by the product of these integers, under the condition that the divisors are pairwise coprime.
+ 
+ Around A.D. 100, the Chinese mathematician  solved the problem of finding those integers x that leave remainders 2, 3, and 2 when divided by 3, 5, and 7 respectively. One such solution is x = 23; all solutions are of the form 23 + 105k for arbitrary integers k. The "Chinese remainder theorem" provides a correspondence between a system of equations modulo a set of pairwise relatively prime moduli (for example, 3, 5, and 7) and an equation modulo their product (for example, 105).
+
+The Chinese remainder theorem has two major uses. Let the integer n = nl n2 . . . nk, where the factors ni are pairwise relatively prime. First, the Chinese remainder theorem is a descriptive "structure theorem" that describes the structure of Zn as identical to that of the Cartesian product Zn1 XZn2 X . . . X Znk with componentwise addition and multiplication modulo ni in the ith component. Second, this description can often be used to yield efficient algorithms, since working in each of the systems Zni can be more efficient (in terms of bit operations) than working modulo n.
+
+#### Code in cpp
+
+  <details>
+<summary>Answer</summary>
+
+```
+// A C++ program to demonstrate working of Chinise remainder
+// Theorem
+#include<bits/stdc++.h>
+using namespace std;
+ 
+// k is size of num[] and rem[].  Returns the smallest
+// number x such that:
+//  x % num[0] = rem[0],
+//  x % num[1] = rem[1],
+//  ..................
+//  x % num[k-2] = rem[k-1]
+// Assumption: Numbers in num[] are pairwise coprime
+// (gcd for every pair is 1)
+int findMinX(int num[], int rem[], int k)
+{
+    int x = 1; // Initialize result
+ 
+    // As per the Chinese remainder theorem,
+    // this loop will always break.
+    while (true)
+    {
+        // Check if remainder of x % num[j] is
+        // rem[j] or not (for all j from 0 to k-1)
+        int j;
+        for (j=0; j<k; j++ )
+            if (x%num[j] != rem[j])
+               break;
+ 
+        // If all remainders matched, we found x
+        if (j == k)
+            return x;
+ 
+        // Else try next numner
+        x++;
+    }
+ 
+    return x;
+}
+ 
+// Driver method
+int main(void)
+{
+    int num[] = {3, 4, 5};
+    int rem[] = {2, 3, 1};
+    int k = sizeof(num)/sizeof(num[0]);
+    cout << "x is " << findMinX(num, rem, k);
+    return 0;
+}
+
+```
+</details>
  
  #### Powers of an element
   
  #### The rsa public key cryptosystem
  
+Unlike symmetric key cryptography, we do not find historical use of public-key cryptography. It is a relatively new concept.
+
+Symmetric cryptography was well suited for organizations such as governments, military, and big financial corporations were involved in the classified communication.
+
+With the spread of more unsecure computer networks in last few decades, a genuine need was felt to use cryptography at larger scale. The symmetric key was found to be non-practical due to challenges it faced for key management. This gave rise to the public key cryptosystems.
+
  #### Primality testing
  
  #### Integer factorization
@@ -8143,6 +8506,7 @@ int main()
  ### String matching
  
  #### The naive string matching algorithm
+ 
  Given a text txt[0..n-1] and a pattern pat[0..m-1], write a function search(char pat[], char txt[]) that prints all occurrences of pat[] in txt[]. You may assume that n > m.
 
 Examples:
@@ -8452,10 +8816,378 @@ Computational geometry is a branch of computer science devoted to the study of a
 
 #### Determining whether any pair of segment intersects
 
-#### Finding the convex hull
+Given two line segments (p1, q1) and (p2, q2), find if the given line segments intersect with each other.
+
+#### Code in cpp
+  <details>
+<summary>Answer</summary>
+
+```
+// A C++ program to check if two given line segments intersect
+#include <iostream>
+using namespace std;
+  
+struct Point
+{
+    int x;
+    int y;
+};
+  
+// Given three colinear points p, q, r, the function checks if
+// point q lies on line segment 'pr'
+bool onSegment(Point p, Point q, Point r)
+{
+    if (q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
+        q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y))
+       return true;
+  
+    return false;
+}
+  
+// To find orientation of ordered triplet (p, q, r).
+// The function returns following values
+// 0 --> p, q and r are colinear
+// 1 --> Clockwise
+// 2 --> Counterclockwise
+int orientation(Point p, Point q, Point r)
+{
+    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
+    // for details of below formula.
+    int val = (q.y - p.y) * (r.x - q.x) -
+              (q.x - p.x) * (r.y - q.y);
+  
+    if (val == 0) return 0;  // colinear
+  
+    return (val > 0)? 1: 2; // clock or counterclock wise
+}
+  
+// The main function that returns true if line segment 'p1q1'
+// and 'p2q2' intersect.
+bool doIntersect(Point p1, Point q1, Point p2, Point q2)
+{
+    // Find the four orientations needed for general and
+    // special cases
+    int o1 = orientation(p1, q1, p2);
+    int o2 = orientation(p1, q1, q2);
+    int o3 = orientation(p2, q2, p1);
+    int o4 = orientation(p2, q2, q1);
+  
+    // General case
+    if (o1 != o2 && o3 != o4)
+        return true;
+  
+    // Special Cases
+    // p1, q1 and p2 are colinear and p2 lies on segment p1q1
+    if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+  
+    // p1, q1 and q2 are colinear and q2 lies on segment p1q1
+    if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+  
+    // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+    if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+  
+     // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+    if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+  
+    return false; // Doesn't fall in any of the above cases
+}
+  
+// Driver program to test above functions
+int main()
+{
+    struct Point p1 = {1, 1}, q1 = {10, 1};
+    struct Point p2 = {1, 2}, q2 = {10, 2};
+  
+    doIntersect(p1, q1, p2, q2)? cout << "Yes\n": cout << "No\n";
+  
+    p1 = {10, 0}, q1 = {0, 10};
+    p2 = {0, 0}, q2 = {10, 10};
+    doIntersect(p1, q1, p2, q2)? cout << "Yes\n": cout << "No\n";
+  
+    p1 = {-5, -5}, q1 = {0, 0};
+    p2 = {1, 1}, q2 = {10, 10};
+    doIntersect(p1, q1, p2, q2)? cout << "Yes\n": cout << "No\n";
+  
+    return 0;
+}
+```
+</details>
+
+#### Finding a convex hull
+
+Given a set of points in the plane. the convex hull of the set is the smallest convex polygon that contains all the points of it.
+
+#### Code in cpp
+
+  <details>
+<summary>Answer</summary>
+
+```
+// A C++ program to find convex hull of a set of points. Refer
+// https://www.geeksforgeeks.org/orientation-3-ordered-points/
+// for explanation of orientation()
+#include <bits/stdc++.h>
+using namespace std;
+  
+struct Point
+{
+    int x, y;
+};
+  
+// To find orientation of ordered triplet (p, q, r).
+// The function returns following values
+// 0 --> p, q and r are colinear
+// 1 --> Clockwise
+// 2 --> Counterclockwise
+int orientation(Point p, Point q, Point r)
+{
+    int val = (q.y - p.y) * (r.x - q.x) -
+              (q.x - p.x) * (r.y - q.y);
+  
+    if (val == 0) return 0;  // colinear
+    return (val > 0)? 1: 2; // clock or counterclock wise
+}
+  
+// Prints convex hull of a set of n points.
+void convexHull(Point points[], int n)
+{
+    // There must be at least 3 points
+    if (n < 3) return;
+  
+    // Initialize Result
+    vector<Point> hull;
+  
+    // Find the leftmost point
+    int l = 0;
+    for (int i = 1; i < n; i++)
+        if (points[i].x < points[l].x)
+            l = i;
+  
+    // Start from leftmost point, keep moving counterclockwise
+    // until reach the start point again.  This loop runs O(h)
+    // times where h is number of points in result or output.
+    int p = l, q;
+    do
+    {
+        // Add current point to result
+        hull.push_back(points[p]);
+  
+        // Search for a point 'q' such that orientation(p, q,
+        // x) is counterclockwise for all points 'x'. The idea
+        // is to keep track of last visited most counterclock-
+        // wise point in q. If any point 'i' is more counterclock-
+        // wise than q, then update q.
+        q = (p+1)%n;
+        for (int i = 0; i < n; i++)
+        {
+           // If i is more counterclockwise than current q, then
+           // update q
+           if (orientation(points[p], points[i], points[q]) == 2)
+               q = i;
+        }
+  
+        // Now q is the most counterclockwise with respect to p
+        // Set p as q for next iteration, so that q is added to
+        // result 'hull'
+        p = q;
+  
+    } while (p != l);  // While we don't come to first point
+  
+    // Print Result
+    for (int i = 0; i < hull.size(); i++)
+        cout << "(" << hull[i].x << ", "
+              << hull[i].y << ")\n";
+}
+  
+// Driver program to test above functions
+int main()
+{
+    Point points[] = {{0, 3}, {2, 2}, {1, 1}, {2, 1},
+                      {3, 0}, {0, 0}, {3, 3}};
+    int n = sizeof(points)/sizeof(points[0]);
+    convexHull(points, n);
+    return 0;
+}
+
+Output: The output is points of the convex hull.
+(0, 3)
+(0, 0)
+(3, 0)
+(3, 3)
+
+
+```
+</details>
+
 
 #### Finding the closest pair of points
 
+We are given an array of n points in the plane, and the problem is to find out the closest pair of points in the array. This problem arises in a number of applications. For example, in air-traffic control, you may want to monitor planes that come too close together, since this may indicate a possible collision. Recall the following formula for distance between two points p and q.
+
+ \left \|pq  \right \| = \sqrt{(p_{x}-q_{x})^{2}+ (p_{y}-q_{y})^{2}} 
+
+The Brute force solution is O(n^2), compute the distance between each pair and return the smallest. We can calculate the smallest distance in O(nLogn) time using Divide and Conquer strategy. In this post, a O(n x (Logn)^2) approach is discussed. We will be discussing a O(nLogn) approach in a separate post.
+
+Algorithm
+Following are the detailed steps of a O(n (Logn)^2) algortihm.
+Input: An array of n points P[]
+Output: The smallest distance between two points in the given array.
+
+As a pre-processing step, the input array is sorted according to x coordinates.
+
+1) Find the middle point in the sorted array, we can take P[n/2] as middle point.
+
+2) Divide the given array in two halves. The first subarray contains points from P[0] to P[n/2]. The second subarray contains points from P[n/2+1] to P[n-1].
+
+3) Recursively find the smallest distances in both subarrays. Let the distances be dl and dr. Find the minimum of dl and dr. Let the minimum be d.
+
+4) From the above 3 steps, we have an upper bound d of minimum distance. Now we need to consider the pairs such that one point in pair is from the left half and the other is from the right half. Consider the vertical line passing through P[n/2] and find all points whose x coordinate is closer than d to the middle vertical line. Build an array strip[] of all such points.
+
+5) Sort the array strip[] according to y coordinates. This step is O(nLogn). It can be optimized to O(n) by recursively sorting and merging.
+
+6) Find the smallest distance in strip[]. This is tricky. From the first look, it seems to be a O(n^2) step, but it is actually O(n). It can be proved geometrically that for every point in the strip, we only need to check at most 7 points after it (note that strip is sorted according to Y coordinate). See this for more analysis.
+7) Finally return the minimum of d and distance calculated in the above step (step 6).
+
+#### Code in c
+
+  <details>
+<summary>Answer</summary>
+ 
+```
+// A divide and conquer program in C/C++ to find the smallest distance from a
+// given set of points.
+  
+#include <stdio.h>
+#include <float.h>
+#include <stdlib.h>
+#include <math.h>
+  
+// A structure to represent a Point in 2D plane
+struct Point
+{
+    int x, y;
+};
+  
+/* Following two functions are needed for library function qsort().
+   Refer: http://www.cplusplus.com/reference/clibrary/cstdlib/qsort/ */
+  
+// Needed to sort array of points according to X coordinate
+int compareX(const void* a, const void* b)
+{
+    Point *p1 = (Point *)a,  *p2 = (Point *)b;
+    return (p1->x - p2->x);
+}
+// Needed to sort array of points according to Y coordinate
+int compareY(const void* a, const void* b)
+{
+    Point *p1 = (Point *)a,   *p2 = (Point *)b;
+    return (p1->y - p2->y);
+}
+  
+// A utility function to find the distance between two points
+float dist(Point p1, Point p2)
+{
+    return sqrt( (p1.x - p2.x)*(p1.x - p2.x) +
+                 (p1.y - p2.y)*(p1.y - p2.y)
+               );
+}
+  
+// A Brute Force method to return the smallest distance between two points
+// in P[] of size n
+float bruteForce(Point P[], int n)
+{
+    float min = FLT_MAX;
+    for (int i = 0; i < n; ++i)
+        for (int j = i+1; j < n; ++j)
+            if (dist(P[i], P[j]) < min)
+                min = dist(P[i], P[j]);
+    return min;
+}
+  
+// A utility function to find a minimum of two float values
+float min(float x, float y)
+{
+    return (x < y)? x : y;
+}
+  
+  
+// A utility function to find the distance between the closest points of
+// strip of a given size. All points in strip[] are sorted according to
+// y coordinate. They all have an upper bound on minimum distance as d.
+// Note that this method seems to be a O(n^2) method, but it's a O(n)
+// method as the inner loop runs at most 6 times
+float stripClosest(Point strip[], int size, float d)
+{
+    float min = d;  // Initialize the minimum distance as d
+  
+    qsort(strip, size, sizeof(Point), compareY); 
+  
+    // Pick all points one by one and try the next points till the difference
+    // between y coordinates is smaller than d.
+    // This is a proven fact that this loop runs at most 6 times
+    for (int i = 0; i < size; ++i)
+        for (int j = i+1; j < size && (strip[j].y - strip[i].y) < min; ++j)
+            if (dist(strip[i],strip[j]) < min)
+                min = dist(strip[i], strip[j]);
+  
+    return min;
+}
+  
+// A recursive function to find the smallest distance. The array P contains
+// all points sorted according to x coordinate
+float closestUtil(Point P[], int n)
+{
+    // If there are 2 or 3 points, then use brute force
+    if (n <= 3)
+        return bruteForce(P, n);
+  
+    // Find the middle point
+    int mid = n/2;
+    Point midPoint = P[mid];
+  
+    // Consider the vertical line passing through the middle point
+    // calculate the smallest distance dl on left of middle point and
+    // dr on right side
+    float dl = closestUtil(P, mid);
+    float dr = closestUtil(P + mid, n-mid);
+  
+    // Find the smaller of two distances
+    float d = min(dl, dr);
+  
+    // Build an array strip[] that contains points close (closer than d)
+    // to the line passing through the middle point
+    Point strip[n];
+    int j = 0;
+    for (int i = 0; i < n; i++)
+        if (abs(P[i].x - midPoint.x) < d)
+            strip[j] = P[i], j++;
+  
+    // Find the closest points in strip.  Return the minimum of d and closest
+    // distance is strip[]
+    return min(d, stripClosest(strip, j, d) );
+}
+  
+// The main function that finds the smallest distance
+// This method mainly uses closestUtil()
+float closest(Point P[], int n)
+{
+    qsort(P, n, sizeof(Point), compareX);
+  
+    // Use recursive function closestUtil() to find the smallest distance
+    return closestUtil(P, n);
+}
+  
+// Driver program to test above functions
+int main()
+{
+    Point P[] = {{2, 3}, {12, 30}, {40, 50}, {5, 1}, {12, 10}, {3, 4}};
+    int n = sizeof(P) / sizeof(P[0]);
+    printf("The smallest distance is %f ", closest(P, n));
+    return 0;
+}
+
+```
+</details>
 
 ### Np completeness
 
@@ -8470,23 +9202,45 @@ An algorithm is said to be of polynomial time if its running time is upper bound
 
 #### Polynomial time verification
 
+We now look at algorithms that "verify" membership in languages. For example, suppose that for a given instance <G, u, v, k> of the decision problem PATH, we are also given a path p from u to v. We can easily check whether the length of p is at most k, and if so, we can view p as a "certificate" that the instance indeed belongs to PATH. For the decision problem PATH, this certificate doesn't seem to buy us much. After all, PATH belongs to P- in fact, PATH can be solved in linear time-and so verifying membership from a given certificate takes as long as solving the problem from scratch. We shall now examine a problem for which we know of no polynomial-time decision algorithm yet, given a certificate, verification is easy.
+
 
 #### Np completeness and reducibility
 
+P is set of problems that can be solved by a deterministic Turing machine in Polynomial time.
+
+NP is set of decision problems that can be solved by a Non-deterministic Turing Machine in Polynomial time. P is subset of NP (any problem that can be solved by deterministic machine in polynomial time can also be solved by non-deterministic machine in polynomial time).
+Informally, NP is set of decision problems which can be solved by a polynomial time via a “Lucky Algorithm”, a magical algorithm that always makes a right guess among the given set of choices (Source Ref 1).
+
+NP-complete problems are the hardest problems in NP set.  A decision problem L is NP-complete if:
+1) L is in NP (Any given solution for NP-complete problems can be verified quickly, but there is no efficient known solution).
+2) Every problem in NP is reducible to L in polynomial time (Reduction is defined below).
+
+A problem is NP-Hard if it follows property 2 mentioned above, doesn’t need to follow property 1. Therefore, NP-Complete set is also a subset of NP-Hard set.
+
+Let L1 and L2 be two decision problems. Suppose algorithm A2 solves L2. That is, if y is an input for L2 then algorithm A2 will answer Yes or No depending upon whether y belongs to L2 or not.
+The idea is to find a transformation from L1 to L2 so that the algorithm A2 can be part of an algorithm A1 to solve L1.
+Learning reduction in general is very important. For example, if we have library functions to solve certain problem and if we can reduce a new problem to one of the solved problems, we save a lot of time. Consider the example of a problem where we have to find minimum product path in a given directed graph where product of path is multiplication of weights of edges along the path. If we have code for Dijkstra’s algorithm to find shortest path, we can take log of all weights and use Dijkstra’s algorithm to find the minimum product path rather than writing a fresh code for this new problem.
+
+
 #### Np completeness proofs
 
+From the definition of NP-complete, it appears impossible to prove that a problem L is NP-Complete.  By definition, it requires us to that show every problem in NP is polynomial time reducible to L.   Fortunately, there is an alternate way to prove it.   The idea is to take a known NP-Complete problem and reduce it to L.  If polynomial time reduction is possible, we can prove that L is NP-Complete by transitivity of reduction (If a NP-Complete problem is reducible to L in polynomial time, then all problems are reducible to L in polynomial time).
+
 #### Np complete problems
+
+NP-complete problem, any of a class of computational problems for which no efficient solution algorithm has been found. Many significant computer-science problems belong to this class—e.g., the traveling salesman problem, satisfiability problems, and graph-covering problems.
 
 ### Approximation algorithms
 
 
-#### THE VERTEX COVER PROBLEM
+#### The vertex cover problem
 
 to find minimum subset of vertices that covers all the edges. 
 (remove maximum degree vertices and all its associated edges.)
 The Vertex Cover Problem is to find a subset of the vertices of a graph that contains an endpoint of every edge.
 
-### CODE IN C
+#### Code in c
   <details>
 <summary>Answer</summary>
  
@@ -8531,12 +9285,12 @@ int main(void)
 ```
 </details>
 
-#### THE TRAVELLING SALESMAN PROBLEM
+#### The travelling salesman problem
 
 given cities and distance between them.we have to find the shortest route to visit every city only once
 and return to the starting point.
 
-### CODE IN C
+#### Code in c
   <details>
 <summary>Answer</summary>
  
@@ -8633,13 +9387,13 @@ int main()
 ```
 </details>
 
-#### THE SET COVERING PROBLEM
+#### The set covering problem
 
 the set cover problem is to identify the smallest sub-collection of S whose union equals the universe.
  For example, consider the universe U={1,2,3,4,5} and the collection of set S={{1,2,3},{2,4},{3,4},{4,5}. Clearly the union of S is U.
 
 
-### CODE IN C
+#### Code in c
   <details>
 <summary>Answer</summary>
  
@@ -9149,7 +9903,7 @@ void init_args(int argc, char **argv) {
 
 to find the subset of given set whose sum is equal to given number.
 
-### CODE IN C
+#### Code in c
 <details>
 <summary>Answer</summary>
 	
@@ -9208,6 +9962,9 @@ void sumOfSub(int s,int k,int r)
 
 ####  Randomization and linear programming
 
+In this section, we study two techniques that are useful in designing approximation algorithms: randomization and linear programming. We will give a simple randomized algorithm
+for an optimization version of 3-CNF satisfiability, and then we will use linear programming to help design an approximation algorithm for a weighted version of the vertex
+cover problem. This section only scratches the surface of these two powerful techniques. The chapter notes give references for further study of these areas.
 
 
 

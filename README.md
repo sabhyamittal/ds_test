@@ -4,8 +4,8 @@ Notes for data structure and algos
 
 |Algorithms|Rev1|Rev2|Rev3|Rev4|Rev5|
 |:---------|:---|----|----|:---|:---|
-|Insertion sort|:white_check_mark:|
-|Heap sort|
+|Insertion sort|
+|Heap sort|:white_check_mark:|
 |Merge sort|
 |Maximum subarray|
 |Strassen’s Algorithm for matrix multiplication|

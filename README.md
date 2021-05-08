@@ -1,4 +1,4 @@
-# ds_test
+# daily status
 Notes for data structure and algos
 
 

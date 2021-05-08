@@ -1,4 +1,4 @@
-# daily status
+# Daily Status
 Notes for data structure and algos
 
 

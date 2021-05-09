@@ -7,7 +7,7 @@ Notes for data structure and algos
 |Insertion sort|:white_check_mark:|:white_check_mark:|
 |Heap sort|:white_check_mark:|:white_check_mark:|
 |Merge sort|:white_check_mark:|:white_check_mark:|
-|Maximum subarray|
+|Maximum subarray|:white_check_mark:|
 |Strassen’s Algorithm for matrix multiplication|
 |Priority queues|
 |Counting sort|

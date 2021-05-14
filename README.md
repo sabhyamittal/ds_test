@@ -7,14 +7,14 @@ Notes for data structure and algos
 |Insertion sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Heap sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Merge sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Quick sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Quick sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Maximum subarray|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Strassen’s Algorithm for matrix multiplication|
 |Priority queues|
-|Counting sort|:white_check_mark:|:white_check_mark:|
-|Radix sort|:white_check_mark:|
+|Counting sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Radix sort|:white_check_mark:|:white_check_mark:|
 |Bucket sort|
-|Stacks|
+|Stacks|:white_check_mark:|
 |Queues|
 |Linked list|
 |Binary search trees|

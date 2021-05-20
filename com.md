@@ -1,7 +1,7 @@
 ### Sorting Algorithms	Time Complexity	and Space Complexities
 
-|Best Case|Average Case|Worst Case|Worst Case|
-|:--------|:-----------|:---------|:---------|
+|Algorithms|Best Case|Average Case|Worst Case|Worst Case|
+|:---------|:--------|:-----------|:---------|:---------|
 |Bubble Sort|	Ω(N)|	Θ(N2)|	O(N2)|	O(1)|
 |Selection Sort|	Ω(N2)|	Θ(N2)|	O(N2)|	O(1)|
 |Insertion Sort|	Ω(N)	|Θ(N2)	|O(N2)	|O(1)|

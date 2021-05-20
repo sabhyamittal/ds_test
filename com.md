@@ -1,4 +1,4 @@
-### Sorting Algorithm	Time Complexity	Space Complexity
+### Sorting Algorithms	Time Complexity	and Space Complexities
 
 |Best Case|Average Case|Worst Case|Worst Case|
 |:--------|:-----------|:---------|:---------|

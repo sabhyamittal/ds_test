@@ -17,13 +17,13 @@ Notes for data structure and algos
 |Stacks|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Queues|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Linked list|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Binary search trees|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Binary search trees|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Red black trees(insertion)|
 |Red black trees(deletion)|
 |Interval trees|
-|Rod cutting|:white_check_mark:|:white_check_mark:|
-|Matrix chain multiplication|:white_check_mark:|
-|Longest common subsequence|
+|Rod cutting|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Matrix chain multiplication|:white_check_mark:|:white_check_mark:|
+|Longest common subsequence|:white_check_mark:|
 |Optimal binary search tree|
 |Activity selection problem|
 |Huffman codes|

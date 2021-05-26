@@ -22,11 +22,11 @@ Notes for data structure and algos
 |Red black trees(deletion)|
 |Interval trees|
 |Rod cutting|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Matrix chain multiplication|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Longest common subsequence|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Optimal binary search tree|:white_check_mark:|:white_check_mark:|
-|Activity selection problem|:white_check_mark:|
-|Huffman codes|
+|Matrix chain multiplication|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Longest common subsequence|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Optimal binary search tree|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Activity selection problem|:white_check_mark:|:white_check_mark:|
+|Huffman codes|:white_check_mark:|
 |B-trees|
 |Fibonacci heaps|
 |Van Emde Boas trees|

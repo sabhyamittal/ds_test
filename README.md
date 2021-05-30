@@ -32,7 +32,7 @@ Notes for data structure and algos
 |Van Emde Boas trees|
 |Linked list representation of disjoint sets|
 |Breadth first search|:white_check_mark:|
-|Depth first search|
+|Depth first search|:white_check_mark:|
 |Topological sort|
 |Kruskal's algorithm|
 |Prim's algorithm|

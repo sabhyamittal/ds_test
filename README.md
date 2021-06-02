@@ -34,7 +34,7 @@ Notes for data structure and algos
 |Breadth first search|:white_check_mark:|
 |Depth first search|:white_check_mark:|
 |Topological sort|
-|Kruskal's algorithm|
+|Kruskal's algorithm|:white_check_mark:|
 |Prim's algorithm|
 |Bellman ford algorithm|
 |Single source shortest paths in directed acyclic graphs|

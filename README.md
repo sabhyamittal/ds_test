@@ -36,7 +36,7 @@ Notes for data structure and algos
 |Topological sort|
 |Kruskal's algorithm|:white_check_mark:|:white_check_mark:|
 |Prim's algorithm|:white_check_mark:|
-|Bellman ford algorithm|
+|Bellman ford algorithm|:white_check_mark:|
 |Single source shortest paths in directed acyclic graphs|
 |Dijkstra's algorithm|
 |Floyd Warshall Algorithm|

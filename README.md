@@ -38,8 +38,8 @@ Notes for data structure and algos
 |Prim's algorithm|:white_check_mark:|
 |Bellman ford algorithm|:white_check_mark:|
 |Single source shortest paths in directed acyclic graphs|
-|Dijkstra's algorithm|
-|Floyd Warshall Algorithm|
+|Dijkstra's algorithm|:white_check_mark:|
+|Floyd Warshall Algorithm|:white_check_mark:|
 |The ford fulkerson algorithm|
 |Maximum bipartite algorithm|
 |Push relable algorithm|

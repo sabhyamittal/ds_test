@@ -23,9 +23,9 @@ Notes for data structure and algos
 |Interval trees|
 |Rod cutting|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Matrix chain multiplication|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Longest common subsequence|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Optimal binary search tree|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Activity selection problem|:white_check_mark:|:white_check_mark:|
+|Longest common subsequence|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Optimal binary search tree|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
+|Activity selection problem|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Huffman codes|:white_check_mark:|:white_check_mark:|
 |B-trees|
 |Fibonacci heaps|:white_check_mark:|
@@ -40,7 +40,7 @@ Notes for data structure and algos
 |Single source shortest paths in directed acyclic graphs|
 |Dijkstra's algorithm|:white_check_mark:|
 |Floyd Warshall Algorithm|:white_check_mark:|
-|The ford fulkerson algorithm|
+|The ford fulkerson algorithm|:white_check_mark:|
 |Maximum bipartite algorithm|
 |Push relable algorithm|
 |The relable to front algorithm|

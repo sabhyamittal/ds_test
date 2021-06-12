@@ -61,7 +61,7 @@ Notes for data structure and algos
 |Finding a convex hull|
 |Finding the closest pair of points|
 |The vertex cover problem|
-| travelling salesman problem|
+| travelling salesman problem|:white_check_mark:|
 | set covering problem|
 | subset-sum problem|
 

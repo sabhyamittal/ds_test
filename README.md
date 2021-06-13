@@ -63,7 +63,7 @@ Notes for data structure and algos
 |The vertex cover problem|
 | travelling salesman problem|:white_check_mark:|
 | set covering problem|
-| subset-sum problem|
+| subset-sum problem|:white_check_mark:|
 
 
 

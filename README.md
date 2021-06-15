@@ -45,8 +45,8 @@ Notes for data structure and algos
 |Push relable algorithm|
 |The relable to front algorithm|
 |Multithreaded algorithm|
-|Multithreaded matrix multiplication|
-|Multithreaded merge sort|
+|Multithreaded matrix multiplication|:white_check_mark:|
+|Multithreaded merge sort|:white_check_mark:|
 |Matrix operation|
 |Inverting matrices|
 |The simplex algorithm|

@@ -51,7 +51,7 @@ Notes for data structure and algos
 |Inverting matrices|:white_check_mark:|
 |The simplex algorithm|
 |dft and fft|
-|Greatest common divisor|
+|Greatest common divisor|:white_check_mark:|
 |The chinese remainder theorem|
 |The naive string matching algorithm|
 |The rabin karp algorithm|

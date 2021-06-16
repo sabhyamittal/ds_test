@@ -47,8 +47,8 @@ Notes for data structure and algos
 |Multithreaded algorithm|
 |Multithreaded matrix multiplication|:white_check_mark:|
 |Multithreaded merge sort|:white_check_mark:|
-|Matrix operation|
-|Inverting matrices|
+|Matrix operation|:white_check_mark:|
+|Inverting matrices|:white_check_mark:|
 |The simplex algorithm|
 |dft and fft|
 |Greatest common divisor|

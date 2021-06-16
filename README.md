@@ -9,7 +9,7 @@ Notes for data structure and algos
 |Merge sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Quick sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Maximum subarray|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
-|Strassen’s Algorithm for matrix multiplication|
+|Strassen’s Algorithm for matrix multiplication|:white_check_mark:|
 |Priority queues|
 |Counting sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Radix sort|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|

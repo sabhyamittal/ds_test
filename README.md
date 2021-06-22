@@ -53,8 +53,8 @@ Notes for data structure and algos
 |dft and fft|
 |Greatest common divisor|:white_check_mark:|
 |The chinese remainder theorem|
-|The naive string matching algorithm|
-|The rabin karp algorithm|
+|The naive string matching algorithm|:white_check_mark:|
+|The rabin karp algorithm|:white_check_mark:|
 |String matching with finite automata|
 | knuth morris pratt algorithm|
 |Determining whether any pair of segment intersects|

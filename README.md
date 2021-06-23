@@ -54,7 +54,7 @@ Notes for data structure and algos
 |The chinese remainder theorem|
 |The naive string matching algorithm|:white_check_mark:|
 |The rabin karp algorithm|:white_check_mark:|
-|String matching with finite automata|
+|String matching with finite automata|:white_check_mark:|
 | knuth morris pratt algorithm|:white_check_mark:|
 |Determining whether any pair of segment intersects|
 |Finding a convex hull|

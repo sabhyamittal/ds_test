@@ -57,7 +57,7 @@ Notes for data structure and algos
 |String matching with finite automata|:white_check_mark:|
 | knuth morris pratt algorithm|:white_check_mark:|
 |Determining whether any pair of segment intersects|
-|Finding a convex hull|
+|Finding a convex hull|:white_check_mark:|
 |Finding the closest pair of points|
 |The vertex cover problem|
 | travelling salesman problem|:white_check_mark:|

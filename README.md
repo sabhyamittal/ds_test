@@ -56,9 +56,9 @@ Notes for data structure and algos
 |The rabin karp algorithm|:white_check_mark:|
 |String matching with finite automata|:white_check_mark:|
 | knuth morris pratt algorithm|:white_check_mark:|
-|Determining whether any pair of segment intersects|
+|Determining whether any pair of segment intersects|:white_check_mark:|
 |Finding a convex hull|:white_check_mark:|
-|Finding the closest pair of points|
+|Finding the closest pair of points|:white_check_mark:|
 |The vertex cover problem|
 | travelling salesman problem|:white_check_mark:|
 | set covering problem|

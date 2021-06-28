@@ -42,7 +42,7 @@ Notes for data structure and algos
 |Maximum bipartite algorithm|
 |Push relable algorithm|
 |The relable to front algorithm|
-|Multithreaded algorithm|
+|Multithreaded algorithm|:white_check_mark:|
 |Multithreaded matrix multiplication|:white_check_mark:|
 |Multithreaded merge sort|:white_check_mark:|
 |Matrix operation|:white_check_mark:|
@@ -50,7 +50,6 @@ Notes for data structure and algos
 |The simplex algorithm|
 |dft and fft|
 |Greatest common divisor|:white_check_mark:|
-|The chinese remainder theorem|
 |The naive string matching algorithm|:white_check_mark:|
 |The rabin karp algorithm|:white_check_mark:|
 |String matching with finite automata|:white_check_mark:|

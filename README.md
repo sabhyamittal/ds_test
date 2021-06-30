@@ -57,7 +57,7 @@ Notes for data structure and algos
 |Determining whether any pair of segment intersects|:white_check_mark:|
 |Finding a convex hull|:white_check_mark:|
 |Finding the closest pair of points|:white_check_mark:|
-|The vertex cover problem|
+|The vertex cover problem|:white_check_mark:|
 | travelling salesman problem|:white_check_mark:|
 | set covering problem|
 | subset-sum problem|:white_check_mark:|

@@ -28,7 +28,7 @@ Notes for data structure and algos
 |B-trees|:white_check_mark:|
 |Fibonacci heaps|:white_check_mark:|
 |Van Emde Boas trees|:white_check_mark:|
-|Linked list representation of disjoint sets|
+|Linked list representation of disjoint sets|:white_check_mark:|
 |Breadth first search|:white_check_mark:|
 |Depth first search|:white_check_mark:|
 |Topological sort|:white_check_mark:|

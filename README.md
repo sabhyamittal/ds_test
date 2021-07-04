@@ -18,16 +18,16 @@ Notes for data structure and algos
 |Linked list|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Binary search trees|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Red black trees|:white_check_mark:|
-|Interval trees|
+|Interval trees|:white_check_mark:|
 |Rod cutting|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Matrix chain multiplication|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Longest common subsequence|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Optimal binary search tree|:white_check_mark:|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Activity selection problem|:white_check_mark:|:white_check_mark:|:white_check_mark:|
 |Huffman codes|:white_check_mark:|:white_check_mark:|
-|B-trees|
+|B-trees|:white_check_mark:|
 |Fibonacci heaps|:white_check_mark:|
-|Van Emde Boas trees|
+|Van Emde Boas trees|:white_check_mark:|
 |Linked list representation of disjoint sets|
 |Breadth first search|:white_check_mark:|
 |Depth first search|:white_check_mark:|
@@ -39,8 +39,8 @@ Notes for data structure and algos
 |Dijkstra's algorithm|:white_check_mark:|
 |Floyd Warshall Algorithm|:white_check_mark:|
 |The ford fulkerson algorithm|:white_check_mark:|
-|Maximum bipartite algorithm|
-|Push relable algorithm|
+|Maximum bipartite algorithm|:white_check_mark:|
+|Push relable algorithm|:white_check_mark:|
 |The relable to front algorithm|
 |Multithreaded algorithm|:white_check_mark:|
 |Multithreaded matrix multiplication|:white_check_mark:|

@@ -47,8 +47,8 @@ Notes for data structure and algos
 |Multithreaded merge sort|:white_check_mark:|
 |Matrix operation|:white_check_mark:|
 |Inverting matrices|:white_check_mark:|
-|The simplex algorithm|
-|dft and fft|
+|The simplex algorithm|:white_check_mark:|
+|dft and fft|:white_check_mark:|
 |Greatest common divisor|:white_check_mark:|
 |The naive string matching algorithm|:white_check_mark:|
 |The rabin karp algorithm|:white_check_mark:|

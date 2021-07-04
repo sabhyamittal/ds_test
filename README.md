@@ -59,7 +59,7 @@ Notes for data structure and algos
 |Finding the closest pair of points|:white_check_mark:|
 |The vertex cover problem|:white_check_mark:|
 | travelling salesman problem|:white_check_mark:|
-| set covering problem|
+| set covering problem|:white_check_mark:|
 | subset-sum problem|:white_check_mark:|
 
 

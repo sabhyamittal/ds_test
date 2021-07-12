@@ -6,7 +6,7 @@
 4.Sql 
 5.Java 
 6.C++ 
-7.Machinr Learning 
+7.Machine Learning 
 8.Deep learning 
 9.Iot 
 10.Tableau/Power bi
@@ -15,3 +15,5 @@
 13.Android Development 
 14.Angular/react 
 15.Javascript
+16.Spark
+17.Scala

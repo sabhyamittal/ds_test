@@ -1,7 +1,18 @@
 ### Technologies
 
 1.Python 
-2.Django 
+
+#### 2.Django 
+
+<details>
+<summary>Answer</summary> 
+  
+```
+to build production-grade backends
+  
+```
+</details>
+  
 3.Hadoop 
 4.Sql 
 5.Java 

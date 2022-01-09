@@ -50,8 +50,10 @@ Complexity Analysis
 Time complexity:O(N) to copy N characters.
 
 Space complexity:O(1) to keep buf4 of 4 elements.
+
 <details>
   <summary>code</summary>
+  
   ```
 class Solution {
 public:
@@ -72,6 +74,7 @@ public:
         return copiedChars;
     }
 };
+  
   ```
   </details>
 
@@ -93,6 +96,7 @@ Increase copiedChars: copiedChars += readChars.
 Now buf contains at least N characters. Return min(n, copiedChars).
 
 Implementation
+
 <details>
   <summary>code</summary>
   ```

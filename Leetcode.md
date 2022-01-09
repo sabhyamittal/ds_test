@@ -99,6 +99,7 @@ Implementation
 
 <details>
   <summary>code</summary>
+  
   ```
   class Solution {
 public:
@@ -115,6 +116,7 @@ public:
                               
  ```
  </details>
+  
 Complexity Analysis
 
 Time complexity: \mathcal{O}(N)O(N) to copy N characters.

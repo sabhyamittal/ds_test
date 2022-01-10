@@ -214,7 +214,7 @@ You must write an algorithm that runs in O(log n) time.
 }
   
 ```
-<details>  
+</details>  
   
 #### Question 7. 
   
@@ -1531,6 +1531,7 @@ A strobogrammatic number is a number that looks the same when rotated 180 degree
  ```
  ```
 </details> 
+  
   #### Question 93:
 We can shift a string by shifting each of its letters to its successive letter.
 

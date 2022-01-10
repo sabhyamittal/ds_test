@@ -231,7 +231,7 @@ Each range [a,b] in the list should be output as:
 "a" if a == b
   
 <details>
-<summary>code</details>  
+<summary>code</summary>  
   
 ```
   class Solution:

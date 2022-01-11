@@ -1627,6 +1627,7 @@ The cost of painting each house with a certain color is represented by an n x 3 
 
 For example, costs[0][0] is the cost of painting house 0 with the color red; costs[1][2] is the cost of painting house 1 with color green, and so on...
 Return the minimum cost to paint all houses. 
+  
 <details>
 <summary>code</summary>
   
@@ -1635,7 +1636,9 @@ Return the minimum cost to paint all houses.
 </details> 
   
  #### Question 101:
-  
+ Given the root of a binary tree, return all root-to-leaf paths in any order.
+
+A leaf is a node with no children. 
 <details>
 <summary>code</summary>
   
@@ -1644,7 +1647,7 @@ Return the minimum cost to paint all houses.
 </details>   
   
 #### Question 102:
-  
+Given an integer num, repeatedly add all its digits until the result has only one digit, and return it.  
 <details>
 <summary>code</summary>
   
@@ -1653,7 +1656,7 @@ Return the minimum cost to paint all houses.
 </details>   
   
 #### Question 103:
-  
+Given an array of n integers nums and an integer target, find the number of index triplets i, j, k with 0 <= i < j < k < n that satisfy the condition nums[i] + nums[j] + nums[k] < target.  
 <details>
 <summary>code</summary>
   
@@ -1662,6 +1665,10 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 104:
+ Given an integer array nums, in which exactly two elements appear only once and all the other elements appear exactly twice. Find the two elements that appear only once. You can return the answer in any order.
+
+You must write an algorithm that runs in linear runtime complexity and uses only constant extra space.
+
   
 <details>
 <summary>code</summary>
@@ -1671,7 +1678,9 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 105:
-  
+You have a graph of n nodes labeled from 0 to n - 1. You are given an integer n and a list of edges where edges[i] = [ai, bi] indicates that there is an undirected edge between nodes ai and bi in the graph.
+
+Return true if the edges of the given graph make up a valid tree, and false otherwise.  
 <details>
 <summary>code</summary>
   
@@ -1680,7 +1689,11 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 106:
-  
+The cancellation rate is computed by dividing the number of canceled (by client or driver) requests with unbanned users by the total number of requests with unbanned users on that day.
+
+Write a SQL query to find the cancellation rate of requests with unbanned users (both client and driver must not be banned) each day between "2013-10-01" and "2013-10-03". Round Cancellation Rate to two decimal points.
+
+Return the result table in any order. 
 <details>
 <summary>code</summary>
   
@@ -1689,6 +1702,9 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 107:
+An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+
+Given an integer n, return true if n is an ugly number.
   
 <details>
 <summary>code</summary>
@@ -1698,6 +1714,10 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 108:
+ An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+
+Given an integer n, return the nth ugly number.
+
   
 <details>
 <summary>code</summary>
@@ -1707,7 +1727,14 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 109:
-  
+There are a row of n houses, each house can be painted with one of the k colors. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
+
+The cost of painting each house with a certain color is represented by an n x k cost matrix costs.
+
+For example, costs[0][0] is the cost of painting house 0 with color 0; costs[1][2] is the cost of painting house 1 with color 2, and so on...
+Return the minimum cost to paint all houses.
+
+   
 <details>
 <summary>code</summary>
   
@@ -1716,7 +1743,7 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 110:
-  
+ Given a string s, return true if a permutation of the string could form a palindrome. 
 <details>
 <summary>code</summary>
   
@@ -1725,7 +1752,9 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 111:
-  
+Given a string s, return all the palindromic permutations (without duplicates) of it.
+
+You may return the answer in any order. If s has no palindromic permutation, return an empty list.  
 <details>
 <summary>code</summary>
   
@@ -1734,7 +1763,7 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 112:
-  
+Given an array nums containing n distinct numbers in the range [0, n], return the only number in the range that is missing from the array.  
 <details>
 <summary>code</summary>
   
@@ -1743,7 +1772,15 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 101:
-  
+There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
+
+You are given a list of strings words from the alien language's dictionary, where the strings in words are sorted lexicographically by the rules of this new language.
+
+Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
+
+A string s is lexicographically smaller than a string t if at the first letter where they differ, the letter in s comes before the letter in t in the alien language. If the first min(s.length, t.length) letters are the same, then s is smaller if and only if s.length < t.length.
+
+   
 <details>
 <summary>code</summary>
   
@@ -1752,7 +1789,7 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 113:
-  
+Given the root of a binary search tree and a target value, return the value in the BST that is closest to the target  
 <details>
 <summary>code</summary>
   
@@ -1761,7 +1798,7 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 114:
-  
+Design an algorithm to encode a list of strings to a string. The encoded string is then sent over the network and is decoded back to the original list of strings.  
 <details>
 <summary>code</summary>
   
@@ -1770,7 +1807,9 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 115:
-  
+Given the root of a binary search tree, a target value, and an integer k, return the k values in the BST that are closest to the target. You may return the answer in any order.
+
+You are guaranteed to have only one unique set of k values in the BST that are closest to the target.  
   <details>
 <summary>code</summary>
   
@@ -1778,14 +1817,9 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  #### Question 116:
+   #### Question 116:
+ Convert a non-negative integer num to its English words representation.
+
   
   <details>
 <summary>code</summary>
@@ -1795,6 +1829,28 @@ Return the minimum cost to paint all houses.
 </details>   
   
   #### Question 117:
+Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper, return compute the researcher's h-index.
+
+According to the definition of h-index on Wikipedia: A scientist has an index h if h of their n papers have at least h citations each, and the other n − h papers have no more than h citations each.
+
+If there are several possible values for h, the maximum one is taken as the h-index.
+
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+  #### Question 118:
+Given an array of integers citations where citations[i] is the number of citations a researcher received for their ith paper and citations is sorted in an ascending order, return compute the researcher's h-index.
+
+According to the definition of h-index on Wikipedia: A scientist has an index h if h of their n papers have at least h citations each, and the other n − h papers have no more than h citations each.
+
+If there are several possible values for h, the maximum one is taken as the h-index.
+
+You must write an algorithm that runs in logarithmic time.
   
   <details>
 <summary>code</summary>
@@ -1803,7 +1859,12 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 119:
+You are painting a fence of n posts with k different colors. You must paint the posts following these rules:
+
+Every post must be painted exactly one color.
+There cannot be three or more consecutive posts with the same color.
+Given the two integers n and k, return the number of ways you can paint the fence.
   
   <details>
 <summary>code</summary>
@@ -1812,7 +1873,27 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 120:
+Suppose you are at a party with n people (labeled from 0 to n - 1), and among them, there may exist one celebrity. The definition of a celebrity is that all the other n - 1 people know him/her, but he/she does not know any of them.
+
+Now you want to find out who the celebrity is or verify that there is not one. The only thing you are allowed to do is to ask questions like: "Hi, A. Do you know B?" to get information about whether A knows B. You need to find out the celebrity (or verify there is not one) by asking as few questions as possible (in the asymptotic sense).
+
+You are given a helper function bool knows(a, b) which tells you whether A knows B. Implement a function int findCelebrity(n). There will be exactly one celebrity if he/she is in the party. Return the celebrity's label if there is a celebrity in the party. If there is no celebrity, return -1.
+
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+  #### Question 121:
+ You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad.
+
+Suppose you have n versions [1, 2, ..., n] and you want to find out the first bad one, which causes all the following ones to be bad.
+
+You are given an API bool isBadVersion(version) which returns whether version is bad. Implement a function to find the first bad version. You should minimize the number of calls to the API.
   
   <details>
 <summary>code</summary>
@@ -1821,7 +1902,11 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 122:
+ Given an integer n, return the least number of perfect square numbers that sum to n.
+
+A perfect square is an integer that is the square of an integer; in other words, it is the product of some integer with itself. For example, 1, 4, 9, and 16 are perfect squares while 3 and 11 are not.
+
   
   <details>
 <summary>code</summary>
@@ -1830,7 +1915,11 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 123:
+ Given an integer array nums, reorder it such that nums[0] <= nums[1] >= nums[2] <= nums[3]....
+
+You may assume the input array always has a valid answer.
+
   
   <details>
 <summary>code</summary>
@@ -1839,7 +1928,14 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 123:
+ Given two vectors of integers v1 and v2, implement an iterator to return their elements alternately.
+
+Implement the ZigzagIterator class:
+
+ZigzagIterator(List<int> v1, List<int> v2) initializes the object with the two vectors v1 and v2.
+boolean hasNext() returns true if the iterator still has elements, and false otherwise.
+int next() returns the current element of the iterator and moves the iterator to the next element.
   
   <details>
 <summary>code</summary>
@@ -1848,7 +1944,11 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 124:
+Given a string num that contains only digits and an integer target, return all possibilities to insert the binary operators '+', '-', and/or '*' between the digits of num so that the resultant expression evaluates to the target value.
+
+Note that operands in the returned expressions should not contain leading zeros.
+
   
   <details>
 <summary>code</summary>
@@ -1857,7 +1957,11 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+   #### Question 125:
+ Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+Note that you must do this in-place without making a copy of the array.
+
   
   <details>
 <summary>code</summary>
@@ -1866,6 +1970,18 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
+   #### Question 126:
+  Design an iterator that supports the peek operation on an existing iterator in addition to the hasNext and the next operations.
+
+Implement the PeekingIterator class:
+
+PeekingIterator(Iterator<int> nums) Initializes the object with the given integer iterator iterator.
+int next() Returns the next element in the array and moves the pointer to the next element.
+boolean hasNext() Returns true if there are still elements in the array.
+int peek() Returns the next element in the array without moving the pointer.
+Note: Each language may have a different implementation of the constructor and Iterator, but they all support the int next() and boolean hasNext() functions.
+
+ 
   <details>
 <summary>code</summary>
   
@@ -1873,33 +1989,10 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
+   #### Question 127:
+  Given the root of a binary search tree and a node p in it, return the in-order successor of that node in the BST. If the given node has no in-order successor in the tree, return null.
+
+The successor of a node p is the node with the smallest key greater than p.val.
   
   <details>
 <summary>code</summary>
@@ -1908,20 +2001,14 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
+   #### Question 128:
+ You are given an m x n grid rooms initialized with these three possible values.
+
+-1 A wall or an obstacle.
+0 A gate.
+INF Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than 2147483647.
+Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+
   
   <details>
 <summary>code</summary>
@@ -1930,21 +2017,13 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  #### Question 113:
+   #### Question 129:
+ Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.
+
+There is only one repeated number in nums, return this repeated number.
+
+You must solve the problem without modifying the array nums and uses only constant extra space.
+
   
   <details>
 <summary>code</summary>
@@ -1953,7 +2032,20 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+   #### Question 130:
+ The abbreviation of a word is a concatenation of its first letter, the number of characters between the first and last letter, and its last letter. If a word has only two characters, then it is an abbreviation of itself.
+
+For example:
+
+dog --> d1g because there is one letter between the first letter 'd' and the last letter 'g'.
+internationalization --> i18n because there are 18 letters between the first letter 'i' and the last letter 'n'.
+it --> it because any word with only two characters is an abbreviation of itself.
+Implement the ValidWordAbbr class:
+
+ValidWordAbbr(String[] dictionary) Initializes the object with a dictionary of words.
+boolean isUnique(string word) Returns true if either of the following conditions are met (otherwise returns false):
+There is no word in dictionary whose abbreviation is equal to word's abbreviation.
+For any word in dictionary whose abbreviation is equal to word's abbreviation, that word and word are the same.
   
   <details>
 <summary>code</summary>
@@ -1962,7 +2054,175 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+   #### Question 131:
+According to Wikipedia's article: "The Game of Life, also known simply as Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970."
+
+The board is made up of an m x n grid of cells, where each cell has an initial state: live (represented by a 1) or dead (represented by a 0). Each cell interacts with its eight neighbors (horizontal, vertical, diagonal) using the following four rules (taken from the above Wikipedia article):
+
+Any live cell with fewer than two live neighbors dies as if caused by under-population.
+Any live cell with two or three live neighbors lives on to the next generation.
+Any live cell with more than three live neighbors dies, as if by over-population.
+Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+The next state is created by applying the above rules simultaneously to every cell in the current state, where births and deaths occur simultaneously. Given the current state of the m x n grid board, return the next state.
+
+ 
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+   #### Question 132:
+  Given a pattern and a string s, find if s follows the same pattern.
+
+Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in s.
+
+ 
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+   #### Question 133:
+ Given a pattern and a string s, return true if s matches the pattern.
+
+A string s matches a pattern if there is some bijective mapping of single characters to strings such that if each character in pattern is replaced by the string it maps to, then the resulting string is s. A bijective mapping means that no two characters map to the same string, and no character maps to two different strings.
+
+  
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+   #### Question 134:
+ You are playing the following Nim Game with your friend:
+
+Initially, there is a heap of stones on the table.
+You and your friend will alternate taking turns, and you go first.
+On each turn, the person whose turn it is will remove 1 to 3 stones from the heap.
+The one who removes the last stone is the winner.
+Given n, the number of stones in the heap, return true if you can win the game assuming both you and your friend play optimally, otherwise return false.You are playing the following Nim Game with your friend:
+
+Initially, there is a heap of stones on the table.
+You and your friend will alternate taking turns, and you go first.
+On each turn, the person whose turn it is will remove 1 to 3 stones from the heap.
+The one who removes the last stone is the winner.
+Given n, the number of stones in the heap, return true if you can win the game assuming both you and your friend play optimally, otherwise return false.
+  
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+   #### Question 135:
+You are playing a Flip Game with your friend.
+
+You are given a string currentState that contains only '+' and '-'. You and your friend take turns to flip two consecutive "++" into "--". The game ends when a person can no longer make a move, and therefore the other person will be the winner.
+
+Return all possible states of the string currentState after one valid move. You may return the answer in any order. If there is no valid move, return an empty list [].
+
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+  #### Question 136:
+You are playing a Flip Game with your friend.
+
+You are given a string currentState that contains only '+' and '-'. You and your friend take turns to flip two consecutive "++" into "--". The game ends when a person can no longer make a move, and therefore the other person will be the winner.
+
+Return true if the starting player can guarantee a win, and false otherwise.
+
+  
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+  #### Question 137:
+The median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value and the median is the mean of the two middle values.
+
+For example, for arr = [2,3,4], the median is 3.
+For example, for arr = [2,3], the median is (2 + 3) / 2 = 2.5.
+Implement the MedianFinder class:
+
+MedianFinder() initializes the MedianFinder object.
+void addNum(int num) adds the integer num from the data stream to the data structure.
+double findMedian() returns the median of all elements so far. Answers within 10-5 of the actual answer will be accepted.
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+  #### Question 138:
+ Given an m x n binary grid grid where each 1 marks the home of one friend, return the minimal total travel distance.
+
+The total travel distance is the sum of the distances between the houses of the friends and the meeting point.
+
+The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+
+ 
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+ 
+  #### Question 139:
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
+
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.
+
+Clarification: The input/output format is the same as how LeetCode serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.
+
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+ 
+  #### Question 140:
+Given the root of a binary tree, return the length of the longest consecutive sequence path.
+
+The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The longest consecutive path needs to be from parent to child (cannot be the reverse).
+
+ 
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+ 
+  #### Question 141:
+ You are playing the Bulls and Cows game with your friend.
+
+You write down a secret number and ask your friend to guess what the number is. When your friend makes a guess, you provide a hint with the following info:
+
+The number of "bulls", which are digits in the guess that are in the correct position.
+The number of "cows", which are digits in the guess that are in your secret number but are located in the wrong position. Specifically, the non-bull digits in the guess that could be rearranged such that they become bulls.
+Given the secret number secret and your friend's guess guess, return the hint for your friend's guess.
+
+The hint should be formatted as "xAyB", where x is the number of bulls and y is the number of cows. Note that both secret and guess may contain duplicate digits.
+
   
   <details>
 <summary>code</summary>
@@ -1971,7 +2231,33 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 142:
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements. For example, [3,6,2,7] is a subsequence of the array [0,3,1,6,2,2,7].
+
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+ 
+  #### Question 143:
+Given a string s that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.
+
+Return all the possible results. You may return the answer in any order.
+
+   
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+ 
+  #### Question 144:
   
   <details>
 <summary>code</summary>
@@ -1980,7 +2266,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 145:
   
   <details>
 <summary>code</summary>
@@ -1989,7 +2275,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 146:
   
   <details>
 <summary>code</summary>
@@ -1998,7 +2284,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 147:
   
   <details>
 <summary>code</summary>
@@ -2007,7 +2293,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 148:
   
   <details>
 <summary>code</summary>
@@ -2016,7 +2302,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 149:
   
   <details>
 <summary>code</summary>
@@ -2025,7 +2311,16 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 150:
+  
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+  
+  #### Question 151:
   
   <details>
 <summary>code</summary>
@@ -2034,7 +2329,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
+  #### Question 152:
   
   <details>
 <summary>code</summary>
@@ -2043,34 +2338,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
  
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
- 
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
- 
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
- 
-  #### Question 113:
+  #### Question 153:
   
   <details>
 <summary>code</summary>
@@ -2079,25 +2347,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
- 
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
- 
-  #### Question 113:
+  #### Question 154:
   
   <details>
 <summary>code</summary>
@@ -2106,7 +2356,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 155:
   
   <details>
 <summary>code</summary>
@@ -2115,7 +2365,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 156:
   
   <details>
 <summary>code</summary>
@@ -2124,7 +2374,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 157:
   
   <details>
 <summary>code</summary>
@@ -2133,7 +2383,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 158:
   
   <details>
 <summary>code</summary>
@@ -2142,7 +2392,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 159:
   
   <details>
 <summary>code</summary>
@@ -2151,7 +2401,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 160:
   
   <details>
 <summary>code</summary>
@@ -2160,7 +2410,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 161:
   
   <details>
 <summary>code</summary>
@@ -2169,7 +2419,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 162:
   
   <details>
 <summary>code</summary>
@@ -2178,7 +2428,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 163:
   
   <details>
 <summary>code</summary>
@@ -2187,7 +2437,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 164:
   
   <details>
 <summary>code</summary>
@@ -2196,7 +2446,17 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 165:
+  
+  <details>
+<summary>code</summary>
+  
+ ```
+ ```
+</details>   
+
+  
+  #### Question 166:
   
   <details>
 <summary>code</summary>
@@ -2205,7 +2465,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 167:
   
   <details>
 <summary>code</summary>
@@ -2214,7 +2474,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 168:
   
   <details>
 <summary>code</summary>
@@ -2223,7 +2483,7 @@ Return the minimum cost to paint all houses.
  ```
 </details>   
   
-  #### Question 113:
+  #### Question 169:
   
   <details>
 <summary>code</summary>
@@ -2231,17 +2491,8 @@ Return the minimum cost to paint all houses.
  ```
  ```
 </details>   
-  
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
-  #### Question 113:
+   
+  #### Question 170:
   
   <details>
 <summary>code</summary>
@@ -2249,16 +2500,6 @@ Return the minimum cost to paint all houses.
  ```
  ```
 </details>   
-  
-  #### Question 113:
-  
-  <details>
-<summary>code</summary>
-  
- ```
- ```
-</details>   
-  
   
   
   

@@ -1,4 +1,5 @@
 #### Question 1.
+Given a file and assume that you can only read the file using a given method read4, implement a method to read n characters.
 
 <details>
 <summary>code</summary> 
@@ -26,6 +27,35 @@ class Solution:
 #### Question 2.
   
 Given a file and assume that you can only read the file using a given method read4, implement a method read to read n characters. Your method read may be called multiple times.
+  
+<details>
+<summary>code</summary>  
+  
+``` 
+class Solution:
+    def __init__(self):
+        self.buffer = [None] * 4
+        self.i = 4
+        self.end = 4
+
+    def read(self, buf: List[str], n: int) -> int:
+        read = 0
+
+        while self.load() and read < n:
+            for _ in range(min(self.end - self.i, n - read)):
+                buf[read] = self.buffer[self.i]
+                read += 1
+                self.i += 1
+        return read
+
+    def load(self):
+        if self.i == 4 and self.end == 4:
+            self.i = 0
+            self.end = read4(self.buffer)
+        return self.i < self.end
+  
+ ```
+ </details>
   
 #### Question 3.
  
@@ -196,22 +226,35 @@ You may imagine that nums[-1] = nums[n] = -∞.
 You must write an algorithm that runs in O(log n) time.
 
 <details>
-<summary>code in JAVA</summary>  
+<summary>code</summary>  
   
 ```
-  public class Solution {
-    public int findPeakElement(int[] nums) {
-        int l = 0, r = nums.length - 1;
-        while (l < r) {
-            int mid = (l + r) / 2;
-            if (nums[mid] > nums[mid + 1])
-                r = mid;
-            else
-                l = mid + 1;
-        }
-        return l;
-    }
-}
+ class Solution(object):
+    def findPeakElement(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        left, right = 0, len(nums)
+        
+        if len(nums) == 1 or nums[0] > nums[1]:
+            return 0
+        if nums[-1] > nums[-2]:
+            return right - 1 
+        
+        while left < right:
+            mid = (left + right) // 2
+            
+            if nums[mid] > nums[mid - 1] and nums[mid] > nums[mid + 1]:
+                return mid
+            
+            if nums[mid - 1] > nums[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        
+        return left
+    
   
 ```
 </details>  
@@ -261,46 +304,23 @@ Given an integer array nums, return the maximum difference between two successiv
 You must write an algorithm that runs in linear time and uses linear extra space. 
   
 <details>
-<summary>code in C++</summary> 
+<summary>code</summary> 
   
 ```
-  class Bucket {
-public:
-    bool used = false;
-    int minval = numeric_limits<int>::max();        // same as INT_MAX
-    int maxval = numeric_limits<int>::min();        // same as INT_MIN
-};
-
-int maximumGap(vector<int>& nums)
-{
-    if (nums.empty() || nums.size() < 2)
-        return 0;
-
-    int mini = *min_element(nums.begin(), nums.end()),
-        maxi = *max_element(nums.begin(), nums.end());
-
-    int bucketSize = max(1, (maxi - mini) / ((int)nums.size() - 1));        // bucket size or capacity
-    int bucketNum = (maxi - mini) / bucketSize + 1;                         // number of buckets
-    vector<Bucket> buckets(bucketNum);
-
-    for (auto&& num : nums) {
-        int bucketIdx = (num - mini) / bucketSize;                          // locating correct bucket
-        buckets[bucketIdx].used = true;
-        buckets[bucketIdx].minval = min(num, buckets[bucketIdx].minval);
-        buckets[bucketIdx].maxval = max(num, buckets[bucketIdx].maxval);
-    }
-
-    int prevBucketMax = mini, maxGap = 0;
-    for (auto&& bucket : buckets) {
-        if (!bucket.used)
-            continue;
-
-        maxGap = max(maxGap, bucket.minval - prevBucketMax);
-        prevBucketMax = bucket.maxval;
-    }
-
-    return maxGap;
-}
+class Solution:
+    def maximumGap(self, nums: List[int]) -> int:
+        if len(nums)==1 or len(nums)==2:return abs(nums[0]-nums[len(nums)-1])
+        else:
+            nums.sort()
+            j=1
+            i=0
+            maxx=-1
+            while i<len(nums)-1 and j<len(nums):
+                ans=abs(nums[i]-nums[j])
+                i+=1
+                j+=1
+                if ans>maxx:maxx=ans
+            return maxx 
   
 ```
 </details>  
@@ -369,41 +389,33 @@ If multiple answers are possible, return any of them.
 It is guaranteed that the length of the answer string is less than 104 for all the given inputs.
 
 <details>
-<summary>code in JAVA</summary>  
+<summary>code</summary>  
  
 ```
-public String fractionToDecimal(int numerator, int denominator) {
-    if (numerator == 0) {
-        return "0";
-    }
-    StringBuilder fraction = new StringBuilder();
-    // If either one is negative (not both)
-    if (numerator < 0 ^ denominator < 0) {
-        fraction.append("-");
-    }
-    // Convert to Long or else abs(-2147483648) overflows
-    long dividend = Math.abs(Long.valueOf(numerator));
-    long divisor = Math.abs(Long.valueOf(denominator));
-    fraction.append(String.valueOf(dividend / divisor));
-    long remainder = dividend % divisor;
-    if (remainder == 0) {
-        return fraction.toString();
-    }
-    fraction.append(".");
-    Map<Long, Integer> map = new HashMap<>();
-    while (remainder != 0) {
-        if (map.containsKey(remainder)) {
-            fraction.insert(map.get(remainder), "(");
-            fraction.append(")");
-            break;
-        }
-        map.put(remainder, fraction.length());
-        remainder *= 10;
-        fraction.append(String.valueOf(remainder / divisor));
-        remainder %= divisor;
-    }
-    return fraction.toString();
-}
+class Solution:
+    def fractionToDecimal(self, numerator: int, denominator: int) -> str:
+        neg = True if numerator/denominator < 0 else False
+        numerator = -numerator if numerator < 0 else numerator
+        denominator = -denominator if denominator < 0 else denominator
+        out = str(numerator//denominator)
+        if numerator % denominator:
+            out += "."
+        remainders = []
+        quotients = []
+        numerator %= denominator
+        while numerator:
+            numerator *= 10
+            if str(numerator) in remainders:
+                duplicateStart = remainders.index(str(numerator))
+                out += "".join(quotients[:duplicateStart])
+                out += "("+"".join(quotients[duplicateStart:])+")"
+                return "-"+out if neg else out
+            else:
+                remainders.append(str(numerator))
+                quotients.append(str(numerator // denominator))
+                numerator %= denominator
+        out += "".join(quotients)
+        return "-"+out if neg else out
   
 ```  
 </details>  
@@ -418,29 +430,20 @@ Return the indices of the two numbers, index1 and index2, added by one as an int
 The tests are generated such that there is exactly one solution. You may not use the same element twice.  
                                                                                                          
 <details>
-<summary>code in C++</summary>
+<summary>code</summary>
   
  ```
-  class Solution {
-public:
-    vector<int> twoSum(vector<int>& numbers, int target) {
-        int low = 0;
-        int high = numbers.size() - 1;
-        while (low < high) {
-            int sum = numbers[low] + numbers[high];
-                          
-            if (sum == target) {
-                return {low + 1, high + 1};
-            } else if (sum < target) {
-                ++low;
-            } else {
-                --high;
-            }
-        }
-        // In case there is no solution, return {-1, -1}.
-        return {-1, -1};
-    }
-};
+ def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        n = len(numbers)
+        l, r = 0, n - 1
+        
+        while (numbers[l] + numbers[r]) != target:
+            if numbers[l] + numbers[r] > target:
+                r -= 1
+            else:
+                l += 1
+        
+        return list((l + 1, r + 1)) 
  ```
  </details> 
   
@@ -459,6 +462,22 @@ Z -> 26
 AA -> 27
 AB -> 28 
 ...
+  
+<details>
+<summary>code</summary>
+  
+  ```
+  def convertToTitle(self, columnNumber: int) -> str:
+        res = ""
+        while(columnNumber):
+            n = int(columnNumber % 26)
+            n += (n == 0) * 26
+            res = chr(64 + n) + res
+            columnNumber = (columnNumber - n) // 26 
+        return res
+  
+  ```
+  </details>
   
 #### Question 13.
   
@@ -508,6 +527,7 @@ TwoSum() Initializes the TwoSum object, with an empty array initially.
 void add(int number) Adds number to the data structure.
 boolean find(int value) Returns true if there exists any pair of numbers whose sum is equal to value, otherwise, it returns false.
 using HashTable:  
+  
 <details>
 <summary>code</summary>  
   
@@ -578,10 +598,26 @@ Note that n! = n * (n - 1) * (n - 2) * ... * 3 * 2 * 1.
 <summary>code</summary>
   
  ```
+ def trailingZeroes(self, n: int) -> int:
+        
+    # Calculate n!
+    n_factorial = 1
+    for i in range(2, n + 1):
+        n_factorial *= i
+    
+    # Count how many 0's are on the end.
+    zero_count = 0
+    while n_factorial % 10 == 0:
+        zero_count += 1
+        n_factorial //= 10
+        
+    return zero_count
+  
  ```
 </details>
   
 #### Question 17:
+  
 Implement the BSTIterator class that represents an iterator over the in-order traversal of a binary search tree (BST):
 
 BSTIterator(TreeNode root) Initializes an object of the BSTIterator class. The root of the BST is given as part of the constructor. 
@@ -593,6 +629,46 @@ int next() Moves the pointer to the right, then returns the number at the pointe
 <summary>code</summary>
   
  ```
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class BSTIterator:
+
+    def __init__(self, root: TreeNode):
+
+        # Array containing all the nodes in the sorted order
+        self.nodes_sorted = []
+
+        # Pointer to the next smallest element in the BST
+        self.index = -1
+
+        # Call to flatten the input binary search tree
+        self._inorder(root)
+
+    def _inorder(self, root):
+        if not root:
+            return
+        self._inorder(root.left)
+        self.nodes_sorted.append(root.val)
+        self._inorder(root.right)
+
+    def next(self) -> int:
+        """
+        @return the next smallest number
+        """
+        self.index += 1
+        return self.nodes_sorted[self.index]
+
+    def hasNext(self) -> bool:
+        """
+        @return whether we have a next smallest number
+        """
+        return self.index + 1 < len(self.nodes_sorted)
+                                                      
  ```
 </details>
   
@@ -613,6 +689,39 @@ Return the knight's minimum initial health so that he can rescue the princess.
 <summary>code</summary>
   
  ```
+ class Solution(object):
+    def calculateMinimumHP(self, dungeon):
+        """
+        :type dungeon: List[List[int]]
+        :rtype: int
+        """
+        rows, cols = len(dungeon), len(dungeon[0])
+        dp = [[float('inf')] * cols for _ in range(rows)]
+
+        def get_min_health(currCell, nextRow, nextCol):
+            if nextRow >= rows or nextCol >= cols:
+                return float('inf')
+            nextCell = dp[nextRow][nextCol]
+            # hero needs at least 1 point to survive
+            return max(1, nextCell - currCell)
+
+        for row in reversed(range(rows)):
+            for col in reversed(range(cols)):
+                currCell = dungeon[row][col]
+
+                right_health = get_min_health(currCell, row, col+1)
+                down_health = get_min_health(currCell, row+1, col)
+                next_health = min(right_health, down_health)
+
+                if next_health != float('inf'):
+                    min_health = next_health
+                else:
+                    min_health = 1 if currCell >= 0 else (1 - currCell)
+
+                dp[row][col] = min_health
+
+        return dp[0][0]
+  
  ```
 </details>
   
@@ -623,9 +732,13 @@ report null instead.
 Return the result table in any order.  
   
 <details>
-<summary>code</summary>
+<summary>code in MYSQL</summary>
   
  ```
+SELECT Person.firstName , Person.lastName ,Address.city, Address.state
+FROM Person LEFT JOIN Address
+ON Person.personId = Address.personId;
+  
  ```
 </details>
   
@@ -637,6 +750,16 @@ The query result format is in the following example.
 <summary>code</summary>
   
  ```
+  with Temp as
+    (select salary, dense_rank() over(order by salary desc) as rnk from Employee)
+    select case when
+           sum(rnk)<2 then
+           salary=null
+           else
+           salary
+           end        
+     as SecondHighestSalary from Temp where rnk=2
+                      
  ```
 </details>
   
@@ -648,6 +771,21 @@ The query result format is in the following example.
 <summary>code</summary>
   
  ```
+  CREATE FUNCTION getNthHighestSalary(@N INT) RETURNS INT AS
+BEGIN
+RETURN (
+
+    select salary
+    from
+   ( select salary,
+    Dense_rank() over (order by salary desc) as rnk
+    from employee) x
+    where Rnk=@N
+    group by salary
+    
+);
+END
+  
  ```
 </details>
   
@@ -663,6 +801,9 @@ Return the result table ordered by score in descending order.
 <summary>code</summary>
   
  ```
+select Score, dense_rank() over (order by Score desc) as Rank from Scores
+order by Score desc
+  
  ```
 </details>
   
@@ -676,6 +817,15 @@ Since the result may be very large, so you need to return a string instead of an
 <summary>code</summary>
   
  ```
+  class LargerNumKey(str):
+    def __lt__(x, y):
+        return x+y > y+x
+        
+class Solution:
+    def largestNumber(self, nums):
+        largest_num = ''.join(sorted(map(str, nums), key=LargerNumKey))
+        return '0' if largest_num[0] == '0' else largest_num
+  
  ```
 </details>
   
@@ -687,6 +837,19 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+SELECT DISTINCT
+    l1.Num AS ConsecutiveNums
+FROM
+    Logs l1,
+    Logs l2,
+    Logs l3
+WHERE
+    l1.Id = l2.Id - 1
+    AND l2.Id = l3.Id - 1
+    AND l1.Num = l2.Num
+    AND l2.Num = l3.Num
+;
+  
  ```
 </details>
   
@@ -699,6 +862,34 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+ 1.
+  SELECT
+    *
+FROM
+    Employee AS a,
+    Employee AS b
+WHERE
+    a.ManagerId = b.Id
+        AND a.Salary > b.Salary
+;
+  2.MYSQL
+SELECT
+    a.Name AS 'Employee'
+FROM
+    Employee AS a,
+    Employee AS b
+WHERE
+    a.ManagerId = b.Id
+        AND a.Salary > b.Salary
+;  
+  3.Using JOIN clause
+  SELECT
+     a.NAME AS Employee
+FROM Employee AS a JOIN Employee AS b
+     ON a.ManagerId = b.Id
+     AND a.Salary > b.Salary
+;
+  
  ```
 </details>
   
@@ -710,6 +901,30 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+  select Email, count(Email) as num
+from Person
+group by Email;
+| Email   | num |
+|---------|-----|
+| a@b.com | 2   |
+| c@d.com | 1   |
+Taking this as a temporary table, we can get a solution as below.
+
+select Email from
+(
+  select Email, count(Email) as num
+  from Person
+  group by Email
+) as statistic
+where num > 1
+;
+  MySQL
+
+select Email
+from Person
+group by Email
+having count(Email) > 1;
+  
  ```
 </details>
   
@@ -721,6 +936,18 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+  select customerid from orders;
+Then, we can use NOT IN to query the customers who are not in this list.
+
+MySQL
+
+select customers.name as 'Customers'
+from customers
+where customers.id not in
+(
+    select customerid from orders
+);
+  
  ```
 </details>
   
@@ -733,6 +960,30 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+ MySQL
+
+SELECT
+    Department.name AS 'Department',
+    Employee.name AS 'Employee',
+    Salary
+FROM
+    Employee
+        JOIN
+    Department ON Employee.DepartmentId = Department.Id
+WHERE
+    (Employee.DepartmentId , Salary) IN
+    (   SELECT
+            DepartmentId, MAX(Salary)
+        FROM
+            Employee
+        GROUP BY DepartmentId
+    )
+;
+| Department | Employee | Salary |
+|------------|----------|--------|
+| Sales      | Henry    | 80000  |
+| IT         | Max      | 90000  |
+  
  ```
 </details>
   
@@ -747,6 +998,32 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+  MySQL
+
+SELECT
+    d.Name AS 'Department', e1.Name AS 'Employee', e1.Salary
+FROM
+    Employee e1
+        JOIN
+    Department d ON e1.DepartmentId = d.Id
+WHERE
+    3 > (SELECT
+            COUNT(DISTINCT e2.Salary)
+        FROM
+            Employee e2
+        WHERE
+            e2.Salary > e1.Salary
+                AND e1.DepartmentId = e2.DepartmentId
+        )
+;
+| Department | Employee | Salary |
+|------------|----------|--------|
+| IT         | Joe      | 70000  |
+| Sales      | Henry    | 80000  |
+| Sales      | Sam      | 60000  |
+| IT         | Max      | 90000  |
+| IT         | Randy    | 85000  |
+  
  ```
 </details> 
 
@@ -760,6 +1037,36 @@ Your code must solve the problem in-place, i.e. without allocating extra space.
 <summary>code</summary>
   
  ```
+  class Solution:
+    def reverse(self, l: list, left: int, right: int) -> None:
+        while left < right:
+            l[left], l[right] = l[right], l[left]
+            left, right = left + 1, right - 1
+            
+    def reverse_each_word(self, l: list) -> None:
+        n = len(l)
+        start = end = 0
+        
+        while start < n:
+            # go to the end of the word
+            while end < n and l[end] != ' ':
+                end += 1
+            # reverse the word
+            self.reverse(l, start, end - 1)
+            # move to the next word
+            start = end + 1
+            end += 1
+            
+    def reverseWords(self, s: List[str]) -> None:
+        """
+        Do not return anything, modify s in-place instead.
+        """
+        # reverse the whole string
+        self.reverse(s, 0, len(s) - 1)
+        
+        # reverse each word
+        self.reverse_each_word(s)
+  
  ```
 </details> 
   
@@ -776,6 +1083,19 @@ You may return the answer in any order.
 <summary>code</summary>
   
  ```
+  class Solution:
+    def findRepeatedDnaSequences(self, s: str) -> List[str]:
+        L, n = 10, len(s)     
+        seen, output = set(), set()
+
+        # iterate over all sequences of length L
+        for start in range(n - L + 1):
+            tmp = s[start:start + L]
+            if tmp in seen:
+                output.add(tmp[:])
+            seen.add(tmp)
+        return output
+  
  ```
 </details> 
   
@@ -789,6 +1109,40 @@ Note: You may not engage in multiple transactions simultaneously (i.e., you must
 <summary>code</summary>
   
  ```
+ class Solution:
+    def maxProfit(self, k: int, prices: List[int]) -> int:
+        n = len(prices)
+
+        # solve special cases
+        if not prices or k==0:
+            return 0
+
+        if 2*k > n:
+            res = 0
+            for i, j in zip(prices[1:], prices[:-1]):
+                res += max(0, i - j)
+            return res
+
+        # dp[i][used_k][ishold] = balance
+        # ishold: 0 nothold, 1 hold
+        dp = [[[-math.inf]*2 for _ in range(k+1)] for _ in range(n)]
+
+        # set starting value
+        dp[0][0][0] = 0
+        dp[0][1][1] = -prices[0]
+
+        # fill the array
+        for i in range(1, n):
+            for j in range(k+1):
+                # transition equation
+                dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1]+prices[i])
+                # you can't hold stock without any transaction
+                if j > 0:
+                    dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0]-prices[i])
+
+        res = max(dp[n-1][j][0] for j in range(k+1))
+        return res
+  
  ```
 </details> 
   
@@ -799,6 +1153,16 @@ Given an array, rotate the array to the right by k steps, where k is non-negativ
 <summary>code</summary>
   
  ```
+ class Solution:
+    def rotate(self, nums: List[int], k: int) -> None:
+        # speed up the rotation
+        k %= len(nums)
+
+        for i in range(k):
+            previous = nums[-1]
+            for j in range(len(nums)):
+                nums[j], previous = previous, nums[j]
+  
  ```
 </details> 
   
@@ -808,6 +1172,17 @@ Reverse bits of a given 32 bits unsigned integer.
 <summary>code</summary>
   
  ```
+ class Solution:
+    # @param n, an integer
+    # @return an integer
+    def reverseBits(self, n):
+        ret, power = 0, 31
+        while n:
+            ret += (n & 1) << power
+            n = n >> 1
+            power -= 1
+        return ret
+  
  ```
 </details> 
   
@@ -817,6 +1192,10 @@ Write a function that takes an unsigned integer and returns the number of '1' bi
 <summary>code</summary>
   
  ```
+ class Solution:
+    def hammingWeight(self, n: int) -> int:
+        return len([x for x in bin(n)[2:] if x is '1'])
+  
  ```
 </details> 
   
@@ -833,6 +1212,8 @@ Words are separated by one or more whitespace characters.
 <summary>code</summary>
   
  ```
+ cat words.txt | sed 's/\ /\n/g' | sort | uniq -c |sort -r | awk '{print $2,$1}'
+  
  ```
 </details> 
   
@@ -847,6 +1228,8 @@ You may also assume each line in the text file must not contain leading or trail
 <summary>code</summary>
   
  ```
+  egrep '^[0-9]{3}-[0-9]{3}-[0-9]{4}$|^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$' file.txt
+  
  ```
 </details> 
   
@@ -858,6 +1241,9 @@ You may assume that each row has the same number of columns, and each field is s
 <summary>code</summary>
   
  ```
+  seq "$(awk '{print NF}' file.txt | head -n 1)" |
+	xargs -r -I {} sh -c "awk '{print \${}}' file.txt | xargs -r"
+  
  ```
 </details> 
   
@@ -867,6 +1253,8 @@ Given a text file file.txt, print just the 10th line of the file.
 <summary>code</summary>
   
  ```
+ f=file.txt line=10; [ "`wc -l $f | cut -f 1 -d ' '`" -ge "$line" ] && head -$line $f | tail -1
+  
  ```
 </details> 
   
@@ -878,6 +1266,29 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+  SELECT p1.*
+FROM Person p1,
+    Person p2
+WHERE
+    p1.Email = p2.Email
+;
+Then we need to find the bigger id having same email address with other records. So we can add a new condition to the WHERE clause like this.
+
+SELECT p1.*
+FROM Person p1,
+    Person p2
+WHERE
+    p1.Email = p2.Email AND p1.Id > p2.Id
+;
+As we already get the records to be deleted, we can alter this statement to DELETE in the end.
+
+MySQL
+
+DELETE p1 FROM Person p1,
+    Person p2
+WHERE
+    p1.Email = p2.Email AND p1.Id > 
+  
  ```
 </details> 
   
@@ -890,6 +1301,17 @@ Return the result table in any order.
 <summary>code</summary>
   
  ```
+  MySQL
+
+SELECT
+    weather.id AS 'Id'
+FROM
+    weather
+        JOIN
+    weather w ON DATEDIFF(weather.recordDate, w.recordDate) = 1
+        AND weather.Temperature > w.Temperature
+;
+  
  ```
 </details> 
   
@@ -905,6 +1327,35 @@ Given an integer array nums representing the amount of money of each house, retu
 <summary>code</summary>
   
  ```
+ class Solution:
+    
+    def __init__(self):
+        self.memo = {}
+    
+    def rob(self, nums: List[int]) -> int:
+        
+        self.memo = {}
+        
+        return self.robFrom(0, nums)
+    
+    def robFrom(self, i, nums):
+        
+        
+        # No more houses left to examine.
+        if i >= len(nums):
+            return 0
+        
+        # Return cached value.
+        if i in self.memo:
+            return self.memo[i]
+        
+        # Recursive relation evaluation to get the optimal answer.
+        ans = max(self.robFrom(i + 1, nums), self.robFrom(i + 2, nums) + nums[i])
+        
+        # Cache for future use.
+        self.memo[i] = ans
+        return ans
+  
  ```
 </details> 
   
@@ -914,6 +1365,35 @@ Given the root of a binary tree, imagine yourself standing on the right side of 
 <summary>code</summary>
   
  ```
+  class Solution:
+    def rightSideView(self, root: TreeNode) -> List[int]:
+        if root is None:
+            return []
+        
+        next_level = deque([root,])
+        rightside = []
+        
+        while next_level:
+            # prepare for the next level
+            curr_level = next_level
+            next_level = deque()
+
+            while curr_level:
+                node = curr_level.popleft()
+                    
+                # add child nodes of the current level
+                # in the queue for the next level
+                if node.left:
+                    next_level.append(node.left)
+                if node.right:
+                    next_level.append(node.right)
+            
+            # The current level is finished.
+            # Its last element is the rightmost one.
+            rightside.append(node.val)
+        
+        return rightside
+  
  ```
 </details> 
   
@@ -925,6 +1405,40 @@ An island is surrounded by water and is formed by connecting adjacent lands hori
 <summary>code</summary>
   
  ```
+ class Solution:
+     
+	def numIslands(self, grid: List[List[str]]) -> int:
+	
+        if not grid:
+            return 0
+        rows, cols=len(grid), len(grid[0])
+        islands=0
+        
+        for i in range(rows):
+            for j in range(cols):
+                if grid[i][j]=='1':
+                    islands+=1
+                    self.explore(grid, i , j)
+        return islands           
+     
+     
+    def explore(self, grid, i, j):
+	
+	# Mark this point as '0', so that it does not count again.
+	
+        grid[i][j]='0'
+        rows, cols=len(grid), len(grid[0])
+
+        if (i+1<rows and grid[i+1][j]=='1'):
+            self.explore(grid, i+1, j)
+        if (i-1>=0 and grid[i-1][j]=='1'):
+            self.explore(grid, i-1, j)
+        if (j+1<cols and grid[i][j+1]=='1'):
+            self.explore(grid, i, j+1)
+        if (j-1>=0 and grid[i][j-1]=='1'):
+            self.explore(grid, i, j-1)
+ 
+  
  ```
 </details> 
   
@@ -934,6 +1448,16 @@ Given two integers left and right that represent the range [left, right], return
 <summary>code</summary>
   
  ```
+ class Solution:
+    def rangeBitwiseAnd(self, m: int, n: int) -> int:
+        shift = 0   
+        # find the common 1-bits
+        while m < n:
+            m = m >> 1
+            n = n >> 1
+            shift += 1
+        return m << shift 
+  
  ```
 </details> 
   
@@ -950,6 +1474,22 @@ Return true if n is a happy number, and false if not.
 <summary>code</summary>
   
  ```
+ def isHappy(self, n: int) -> bool:
+
+    def get_next(n):
+        total_sum = 0
+        while n > 0:
+            n, digit = divmod(n, 10)
+            total_sum += digit ** 2
+        return total_sum
+
+    seen = set()
+    while n != 1 and n not in seen:
+        seen.add(n)
+        n = get_next(n)
+
+    return n == 1 
+  
  ```
 </details> 
   
@@ -960,6 +1500,21 @@ Given the head of a linked list and an integer val, remove all the nodes of the 
 <summary>code</summary>
   
  ```
+class Solution:
+    def removeElements(self, head: ListNode, val: int) -> ListNode:
+        sentinel = ListNode(0)
+        sentinel.next = head
+        
+        prev, curr = sentinel, head
+        while curr:
+            if curr.val == val:
+                prev.next = curr.next
+            else:
+                prev = curr
+            curr = curr.next
+        
+        return sentinel.next  
+  
  ```
 </details> 
   
@@ -969,6 +1524,20 @@ Given an integer n, return the number of prime numbers that are strictly less th
 <summary>code</summary>
   
  ```
+ class Solution:
+    def countPrimes(self, n: int) -> int:
+        if n <= 2:
+            return 0
+        
+        numbers = {}
+        for p in range(2, int(sqrt(n)) + 1):
+            if p not in numbers:
+                for multiple in range(p*p, n, p):
+                    numbers[multiple] = 1
+        
+        # Exclude "1" and the number "n" itself.
+        return n - len(numbers) - 2 
+  
  ```
 </details> 
   
@@ -983,6 +1552,26 @@ All occurrences of a character must be replaced with another character while pre
 <summary>code</summary>
   
  ```
+ class Solution:
+    def isIsomorphic(self, s: str, t: str) -> bool:
+        
+        mapping_s_t = {}
+        mapping_t_s = {}
+        
+        for c1, c2 in zip(s, t):
+            
+            # Case 1: No mapping exists in either of the dictionaries
+            if (c1 not in mapping_s_t) and (c2 not in mapping_t_s):
+                mapping_s_t[c1] = c2
+                mapping_t_s[c2] = c1
+            
+            # Case 2: Ether mapping doesn't exist in one of the dictionaries or Mapping exists and
+            # it doesn't match in either of the dictionaries or both            
+            elif mapping_s_t.get(c1) != c2 or mapping_t_s.get(c2) != c1:
+                return False
+            
+        return True 
+  
  ```
 </details> 
   
@@ -992,6 +1581,25 @@ Given the head of a singly linked list, reverse the list, and return the reverse
 <summary>code</summary>
   
  ```
+  class Solution(object):        
+    def reverseList(self, head):  # Iterative
+        prev, curr = None, head
+        while curr:
+            curr.next, prev, curr = prev, curr, curr.next
+        return prev
+        
+    def reverseList_v1(self, head):  # Recursive
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """     
+        if not head or not head.next:
+            return head
+        p = self.reverseList(head.next)
+        head.next.next = head
+        head.next = None
+        return p 
+  
  ```
 </details> 
   
@@ -1007,6 +1615,48 @@ Return true if you can finish all courses. Otherwise, return false.
 <summary>code</summary>
   
  ```
+ class Solution(object):
+    def canFinish(self, numCourses, prerequisites):
+        """
+        :type numCourses: int
+        :type prerequisites: List[List[int]]
+        :rtype: bool
+        """
+        from collections import defaultdict
+        courseDict = defaultdict(list)
+
+        for relation in prerequisites:
+            nextCourse, prevCourse = relation[0], relation[1]
+            courseDict[prevCourse].append(nextCourse)
+
+        path = [False] * numCourses
+        for currCourse in range(numCourses):
+            if self.isCyclic(currCourse, courseDict, path):
+                return False
+        return True
+
+
+    def isCyclic(self, currCourse, courseDict, path):
+        """
+        backtracking method to check that no cycle would be formed starting from currCourse
+        """
+        if path[currCourse]:
+            # come across a previously visited node, i.e. detect the cycle
+            return True
+
+        # before backtracking, mark the node in the path
+        path[currCourse] = True
+
+        # backtracking
+        ret = False
+        for child in courseDict[currCourse]:
+            ret = self.isCyclic(child, courseDict, path)
+            if ret: break
+
+        # after backtracking, remove the node from the path
+        path[currCourse] = False
+        return ret 
+  
  ```
 </details> 
   
@@ -1024,6 +1674,40 @@ boolean startsWith(String prefix) Returns true if there is a previously inserted
 <summary>code</summary>
   
  ```
+ def __init__(self):
+    self.trie = {} # Setting try to dictionary
+def insert(self, word: str) -> None:
+    t = self.trie # Setting t to the dictionary which we just declared
+    for w in word:
+        if w not in t: # The word will be inserted if it is not in try
+            t[w] = {}
+        t = t[w]
+    t["end"] = True
+    # If the word is lets say "apple" then it will be inserted in the following way: {a:{p:{p:{l:{{l:{e:{end: True}}}}}}}}
+    # The key end flag is set to true indicates that the word actually exists
+    # If ther is no end flag then it means that the word is just a prefix
+
+def search(self, word: str) -> bool:
+    t = self.trie
+    # Here I will check the entire word letter by letter. 
+    for w in word:
+        if w in t:
+            t = t[w] # If the letter is found then we will set the trie to that key which means that if we are searching for apple and if our loop is on l letter of the word apple then at that time t = {l:{e:{end:True}}}
+        else:
+            return False
+    return "end" in t
+# The value of key end will be returned which is True
+
+def startsWith(self, prefix: str) -> bool:
+    t  = self.trie
+    # For checking the prefix I will directly check if the letter for the word is in trie. If it is in the trie then setting the value of the letter equal to trie everytime. For example if we are checking for "app"
+    for w in prefix:
+        if w in t:
+            t = t[w] # apple is already in the trie therefore the loop will run till app and if any other letter which is not in the trie  encountered then it will directly return False.
+        else:
+            return False
+    return True 
+  
  ```
 </details> 
   
@@ -1036,6 +1720,26 @@ boolean startsWith(String prefix) Returns true if there is a previously inserted
 <summary>code</summary>
   
  ```
+ total = 0
+    res = [-1,-1]
+    resLen = float('inf')
+    l = 0
+    for r in range(len(nums)):
+        
+        num = nums[r]
+        
+        total += num
+        
+        while total >= target:
+            if (r-l+1) < resLen:
+                resLen = r-l+1
+                res = [l, r]
+            
+            total -= nums[l]
+            
+            l+=1
+    return resLen if resLen != float('inf') else 0 
+  
  ```
 </details> 
   
@@ -1052,6 +1756,62 @@ Return the ordering of courses you should take to finish all courses. If there a
 <summary>code</summary>
   
  ```
+ from collections import defaultdict
+class Solution:
+
+    WHITE = 1
+    GRAY = 2
+    BLACK = 3
+
+    def findOrder(self, numCourses, prerequisites):
+        """
+        :type numCourses: int
+        :type prerequisites: List[List[int]]
+        :rtype: List[int]
+        """
+
+        # Create the adjacency list representation of the graph
+        adj_list = defaultdict(list)
+
+        # A pair [a, b] in the input represents edge from b --> a
+        for dest, src in prerequisites:
+            adj_list[src].append(dest)
+
+        topological_sorted_order = []
+        is_possible = True
+
+        # By default all vertces are WHITE
+        color = {k: Solution.WHITE for k in range(numCourses)}
+        def dfs(node):
+            nonlocal is_possible
+
+            # Don't recurse further if we found a cycle already
+            if not is_possible:
+                return
+
+            # Start the recursion
+            color[node] = Solution.GRAY
+
+            # Traverse on neighboring vertices
+            if node in adj_list:
+                for neighbor in adj_list[node]:
+                    if color[neighbor] == Solution.WHITE:
+                        dfs(neighbor)
+                    elif color[neighbor] == Solution.GRAY:
+                         # An edge to a GRAY vertex represents a cycle
+                        is_possible = False
+
+            # Recursion ends. We mark it as black
+            color[node] = Solution.BLACK
+            topological_sorted_order.append(node)
+
+        for vertex in range(numCourses):
+            # If the node is unprocessed, then call dfs on it.
+            if color[vertex] == Solution.WHITE:
+                dfs(vertex)
+
+        return topological_sorted_order[::-1] if is_possible else [] 
+  
  ```
 </details> 
   
@@ -1068,6 +1828,25 @@ bool search(word) Returns true if there is any string in the data structure that
 <summary>code</summary>
   
  ```
+ class WordDictionary:
+    def __init__(self):
+        self.d = defaultdict(set)
+
+
+    def addWord(self, word: str) -> None:
+        self.d[len(word)].add(word)
+
+
+    def search(self, word: str) -> bool:
+        m = len(word)
+        for dict_word in self.d[m]:
+            i = 0
+            while i < m and (dict_word[i] == word[i] or word[i] == '.'):
+                i += 1
+            if i == m:
+                return True
+        return False 
+  
  ```
 </details> 
   
@@ -1080,6 +1859,63 @@ The same letter cell may not be used more than once in a word.
 <summary>code</summary>
   
  ```
+ class Solution:
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        WORD_KEY = '$'
+        
+        trie = {}
+        for word in words:
+            node = trie
+            for letter in word:
+                # retrieve the next node; If not found, create a empty node.
+                node = node.setdefault(letter, {})
+            # mark the existence of a word in trie node
+            node[WORD_KEY] = word
+        
+        rowNum = len(board)
+        colNum = len(board[0])
+        
+        matchedWords = []
+        
+        def backtracking(row, col, parent):    
+            
+            letter = board[row][col]
+            currNode = parent[letter]
+            
+            # check if we find a match of word
+            word_match = currNode.pop(WORD_KEY, False)
+            if word_match:
+                # also we removed the matched word to avoid duplicates,
+                #   as well as avoiding using set() for results.
+                matchedWords.append(word_match)
+            
+            # Before the EXPLORATION, mark the cell as visited 
+            board[row][col] = '#'
+            
+            # Explore the neighbors in 4 directions, i.e. up, right, down, left
+            for (rowOffset, colOffset) in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
+                newRow, newCol = row + rowOffset, col + colOffset     
+                if newRow < 0 or newRow >= rowNum or newCol < 0 or newCol >= colNum:
+                    continue
+                if not board[newRow][newCol] in currNode:
+                    continue
+                backtracking(newRow, newCol, currNode)
+        
+            # End of EXPLORATION, we restore the cell
+            board[row][col] = letter
+        
+            # Optimization: incrementally remove the matched leaf node in Trie.
+            if not currNode:
+                parent.pop(letter)
+
+        for row in range(rowNum):
+            for col in range(colNum):
+                # starting from each of the cells
+                if board[row][col] in trie:
+                    backtracking(row, col, trie)
+        
+        return matchedWords     
+  
  ```
 </details> 
   
@@ -1093,6 +1929,26 @@ Given an integer array nums representing the amount of money of each house, retu
 <summary>code</summary>
   
  ```
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        if len(nums) == 0 or nums is None:
+            return 0
+
+        if len(nums) == 1:
+            return nums[0]
+
+        return max(self.rob_simple(nums[:-1]), self.rob_simple(nums[1:]))
+
+    def rob_simple(self, nums: List[int]) -> int:
+        t1 = 0
+        t2 = 0
+        for current in nums:
+            temp = t1
+            t1 = max(current + t2, t1)
+            t2 = temp
+
+        return t1  
+  
  ```
 </details> 
   
@@ -1100,10 +1956,60 @@ Given an integer array nums representing the amount of money of each house, retu
 You are given a string s. You can convert s to a palindrome by adding characters in front of it.
 
 Return the shortest palindrome you can find by performing this transformation.  
+Using Hashing:  
 <details>
 <summary>code</summary>
   
  ```
+class Hasher:
+    MAX = 50002
+    MOD = 1000000007
+    BASE = 1331
+    
+    def __init__(self, n):
+        Hasher.MAX = n + 2
+        self.storage = [0 for _ in range(Hasher.MAX)]
+        self.precompute()
+    
+    def precompute(self):
+        self.storage[0] = 1
+        for i in range(1, Hasher.MAX):
+            self.storage[i] = (self.storage[i-1] * Hasher.BASE) % Hasher.MOD
+    
+    def populateHash(self, H, s):
+        H[0] = 0
+        for i, ch in enumerate(s):
+            H[i+1] = (H[i] * Hasher.BASE + ord(ch)) % Hasher.MOD
+    
+    def getHash(self, s):
+        hashValue = 0
+        for i, ch in enumerate(s):
+            hashValue = (hashValue * Hasher.BASE + ord(ch)) % Hasher.MOD
+        return hashValue
+    
+    def getHash(self, H, l, r):
+        MOD = Hasher.MOD
+        return (H[r] - (H[l-1] * self.storage[r-l+1]) % MOD + MOD) % MOD
+        
+
+class Solution:
+    def shortestPalindrome(self, s: str) -> str:
+        n = len(s)
+
+        hasher = Hasher(n)
+        H1 = [0 for _ in range(hasher.MAX)]
+        H2 = [0 for _ in range(hasher.MAX)]
+        
+        hasher.populateHash(H1, s)
+        hasher.populateHash(H2, s[::-1])
+        
+        idx = 0
+        for i in range(n):
+            if H1[i+1] == hasher.getHash(H2, n - i, n):
+                idx = i
+
+        return s[idx+1:][::-1] + s  
+  
  ```
 </details> 
   
@@ -1115,6 +2021,15 @@ Note that it is the kth largest element in the sorted order, not the kth distinc
 <summary>code</summary>
   
  ```
+class Solution:
+    def findKthLargest(self, nums, k):
+        """
+        :type nums: List[int]
+        :type k: int
+        :rtype: int
+        """
+        return heapq.nlargest(k, nums)[-1]  
+  
  ```
 </details> 
   
@@ -1128,6 +2043,30 @@ Return a list of all possible valid combinations. The list must not contain the 
 <summary>code</summary>
   
  ```
+ class Solution:
+    def combinationSum3(self, k: int, n: int) -> List[List[int]]:
+        results = []
+        def backtrack(remain, comb, next_start):
+            if remain == 0 and len(comb) == k:
+                # make a copy of current combination
+                # Otherwise the combination would be reverted in other branch of backtracking.
+                results.append(list(comb))
+                return
+            elif remain < 0 or len(comb) == k:
+                # exceed the scope, no need to explore further.
+                return
+
+            # Iterate through the reduced list of candidates.
+            for i in range(next_start, 9):
+                comb.append(i+1)
+                backtrack(remain-i-1, comb, i+1)
+                # backtrack the current choice
+                comb.pop()
+
+        backtrack(n, [], 0)
+
+        return results 
+  
  ```
 </details> 
   
@@ -1139,6 +2078,32 @@ Given an integer array nums, return true if any value appears at least twice in 
 <summary>code</summary>
   
  ```
+ Python Solution Using Dictionary
+
+class Solution:
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        hash={}
+        flag=0
+        for i in nums:
+            hash[i]=0
+            
+        for i in nums:
+            hash[i]+=1
+            
+        for i in nums:
+            if hash[i]>1:
+                flag=1
+                break
+        return bool(flag)    
+	
+python solution using set
+
+class Solution:
+    # @param {integer[]} nums
+    # @return {boolean}
+    def containsDuplicate(self, nums):
+        return (len(nums) >len(set(nums))) 
+  
  ```
 </details> 
   
@@ -1164,6 +2129,87 @@ Note: There must be no consecutive horizontal lines of equal height in the outpu
 <summary>code</summary>
   
  ```
+ class Solution:
+    def getSkyline(self, buildings: 'List[List[int]]') -> 'List[List[int]]':
+        """
+        Divide-and-conquer algorithm to solve skyline problem,
+        which is similar with the merge sort algorithm.
+        """
+        n = len(buildings)
+        # The base cases
+        if n == 0:
+            return []
+        if n == 1:
+            x_start, x_end, y = buildings[0]
+            return [[x_start, y], [x_end, 0]]
+
+        # If there is more than one building,
+        # recursively divide the input into two subproblems.
+        left_skyline = self.getSkyline(buildings[: n // 2])
+        right_skyline = self.getSkyline(buildings[n // 2 :])
+
+        # Merge the results of subproblem together.
+        return self.merge_skylines(left_skyline, right_skyline)
+
+    def merge_skylines(self, left, right):
+        """
+        Merge two skylines together.
+        """
+        def update_output(x, y):
+            """
+            Update the final output with the new element.
+            """
+            # if skyline change is not vertical -
+            # add the new point
+            if not output or output[-1][0] != x:
+                output.append([x, y])
+            # if skyline change is vertical -
+            # update the last point
+            else:
+                output[-1][1] = y
+
+        def append_skyline(p, lst, n, y, curr_y):
+            """
+            Append the rest of the skyline elements with indice (p, n)
+            to the final output.
+            """
+            while p < n:
+                x, y = lst[p]
+                p += 1
+                if curr_y != y:
+                    update_output(x, y)
+                    curr_y = y
+
+        n_l, n_r = len(left), len(right)
+        p_l = p_r = 0
+        curr_y  = left_y = right_y = 0
+        output = []
+
+        # while we're in the region where both skylines are present
+        while p_l < n_l and p_r < n_r:
+            point_l, point_r = left[p_l], right[p_r]
+            # pick up the smallest x
+            if point_l[0] < point_r[0]:
+                x, left_y = point_l
+                p_l += 1
+            else:
+                x, right_y = point_r
+                p_r += 1
+            # max height (i.e. y) between both skylines
+            max_y = max(left_y, right_y)
+            # if there is a skyline change
+            if curr_y != max_y:
+                update_output(x, max_y)
+                curr_y = max_y
+
+        # there is only left skyline
+        append_skyline(p_l, left, n_l, left_y, curr_y)
+
+        # there is only right skyline
+        append_skyline(p_r, right, n_r, right_y, curr_y)
+
+        return output 
+  
  ```
 </details> 
   
@@ -1173,6 +2219,18 @@ Note: There must be no consecutive horizontal lines of equal height in the outpu
 <summary>code</summary>
   
  ```
+ def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+    nums_length = len(nums)
+    if nums_length == len(set(nums)):
+        return False
+    else:
+        for i in range(0, nums_length):
+            for j in range(i+1, nums_length):
+                if nums[i] == nums[j] and abs(i-j) <= k:
+                    return True
+
+        return False             
+              
  ```
 </details> 
   
@@ -1183,6 +2241,29 @@ Given an integer array nums and two integers k and t, return true if there are t
 <summary>code</summary>
   
  ```
+class Solution:
+    def containsNearbyAlmostDuplicate(self, nums: List[int], k: int, t: int) -> bool:
+        bucket={}## key: index of bucket, val:elements within bucket, range for each bucket is t+1
+        bucket_size=t+1
+        for i,n in enumerate(nums):
+            bucket_index=n//bucket_size
+            if bucket_index not in bucket:
+                bucket[bucket_index]=[i]
+            else:
+                if abs(bucket[bucket_index][-1]-i)<=k:
+                    return True
+                bucket[bucket_index].append(i)
+            ## Check neighbor buckets
+            if bucket_index-1 in bucket:
+                last_index=bucket[bucket_index-1][-1]
+                if abs(last_index-i)<=k and abs(nums[last_index]-nums[i])<=t:
+                    return True
+            if bucket_index+1 in bucket:
+                last_index=bucket[bucket_index+1][-1]
+                if abs(last_index-i)<=k and abs(nums[last_index]-nums[i])<=t:
+                    return True
+        return False
+              
  ```
 </details> 
   
@@ -1192,6 +2273,27 @@ Given an m x n binary matrix filled with 0's and 1's, find the largest square co
 <summary>code</summary>
   
  ```
+ class Solution:
+    def maximalSquare(self, M):
+        m, n, ans = len(M), len(M[0]), 0
+        def get_max_square_len(row, col):
+            all_ones_row_len, sq_len, i, j = min(m-row, n-col), 0, 0, 0
+            while i < all_ones_row_len:
+                j = 0
+                while j < all_ones_row_len and M[i+row][j+col] != '0': 
+                    j += 1
+                all_ones_row_len = j
+                sq_len = min(all_ones_row_len, i := i + 1)
+            return sq_len
+        
+        for row in range(m):
+            for col in range(n):
+                ans = max(ans, get_max_square_len(row, col))
+        return ans * ans
+  
+Time Complexity : O(MN*min(M,N)2)
+Space Complexity : O(1) 
+  
  ```
 </details> 
   
@@ -1206,6 +2308,58 @@ Design an algorithm that runs in less than O(n) time complexity.
 <summary>code</summary>
   
  ```
+ class Solution:
+    def compute_depth(self, node: TreeNode) -> int:
+        """
+        Return tree depth in O(d) time.
+        """
+        d = 0
+        while node.left:
+            node = node.left
+            d += 1
+        return d
+
+    def exists(self, idx: int, d: int, node: TreeNode) -> bool:
+        """
+        Last level nodes are enumerated from 0 to 2**d - 1 (left -> right).
+        Return True if last level node idx exists. 
+        Binary search with O(d) complexity.
+        """
+        left, right = 0, 2**d - 1
+        for _ in range(d):
+            pivot = left + (right - left) // 2
+            if idx <= pivot:
+                node = node.left
+                right = pivot
+            else:
+                node = node.right
+                left = pivot + 1
+        return node is not None
+        
+    def countNodes(self, root: TreeNode) -> int:
+        # if the tree is empty
+        if not root:
+            return 0
+        
+        d = self.compute_depth(root)
+        # if the tree contains 1 node
+        if d == 0:
+            return 1
+        
+        # Last level nodes are enumerated from 0 to 2**d - 1 (left -> right).
+        # Perform binary search to check how many nodes exist.
+        left, right = 1, 2**d - 1
+        while left <= right:
+            pivot = left + (right - left) // 2
+            if self.exists(pivot, d, root):
+                left = pivot + 1
+            else:
+                right = pivot - 1
+        
+        # The tree contains 2**d - 1 nodes on the first (d - 1) levels
+        # and left nodes on the last level.
+        return (2**d - 1) + left 
+  
  ```
 </details> 
   
@@ -1219,6 +2373,18 @@ The second rectangle is defined by its bottom-left corner (bx1, by1) and its top
 <summary>code</summary>
   
  ```
+ class Solution:
+    def computeArea(self, ax1: int, ay1: int, ax2: int, ay2: int, bx1: int, by1: int, bx2: int, by2: int) -> int:
+        if (ax2 >= bx1 and ay2 >= by1) and not (by2 < ay1 or bx2 < ax1):
+            cx1 = max(ax1, bx1)
+            cy1 = max(ay1, by1)
+            cx2 = min(ax2, bx2)
+            cy2 = min(ay2, by2)
+            sharedArea = (cx2 - cx1) * (cy2 - cy1)
+        else:
+            sharedArea = 0
+        return (((ax2 - ax1) * (ay2 - ay1)) + ((bx2 - bx1) * (by2 - by1)) - sharedArea) 
+  
  ```
 </details> 
   
@@ -1230,6 +2396,67 @@ Note: You are not allowed to use any built-in function which evaluates strings a
 <summary>code</summary>
   
  ```
+class Solution:
+
+    def evaluate_expr(self, stack):
+        
+        # If stack is empty or the expression starts with
+        # a symbol, then append 0 to the stack.
+        # i.e. [1, '-', 2, '-'] becomes [1, '-', 2, '-', 0]
+        if not stack or type(stack[-1]) == str:
+            stack.append(0)
+            
+        res = stack.pop()
+
+        # Evaluate the expression till we get corresponding ')'
+        while stack and stack[-1] != ')':
+            sign = stack.pop()
+            if sign == '+':
+                res += stack.pop()
+            else:
+                res -= stack.pop()
+        return res       
+
+    def calculate(self, s: str) -> int:
+
+        stack = []
+        n, operand = 0, 0
+
+        for i in range(len(s) - 1, -1, -1):
+            ch = s[i]
+
+            if ch.isdigit():
+
+                # Forming the operand - in reverse order.
+                operand = (10**n * int(ch)) + operand
+                n += 1
+
+            elif ch != " ":
+                if n:
+                    # Save the operand on the stack
+                    # As we encounter some non-digit.
+                    stack.append(operand)
+                    n, operand = 0, 0
+
+                if ch == '(':         
+                    res = self.evaluate_expr(stack)
+                    stack.pop()        
+
+                    # Append the evaluated result to the stack.
+                    # This result could be of a sub-expression within the parenthesis.
+                    stack.append(res)
+
+                # For other non-digits just push onto the stack.
+                else:
+                    stack.append(ch)
+
+        # Push the last operand to stack, if any.
+        if n:
+            stack.append(operand)
+
+        # Evaluate any left overs in the stack.
+        return self.evaluate_expr(stack) 
+  
  ```
 </details> 
   
@@ -1252,6 +2479,36 @@ Depending on your language, the queue may not be supported natively. You may sim
 <summary>code</summary>
   
  ```
+class MyStack:
+
+  def __init__(self):
+    self._queue = []
+
+  def push(self, x: int) -> None:
+    # queue push to back: list.append()
+    self._queue.append(x)
+    return
+        
+  def pop(self) -> int:
+    # queue pop from front: list.pop(0)
+    for i in range(len(self._queue)-1):
+      self._queue.append(self._queue.pop(0))
+    return self._queue.pop(0)
+
+  def top(self) -> int:
+    # queue peek from front: list[0]
+    holder = None
+    for i in range(len(self._queue)-1):
+      self._queue.append(self._queue.pop(0))
+    holder = self._queue[0]
+    self._queue.append(self._queue.pop(0))
+    return holder
+
+  def empty(self) -> bool:
+    # queue get length: len(list)
+    return len(self._queue) == 0
+	```  
+  
  ```
 </details> 
   
@@ -1261,6 +2518,13 @@ Given the root of a binary tree, invert the tree, and return its root.
 <summary>code</summary>
   
  ```
+def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+     if root:
+         root.left, root.right = root.right, root.left
+         self.invertTree(root.left)
+         self.invertTree(root.right)  
+     return root    
+  
  ```
 </details> 
   
@@ -1276,6 +2540,39 @@ Note: You are not allowed to use any built-in function which evaluates strings a
 <summary>code</summary>
   
  ```
+ class Solution:
+    def calculate(self, s):
+        def precedence(c):
+            return c == '*' or c == '/'
+        def toPostfix(s):
+            op, post = deque(), ''
+            for c in s:
+                if c == ' ': continue
+                elif c.isdigit(): post += c
+                else:
+                    post += '|'
+                    while op and precedence(c) <= precedence(op[-1]):
+                        post += op.pop()
+                    op.append(c)
+                    
+            return post + '|' + ''.join(reversed(op))
+        
+        s, num, i = toPostfix(s), deque(), 0
+        while i < len(s):
+            if s[i].isdigit():
+                j = s.find('|', i+1)
+                num.append(int(s[i:j]))
+                i = j
+            else:
+                num1, num2 = num.pop(), num.pop()
+                if   s[i] == '*': num.append(num2 * num1)
+                elif s[i] == '/': num.append(num2 // num1)
+                elif s[i] == '+': num.append(num2 + num1)
+                elif s[i] == '-': num.append(num2 - num1)
+            i += 1
+
+        return num.pop() 
+  
  ```
 </details> 
   
@@ -1293,6 +2590,34 @@ Each range [a,b] in the list should be output as:
 <summary>code</summary>
   
  ```
+ class Solution(object):
+    def summaryRanges(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[str]
+        """
+        L = 0
+        R = 0
+        s = []
+        if len(nums) == 1:
+            s.append(str(nums[L]))
+        for i in range(1, len(nums)):
+            if nums[i]-nums[i-1] == 1:
+                R += 1
+                if i == len(nums)-1:
+                    s.append("%d->%d"%(nums[L],nums[R]))
+            else:
+                if L == R:
+                    s.append(str(nums[L]))
+                else:
+                    s.append("%d->%d"%(nums[L],nums[R]))
+                if i == len(nums)-1:
+                    s.append(str(nums[i]))
+                else:
+                    L = i
+                    R = i
+        return s 
+  
  ```
 </details> 
   
@@ -1302,6 +2627,37 @@ Given an integer array of size n, find all elements that appear more than ⌊ n/
 <summary>code</summary>
   
  ```
+class Solution:
+
+    def majorityElement(self, nums):
+        if not nums:
+            return []
+        
+        # 1st pass
+        count1, count2, candidate1, candidate2 = 0, 0, None, None
+        for n in nums:
+            if candidate1 == n:
+                count1 += 1
+            elif candidate2 == n:
+                count2 += 1
+            elif count1 == 0:
+                candidate1 = n
+                count1 += 1
+            elif count2 == 0:
+                candidate2 = n
+                count2 += 1
+            else:
+                count1 -= 1
+                count2 -= 1
+        
+        # 2nd pass
+        result = []
+        for c in [candidate1, candidate2]:
+            if nums.count(c) > len(nums)//3:
+                result.append(c)
+
+        return result  
+  
  ```
 </details> 
   
@@ -1311,6 +2667,25 @@ Given an integer array of size n, find all elements that appear more than ⌊ n/
 <summary>code</summary>
   
  ```
+class Solution:
+    def kthSmallest(self, root, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        stack = []
+        
+        while True:
+            while root:
+                stack.append(root)
+                root = root.left
+            root = stack.pop()
+            k -= 1
+            if not k:
+                return root.val
+            root = root.right  
+  
  ```
 </details> 
   
@@ -1322,6 +2697,12 @@ An integer n is a power of two, if there exists an integer x such that n == 2x.
 <summary>code</summary>
   
  ```
+ class Solution(object):
+    def isPowerOfTwo(self, n):
+        if n == 0:
+            return False
+        return n & (-n) == n 
+  
  ```
 </details> 
   
@@ -1343,6 +2724,40 @@ Depending on your language, the stack may not be supported natively. You may sim
 <summary>code</summary>
   
  ```
+class Stack:
+    def __init__(self, val, prev=None):
+        self.val = val
+        self.prev = prev
+
+class MyQueue:
+    def __init__(self):
+        self.front = None
+        self.back = None
+
+    def push(self, x: int) -> None:
+        if self.back == None:
+            self.back = Stack(x, None)
+            self.front = self.back
+        else:
+            self.back.prev = Stack(x, None)
+            self.back = self.back.prev
+
+    def pop(self) -> int:
+        val = self.front.val
+        self.front = self.front.prev
+
+        if self.front == None:
+            self.back = None
+        
+        return val
+            
+
+    def peek(self) -> int:
+        return self.front.val
+
+    def empty(self) -> bool:
+        return self.front == None  
+  
  ```
 </details> 
   
@@ -1352,6 +2767,26 @@ Given an integer n, count the total number of digit 1 appearing in all non-negat
 <summary>code</summary>
   
  ```
+ class Solution:
+    def countDigitOne(self, n: int) -> int:
+        
+        #O(logn) mathematical solution
+        #intervals of new 1s: 0-9, 10-99, 100-999, 1000,9999... 
+            #each interval yields 1,10,100,etc. new '1's respectively
+		#first and foremost, we want to check how many of each interval repeats 
+        #conditions for FULL yield when curr%upper bound+1: 1 <=, 19 <=, 199 <=...
+        #conditions for PARTIAL yielf when curr%upper bound+1: None, 10 <= < 19,  100 <= < 199, 1000 <= < 1999 ... 
+        
+        ans = 0
+        for i in range(len(str(n))):
+            curr = 10**(i+1)
+            hi,lo = int('1'+'9'*i), int('1'+'0'*i)
+            ans += (n//curr) * 10**i
+            if (pot:=n%curr) >= hi: ans += 10**i
+            elif lo <= pot < hi: 
+                ans += pot - lo + 1
+        return ans 
+  
  ```
 </details> 
   
@@ -1361,6 +2796,14 @@ Given the head of a singly linked list, return true if it is a palindrome.
 <summary>code</summary>
   
  ```
+def isPalindrome(self, head: ListNode) -> bool:
+    vals = []
+    current_node = head
+    while current_node is not None:
+        vals.append(current_node.val)
+        current_node = current_node.next
+    return vals == vals[::-1]  
+  
  ```
 </details> 
   
@@ -1375,6 +2818,33 @@ According to the definition of LCA on Wikipedia: “The lowest common ancestor i
 <summary>code</summary>
   
  ```
+ class Solution:
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        # Value of current node or parent node.
+        parent_val = root.val
+
+        # Value of p
+        p_val = p.val
+
+        # Value of q
+        q_val = q.val
+
+        # If both p and q are greater than parent
+        if p_val > parent_val and q_val > parent_val:    
+            return self.lowestCommonAncestor(root.right, p, q)
+        # If both p and q are lesser than parent
+        elif p_val < parent_val and q_val < parent_val:    
+            return self.lowestCommonAncestor(root.left, p, q)
+        # We have found the split point, i.e. the LCA node.
+        else:
+            return root 
+  
  ```
 </details> 
   
@@ -1387,6 +2857,45 @@ According to the definition of LCA on Wikipedia: “The lowest common ancestor i
 <summary>code</summary>
   
  ```
+class Solution:
+
+    def __init__(self):
+        # Variable to store LCA node.
+        self.ans = None
+
+    def lowestCommonAncestor(self, root, p, q):
+        """
+        :type root: TreeNode
+        :type p: TreeNode
+        :type q: TreeNode
+        :rtype: TreeNode
+        """
+        def recurse_tree(current_node):
+
+            # If reached the end of a branch, return False.
+            if not current_node:
+                return False
+
+            # Left Recursion
+            left = recurse_tree(current_node.left)
+
+            # Right Recursion
+            right = recurse_tree(current_node.right)
+
+            # If the current node is one of p or q
+            mid = current_node == p or current_node == q
+
+            # If any two of the three flags left, right or mid become True.
+            if mid + left + right >= 2:
+                self.ans = current_node
+
+            # Return True if either of the three bool values is True.
+            return mid or left or right
+
+        # Traverse the tree
+        recurse_tree(root)
+        return self.ans  
+  
  ```
 </details> 
   

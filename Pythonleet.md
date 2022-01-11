@@ -2908,6 +2908,15 @@ It is guaranteed that the node to be deleted is not a tail node in the list.
 <summary>code</summary>
   
  ```
+class Solution(object):
+    def deleteNode(self, node):
+        """
+        :type node: ListNode
+        :rtype: void Do not return anything, modify node in-place instead.
+        """
+        node.val = node.next.val
+        node.next = node.next.next	
+	
  ```
 </details> 
   
@@ -2921,6 +2930,46 @@ You must write an algorithm that runs in O(n) time and without using the divisio
 <summary>code</summary>
   
  ```
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        
+        # The length of the input array 
+        length = len(nums)
+        
+        # The left and right arrays as described in the algorithm
+        L, R, answer = [0]*length, [0]*length, [0]*length
+        
+        # L[i] contains the product of all the elements to the left
+        # Note: for the element at index '0', there are no elements to the left,
+        # so the L[0] would be 1
+        L[0] = 1
+        for i in range(1, length):
+            
+            # L[i - 1] already contains the product of elements to the left of 'i - 1'
+            # Simply multiplying it with nums[i - 1] would give the product of all 
+            # elements to the left of index 'i'
+            L[i] = nums[i - 1] * L[i - 1]
+        
+        # R[i] contains the product of all the elements to the right
+        # Note: for the element at index 'length - 1', there are no elements to the right,
+        # so the R[length - 1] would be 1
+        R[length - 1] = 1
+        for i in reversed(range(length - 1)):
+            
+            # R[i + 1] already contains the product of elements to the right of 'i + 1'
+            # Simply multiplying it with nums[i + 1] would give the product of all 
+            # elements to the right of index 'i'
+            R[i] = nums[i + 1] * R[i + 1]
+        
+        # Constructing the answer array
+        for i in range(length):
+            # For the first element, R[i] would be product except self
+            # For the last element of the array, product except self would be L[i]
+            # Else, multiple product of all elements to the left and to the right
+            answer[i] = L[i] * R[i]
+        
+        return answer	
+	
  ```
 </details> 
   
@@ -2933,6 +2982,14 @@ Return the max sliding window.
 <summary>code</summary>
   
  ```
+class Solution:
+    def maxSlidingWindow(self, nums: 'List[int]', k: 'int') -> 'List[int]':
+        n = len(nums)
+        if n * k == 0:
+            return []
+        
+        return [max(nums[i:i + k]) for i in range(n - k + 1)]	
+	
  ```
 </details> 
   
@@ -2945,6 +3002,44 @@ Integers in each column are sorted in ascending from top to bottom.
 <summary>code</summary>
   
  ```
+	class Solution:
+    def binary_search(self, matrix, target, start, vertical):
+        lo = start
+        hi = len(matrix[0]) - 1 if vertical else len(matrix) - 1
+
+        while hi >= lo:
+            mid = (lo + hi) // 2
+            if vertical: # searching a column
+                if matrix[start][mid] < target:
+                    lo = mid + 1
+                elif matrix[start][mid] > target:
+                    hi = mid - 1
+                else:
+                    return True
+            else: # searching a row
+                if matrix[mid][start] < target:
+                    lo = mid + 1
+                elif matrix[mid][start] > target:
+                    hi = mid - 1
+                else:
+                    return True
+        
+        return False
+
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        # an empty matrix obviously does not contain `target`
+        if not matrix:
+            return False
+
+        # iterate over matrix diagonals starting in bottom left.
+        for i in range(min(len(matrix), len(matrix[0]))):
+            vertical_found = self.binary_search(matrix, target, i, True)
+            horizontal_found = self.binary_search(matrix, target, i, False)
+            if vertical_found or horizontal_found:
+                return True
+        
+        return False
+	
  ```
 </details> 
   
@@ -2955,15 +3050,64 @@ Given a string expression of numbers and operators, return all possible results 
 <summary>code</summary>
   
  ```
+	class Solution:
+    def diffWaysToCompute(self, expression: str) -> List[int]:
+        def parenthesis(s):
+            stk = []
+            for c in range(len(s)):
+                if s[c] == "+" or s[c] == "*" or s[c]== "-":
+                    a = s[0:c]
+                    b = s[c+1:]
+                    res1 = parenthesis(a)
+                    res2 = parenthesis(b)
+                    for i in res1:
+                        for j in res2:
+                            if s[c]== "+":
+                                stk.append(int(i) + int(j))
+
+                            elif s[c]== "-":
+                                stk.append(int(i) - int(j))
+
+                            elif s[c] == "*":
+                                stk.append(int(i) * int(j))
+
+
+            if len(stk) == 0 :
+                stk.append(s)
+
+            # print(stk)
+            return (stk)
+
+
+        return (parenthesis(expression))
+	
  ```
 </details> 
   
   #### Question 86:
 Given two strings s and t, return true if t is an anagram of s, and false otherwise.  
+Using Hash Table:	
 <details>
 <summary>code</summary>
   
  ```
+public boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) {
+        return false;
+    }
+    int[] counter = new int[26];
+    for (int i = 0; i < s.length(); i++) {
+        counter[s.charAt(i) - 'a']++;
+        counter[t.charAt(i) - 'a']--;
+    }
+    for (int count : counter) {
+        if (count != 0) {
+            return false;
+        }
+    }
+    return true;
+}	
+	
  ```
 </details> 
   
@@ -2973,6 +3117,29 @@ Given an array of strings wordsDict and two different strings that already exist
 <summary>code</summary>
   
  ```
+	class Solution(object):
+	def shortestDistance(self, wordsDict, word1, word2):
+		"""
+		:type wordsDict: List[str]
+		:type word1: str
+		:type word2: str
+		:rtype: int
+		"""
+		word1_idx = []
+		word2_idx = []
+
+		for idx,word in enumerate(wordsDict):
+			if word == word1:
+				word1_idx.append(idx)
+			elif word == word2:
+				word2_idx.append(idx)
+		final = 9999999999
+		for i in word1_idx:
+			for j in word2_idx:
+				final = min(abs(i-j),final)
+
+		return final
+	
  ```
 </details> 
   
@@ -2987,6 +3154,38 @@ int shortest(String word1, String word2) returns the shortest distance between w
 <summary>code</summary>
   
  ```
+	from collections import defaultdict
+class WordDistance:
+
+    def __init__(self, words):
+        """
+        :type words: List[str]
+        """
+        self.locations = defaultdict(list)
+
+        # Prepare a mapping from a word to all it's locations (indices).
+        for i, w in enumerate(words):
+            self.locations[w].append(i)
+
+    def shortest(self, word1, word2):
+        """
+        :type word1: str
+        :type word2: str
+        :rtype: int
+        """
+        loc1, loc2 = self.locations[word1], self.locations[word2]
+        l1, l2 = 0, 0
+        min_diff = float("inf")
+
+        # Until the shorter of the two lists is processed
+        while l1 < len(loc1) and l2 < len(loc2):
+            min_diff = min(min_diff, abs(loc1[l1] - loc2[l2]))
+            if loc1[l1] < loc2[l2]:
+                l1 += 1
+            else:
+                l2 += 1
+        return min_diff
+	
  ```
 </details> 
   
@@ -3000,6 +3199,23 @@ Note that word1 and word2 may be the same. It is guaranteed that they represent 
 <summary>code</summary>
   
  ```
+ def shortestWordDistance(self, wordsDict: List[str], word1: str, word2: str) -> int:
+        ans = len(wordsDict)
+        first = -1
+        second = -1
+        for idx,word in enumerate(wordsDict):
+            if word==word1:
+                prev = first# we use prev to record the last idx of same word
+                first = idx
+            if word==word2:
+                if word != word1:
+                    second = idx
+                else:
+                    second = prev
+            if first !=-1 and second !=-1:
+                ans = min(ans,abs(second-first))
+        return ans	
+	
  ```
 </details> 
   
@@ -3013,6 +3229,28 @@ A strobogrammatic number is a number that looks the same when rotated 180 degree
 <summary>code</summary>
   
  ```
+class Solution:
+    def isStrobogrammatic(self, num: str) -> bool:
+        
+        # In Python, we use a list as a string builder.
+        rotated_string_builder = []
+        
+        # Remember that we want to loop backward through the string.
+        for c in reversed(num):
+            if c in {'0', '1', '8'}:
+                rotated_string_builder.append(c)
+            elif c == '6':
+                rotated_string_builder.append('9')
+            elif c == '9':
+                rotated_string_builder.append('6')
+            else: # This must be an invalid digit.
+                return False
+        
+        # In Python, we convert a list of characters to
+        # a string using join.
+        rotated_string = "".join(rotated_string_builder)
+        return rotated_string == num	
+	
  ```
 </details> 
   
@@ -3026,6 +3264,40 @@ A strobogrammatic number is a number that looks the same when rotated 180 degree
 <summary>code</summary>
   
  ```
+	class Solution(object):
+    def __init__(self):
+        self._pairs = {"0":"0", "1":"1", "8":"8", "6":"9", "9":"6"}
+            
+    
+    def findStrobogrammatic(self, n):
+		"""
+        :type n: int
+        :rtype: List[str]
+        """
+        return self.findStrobogrammaticRec(n , False)
+        
+    def findStrobogrammaticRec(self, n, leadingZeroesAllowed):
+       
+        out = []
+        if n <= 0:
+            return out
+        elif n == 1:
+            return ["0", "1", "8"]
+        else:
+            torso = self.findStrobogrammaticRec(n-2, True)
+            for key  in self._pairs.keys():
+                head = key
+                tail = self._pairs[key]
+                if head != "0" or leadingZeroesAllowed:
+                    if torso:
+                        _torso = torso[:]
+                        for i in range(len(_torso)):
+                            _torso[i] = head+_torso[i]+tail
+                        out.extend(_torso)
+                    else:
+                        out.append(head+tail)
+        return out
+	
  ```
 </details> 
   
@@ -3039,6 +3311,53 @@ A strobogrammatic number is a number that looks the same when rotated 180 degree
 <summary>code</summary>
   
  ```
+	import bisect
+
+class Solution:
+    def strobogrammaticInRange(self, low, high):
+        if len(high) == len(low):
+            lows = self.helper(len(low), True)
+            lows = [int(l) for l in lows if str(int(l)) == str(l)]
+            
+            low_index = bisect.bisect_left(lows, int(low))
+            high_index = bisect.bisect_right(lows, int(high))
+            return high_index - low_index
+        
+        lows = self.helper(len(low), True)
+        highs = self.helper(len(high), True)
+
+        low_index = bisect.bisect_left(lows, int(low))
+        high_index = bisect.bisect_right(highs, int(high))
+        
+        cnt = len(lows)
+        
+        prev = len(lows)
+        for i in range(len(low) + 1, len(high)):
+            if i == 2:
+                cnt += 4
+                prev = 4
+                continue
+            cnt += prev * (3 if i % 2 else 5)
+            if not i % 2:
+                prev = prev * 5
+
+        return cnt - low_index + high_index
+    
+    def helper(self, l, is_start):
+        if l == 0:
+            return ['']
+        if l == 1:
+            return ['0', '1', '8'] if not is_start else [0, 1, 8]
+        rst = []
+        center = self.helper(l - 2, False)
+        
+        cs = [['0','0'],['1','1'],['6','9'],['8','8'],['9','6']] if not is_start else [['1','1'],['6','9'],['8','8'],['9','6']]
+        for c in cs:
+            for w in center:
+                rst.append(c[0] + w + c[1] if not is_start else int(c[0] + w + c[1]))
+        
+        return rst
+	
  ```
 </details> 
   
@@ -3054,6 +3373,28 @@ Given an array of strings strings, group all strings[i] that belong to the same 
 <summary>code</summary>
   
  ```
+	class Solution:
+    def groupStrings(self, strings: List[str]) -> List[List[str]]:
+        
+        def shift_letter(letter: str, shift: int):
+            return chr((ord(letter) - shift) % 26 + ord('a'))
+        
+        # Create a hash value
+        def get_hash(string: str):
+            # Calculate the number of shifts to make the first character to be 'a'
+            shift = ord(string[0])
+            return ''.join(shift_letter(letter, shift) for letter in string)
+        
+        # Create a hash_value (hashKey) for each string and append the string
+        # to the list of hash values i.e. mapHashToList["abc"] = ["abc", "bcd"]
+        groups = collections.defaultdict(list)
+        for string in strings:
+            hash_key = get_hash(string)
+            groups[hash_key].append(string)
+        
+        # Return a list of all of the grouped strings
+        return list(groups.values())
+	
  ```
 </details> 
   
@@ -3065,6 +3406,36 @@ A uni-value subtree means all nodes of the subtree have the same value.
 <summary>code</summary>
   
  ```
+	class Solution:
+    def countUnivalSubtrees(self, root):
+        if root is None: return 0
+        self.count = 0
+        self.is_uni(root)
+        return self.count
+
+    def is_uni(self, node):
+
+        # base case - if the node has no children this is a univalue subtree
+        if node.left is None and node.right is None:
+
+            # found a univalue subtree - increment
+            self.count += 1
+            return True
+
+        is_uni = True
+
+        # check if all of the node's children are univalue subtrees and if they have the same value
+        # also recursively call is_uni for children
+        if node.left is not None:
+            is_uni = self.is_uni(node.left) and is_uni and node.left.val == node.val
+
+        if node.right is not None:
+            is_uni = self.is_uni(node.right) and is_uni and node.right.val == node.val
+
+        # increment self.res and return whether a univalue tree exists here
+        self.count += is_uni
+        return is_uni
+	
  ```
 </details> 
   
@@ -3080,6 +3451,28 @@ hasNext() returns true if there are still some elements in the vector, and false
 <summary>code</summary>
   
  ```
+	class Vector2D:
+
+    def __init__(self, v: List[List[int]]):
+        # We need to iterate over the 2D vector, getting all the integers
+        # out of it and putting them into the nums list.
+        for (int[] innerVector : v) {
+        self.nums = []
+        for inner_list in v:
+            for num in inner_list:
+                self.nums.append(num)
+        # We'll keep position 1 behind the next number to return.
+        self.position = -1
+
+    def next(self) -> int:
+        # Move up to the current element and return it.
+        self.position += 1
+        return self.nums[self.position]
+
+    def hasNext(self) -> bool:
+        # If the next position is a valid index of nums, return True.
+        return self.position + 1 < len(self.nums)
+	
  ```
 </details> 
   
@@ -3091,6 +3484,18 @@ Given an array of meeting time intervals where intervals[i] = [starti, endi], de
 <summary>code</summary>
   
  ```
+	class Solution:
+    def canAttendMeetings(self, intervals: List[List[int]]) -> bool:
+        def overlap(interval1: List[int], interval2: List[int]) -> bool:
+            return (interval1[0] >= interval2[0] and interval1[0] < interval2[1]
+                or interval2[0] >= interval1[0] and interval2[0] < interval1[1])
+
+        for i in range(len(intervals)):
+            for j in range(i + 1, len(intervals)):
+                if overlap(intervals[i], intervals[j]):
+                    return False
+        return True
+	
  ```
 </details> 
   
@@ -3101,6 +3506,36 @@ Given an array of meeting time intervals intervals where intervals[i] = [starti,
 <summary>code</summary>
   
  ```
+	class Solution:
+    def minMeetingRooms(self, intervals: List[List[int]]) -> int:
+        
+        # If there is no meeting to schedule then no room needs to be allocated.
+        if not intervals:
+            return 0
+
+        # The heap initialization
+        free_rooms = []
+
+        # Sort the meetings in increasing order of their start time.
+        intervals.sort(key= lambda x: x[0])
+
+        # Add the first meeting. We have to give a new room to the first meeting.
+        heapq.heappush(free_rooms, intervals[0][1])
+
+        # For all the remaining meeting rooms
+        for i in intervals[1:]:
+
+            # If the room due to free up the earliest is free, assign that room to this meeting.
+            if free_rooms[0] <= i[0]:
+                heapq.heappop(free_rooms)
+
+            # If a new room is to be assigned, then also we add to the heap,
+            # If an old room is allocated, then also we have to add to the heap with updated end time.
+            heapq.heappush(free_rooms, i[1])
+
+        # The size of the heap tells us the minimum rooms required for all the meetings.
+        return len(free_rooms)
+	
  ```
 </details> 
   
@@ -3117,6 +3552,24 @@ Note that the factors should be in the range [2, n - 1].
 <summary>code</summary>
   
  ```
+class Solution:
+    def getFactors(self, n: int) -> List[List[int]]:
+        res, level = [], []
+        for d in range(2, int(sqrt(n))+1):
+            if n % d == 0:
+                level.append( [d, n//d] )
+        while level:
+            new = []
+            for chain in level:
+                res.append( chain[:] )
+                cur = chain.pop()
+                start, end = chain[-1], int(sqrt(cur))
+                for d in range(start, end+1): # key: gurantee monotonous increase
+                    if (cur % d == 0):
+                        new.append( chain + [d, cur//d] )
+            level = new
+        return res	
+	
  ```
 </details> 
   
@@ -3126,6 +3579,23 @@ Given an array of unique integers preorder, return true if it is the correct pre
 <summary>code</summary>
   
  ```
+class Solution:
+    def verifyPreorder(self, preorder: List[int]) -> bool:
+        lower = -float('inf')
+        stack = []
+        
+        for curr in preorder:
+            if curr <= lower: # break BST rule
+                return False
+            if not stack or curr < stack[-1]:
+                stack.append(curr)
+                continue
+            while stack and curr >= stack[-1]:
+                lower = stack.pop()
+            stack.append(curr)
+            
+        return True	
+	
  ```
 </details> 
   
@@ -3142,6 +3612,28 @@ Return the minimum cost to paint all houses.
 <summary>code</summary>
   
  ```
+	def minCost(self, costs):
+    """
+    :type costs: List[List[int]]
+    :rtype: int
+    """
+
+    def paint_cost(n, color):
+        total_cost = costs[n][color]
+        if n == len(costs) - 1:
+            pass
+        elif color == 0: # Red
+            total_cost += min(paint_cost(n + 1, 1), paint_cost(n + 1, 2))
+        elif color == 1: # Green
+            total_cost += min(paint_cost(n + 1, 0), paint_cost(n + 1, 2))
+        else: # Blue
+            total_cost += min(paint_cost(n + 1, 0), paint_cost(n + 1, 1))
+        return total_cost
+
+    if costs == []:
+        return 0
+    return min(paint_cost(0, 0), paint_cost(0, 1), paint_cost(0, 2))
+	
  ```
 </details> 
   

@@ -2258,7 +2258,15 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 144:
-  
+You are given an m x n binary matrix image where 0 represents a white pixel and 1 represents a black pixel.
+
+The black pixels are connected (i.e., there is only one black region). Pixels are connected horizontally and vertically.
+
+Given two integers x and y that represents the location of one of the black pixels, return the area of the smallest (axis-aligned) rectangle that encloses all black pixels.
+
+You must write an algorithm with less than O(mn) runtime complexity
+
+   
   <details>
 <summary>code</summary>
   
@@ -2267,7 +2275,14 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 145:
-  
+Given an integer array nums, handle multiple queries of the following type:
+
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+Implement the NumArray class:
+
+NumArray(int[] nums) Initializes the object with the integer array nums.
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+   
   <details>
 <summary>code</summary>
   
@@ -2276,7 +2291,14 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 146:
-  
+Given a 2D matrix matrix, handle multiple queries of the following type:
+
+Calculate the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+Implement the NumMatrix class:
+
+NumMatrix(int[][] matrix) Initializes the object with the integer matrix matrix.
+int sumRegion(int row1, int col1, int row2, int col2) Returns the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+   
   <details>
 <summary>code</summary>
   
@@ -2285,7 +2307,15 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 147:
-  
+You are given an empty 2D binary grid grid of size m x n. The grid represents a map where 0's represent water and 1's represent land. Initially, all the cells of grid are water cells (i.e., all the cells are 0's).
+
+We may perform an add land operation which turns the water at position into a land. You are given an array positions where positions[i] = [ri, ci] is the position (ri, ci) at which we should operate the ith operation.
+
+Return an array of integers answer where answer[i] is the number of islands after turning the cell (ri, ci) into a land.
+
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2294,7 +2324,15 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 148:
-  
+An additive number is a string whose digits can form an additive sequence.
+
+A valid additive sequence should contain at least three numbers. Except for the first two numbers, each subsequent number in the sequence must be the sum of the preceding two.
+
+Given a string containing only digits, return true if it is an additive number or false otherwise.
+
+Note: Numbers in the additive sequence cannot have leading zeros, so sequence 1, 2, 03 or 1, 02, 3 is invalid.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2303,7 +2341,16 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 149:
-  
+Given an integer array nums, handle multiple queries of the following types:
+
+Update the value of an element in nums.
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+Implement the NumArray class:
+
+NumArray(int[] nums) Initializes the object with the integer array nums.
+void update(int index, int val) Updates the value of nums[index] to be val.
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+   
   <details>
 <summary>code</summary>
   
@@ -2312,7 +2359,16 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 150:
-  
+Given a 2D matrix matrix, handle multiple queries of the following types:
+
+Update the value of a cell in matrix.
+Calculate the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+Implement the NumMatrix class:
+
+NumMatrix(int[][] matrix) Initializes the object with the integer matrix matrix.
+void update(int row, int col, int val) Updates the value of matrix[row][col] to be val.
+int sumRegion(int row1, int col1, int row2, int col2) Returns the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+   
   <details>
 <summary>code</summary>
   
@@ -2321,7 +2377,14 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 151:
-  
+You are given an array prices where prices[i] is the price of a given stock on the ith day.
+
+Find the maximum profit you can achieve. You may complete as many transactions as you like (i.e., buy one and sell one share of the stock multiple times) with the following restrictions:
+
+After you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).
+Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
+
+   
   <details>
 <summary>code</summary>
   
@@ -2330,7 +2393,15 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 152:
-  
+A tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.
+
+Given a tree of n nodes labelled from 0 to n - 1, and an array of n - 1 edges where edges[i] = [ai, bi] indicates that there is an undirected edge between the two nodes ai and bi in the tree, you can choose any node of the tree as the root. When you select a node x as the root, the result tree has height h. Among all possible rooted trees, those with minimum height (i.e. min(h))  are called minimum height trees (MHTs).
+
+Return a list of all MHTs' root labels. You can return the answer in any order.
+
+The height of a rooted tree is the number of edges on the longest downward path between the root and a leaf.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2339,7 +2410,9 @@ Return all the possible results. You may return the answer in any order.
 </details>   
  
   #### Question 153:
-  
+Given two sparse matrices mat1 of size m x k and mat2 of size k x n, return the result of mat1 x mat2. You may assume that multiplication is always possible.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2348,7 +2421,13 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 154:
-  
+You are given n balloons, indexed from 0 to n - 1. Each balloon is painted with a number on it represented by an array nums. You are asked to burst all the balloons.
+
+If you burst the ith balloon, you will get nums[i - 1] * nums[i] * nums[i + 1] coins. If i - 1 or i + 1 goes out of bounds of the array, then treat it as if there is a balloon with a 1 painted on it.
+
+Return the maximum coins you can collect by bursting the balloons wisely.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2357,6 +2436,12 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 155:
+A super ugly number is a positive integer whose prime factors are in the array primes.
+
+Given an integer n and an array of integers primes, return the nth super ugly number.
+
+The nth super ugly number is guaranteed to fit in a 32-bit signed integer.
+
   
   <details>
 <summary>code</summary>
@@ -2366,7 +2451,11 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 156:
-  
+Given the root of a binary tree, return the vertical order traversal of its nodes' values. (i.e., from top to bottom, column by column).
+
+If two nodes are in the same row and column, the order should be from left to right.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2375,7 +2464,9 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 157:
-  
+You are given an integer array nums and you have to return a new counts array. The counts array has the property where counts[i] is the number of smaller elements to the right of nums[i].
+
+   
   <details>
 <summary>code</summary>
   
@@ -2384,7 +2475,9 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 158:
-  
+Given a string s, remove duplicate letters so that every letter appears once and only once. You must make sure your result is the smallest in lexicographical order among all possible results.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2393,7 +2486,20 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 159:
-  
+You are given an m x n grid grid of values 0, 1, or 2, where:
+
+each 0 marks an empty land that you can pass by freely,
+each 1 marks a building that you cannot pass through, and
+each 2 marks an obstacle that you cannot pass through.
+You want to build a house on an empty land that reaches all buildings in the shortest total travel distance. You can only move up, down, left, and right.
+
+Return the shortest travel distance for such a house. If it is not possible to build such a house according to the above rules, return -1.
+
+The total travel distance is the sum of the distances between the houses of the friends and the meeting point.
+
+The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2402,7 +2508,9 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 160:
-  
+Given a string array words, return the maximum value of length(word[i]) * length(word[j]) where the two words do not share common letters. If no such two words exist, return 0.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2411,7 +2519,13 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 161:
-  
+There are n bulbs that are initially off. You first turn on all the bulbs, then you turn off every second bulb.
+
+On the third round, you toggle every third bulb (turning on if it's off or turning off if it's on). For the ith round, you toggle every i bulb. For the nth round, you only toggle the last bulb.
+
+Return the number of bulbs that are on after n rounds.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2420,7 +2534,28 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 162:
-  
+Medium
+
+565
+
+198
+
+Add to List
+
+Share
+A word's generalized abbreviation can be constructed by taking any number of non-overlapping and non-adjacent substrings and replacing them with their respective lengths.
+
+For example, "abcde" can be abbreviated into:
+"a3e" ("bcd" turned into "3")
+"1bcd1" ("a" and "e" both turned into "1")
+"5" ("abcde" turned into "5")
+"abcde" (no substrings replaced)
+However, these abbreviations are invalid:
+"23" ("ab" turned into "2" and "cde" turned into "3") is invalid as the substrings chosen are adjacent.
+"22de" ("ab" turned into "2" and "bc" turned into "2") is invalid as the substring chosen overlap.
+Given a string word, return a list of all the possible generalized abbreviations of word. Return the answer in any order.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2429,7 +2564,13 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 163:
-  
+You are given two integer arrays nums1 and nums2 of lengths m and n respectively. nums1 and nums2 represent the digits of two numbers. You are also given an integer k.
+
+Create the maximum number of length k <= m + n from digits of the two numbers. The relative order of the digits from the same array must be preserved.
+
+Return an array of the k digits representing the answer.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2438,7 +2579,13 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 164:
-  
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+You may assume that you have an infinite number of each kind of coin.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2447,7 +2594,11 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 165:
-  
+You have a graph of n nodes. You are given an integer n and an array edges where edges[i] = [ai, bi] indicates that there is an edge between ai and bi in the graph.
+
+Return the number of connected components in the graph.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2457,7 +2608,11 @@ Return all the possible results. You may return the answer in any order.
 
   
   #### Question 166:
-  
+Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+
+You may assume the input array always has a valid answer.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2466,7 +2621,9 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 167:
-  
+Given an integer array nums and an integer k, return the maximum length of a subarray that sums to k. If there isn't one, return 0 instead.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2475,7 +2632,11 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 168:
-  
+Given an integer n, return true if it is a power of three. Otherwise, return false.
+
+An integer n is a power of three, if there exists an integer x such that n == 3x.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2484,7 +2645,11 @@ Return all the possible results. You may return the answer in any order.
 </details>   
   
   #### Question 169:
-  
+Given an integer array nums and two integers lower and upper, return the number of range sums that lie in [lower, upper] inclusive.
+
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j inclusive, where i <= j.
+
+   
   <details>
 <summary>code</summary>
   
@@ -2493,6 +2658,14 @@ Return all the possible results. You may return the answer in any order.
 </details>   
    
   #### Question 170:
+Given the head of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices, and return the reordered list.
+
+The first node is considered odd, and the second node is even, and so on.
+
+Note that the relative order inside both the even and odd groups should remain as it was in the input.
+
+You must solve the problem in O(1) extra space complexity and O(n) time complexity.
+
   
   <details>
 <summary>code</summary>

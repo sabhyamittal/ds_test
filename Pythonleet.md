@@ -3645,7 +3645,12 @@ A leaf is a node with no children.
 <summary>code</summary>
   
  ```
-	
+class TreeNode(object):
+    """ Definition of a binary tree node."""
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None	
 	
  ```
 </details>   
@@ -3656,6 +3661,19 @@ Given an integer num, repeatedly add all its digits until the result has only on
 <summary>code</summary>
   
  ```
+class Solution:
+    def addDigits(self, num: int) -> int:
+        digital_root = 0
+        while num > 0:
+            digital_root += num % 10
+            num = num // 10
+            
+            if num == 0 and digital_root > 9:
+                num = digital_root
+                digital_root = 0
+                
+        return digital_root	
+	
  ```
 </details>   
   
@@ -3665,6 +3683,30 @@ Given an array of n integers nums and an integer target, find the number of inde
 <summary>code</summary>
   
  ```
+	class Solution:
+    
+    def threeSumSmaller(self, arr: List[int], req: int) -> int:
+        # sort saving complexity
+        res, length = 0, len(arr)
+        arr.sort()
+        # enumerate first pointer
+        for fst in range(length - 2):
+            # keep 2 pointer search
+            snd, trd = fst + 1, length - 1
+            while snd < trd:
+                # build triplet, build sumup
+                val = sum([arr[fst], arr[snd], arr[trd]])
+                # if larger or equal than req
+                if val >= req:
+                    # adjust trd pointer
+                    trd -= 1
+                # for curr situation, all smaller trd satisfy
+                else:
+                    res += trd - snd
+                    snd += 1
+        # res return
+        return res
+	
  ```
 </details>   
   

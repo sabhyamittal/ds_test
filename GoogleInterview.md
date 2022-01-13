@@ -40,3 +40,13 @@
  Understand tree traversal algorithms: BFS and 
  DFS, and know the difference between inorder, 
  postorder and preorder.
+ #### Quick sort
+ #### Merge sort
+ #### Heap sort
+ #### Insertion sort
+ #### Radix sort
+ #### Binary Tree
+ #### Binary search tree
+ #### AVL tree
+ #### BFS
+ #### DFS

@@ -2581,3 +2581,651 @@ print(hashTable)
 ```
 </details>
 	 
+#### Red-Black Trees
+<details>
+<summary>code in c++</summary>
+	
+```
+ 
+
+// Implementing Red-Black Tree in C
+
+#include <stdio.h>
+#include <stdlib.h>
+
+enum nodeColor {
+  RED,
+  BLACK
+};
+
+struct rbNode {
+  int data, color;
+  struct rbNode *link[2];
+};
+
+struct rbNode *root = NULL;
+
+// Create a red-black tree
+struct rbNode *createNode(int data) {
+  struct rbNode *newnode;
+  newnode = (struct rbNode *)malloc(sizeof(struct rbNode));
+  newnode->data = data;
+  newnode->color = RED;
+  newnode->link[0] = newnode->link[1] = NULL;
+  return newnode;
+}
+
+// Insert an node
+void insertion(int data) {
+  struct rbNode *stack[98], *ptr, *newnode, *xPtr, *yPtr;
+  int dir[98], ht = 0, index;
+  ptr = root;
+  if (!root) {
+    root = createNode(data);
+    return;
+  }
+
+  stack[ht] = root;
+  dir[ht++] = 0;
+  while (ptr != NULL) {
+    if (ptr->data == data) {
+      printf("Duplicates Not Allowed!!\n");
+      return;
+    }
+    index = (data - ptr->data) > 0 ? 1 : 0;
+    stack[ht] = ptr;
+    ptr = ptr->link[index];
+    dir[ht++] = index;
+  }
+  stack[ht - 1]->link[index] = newnode = createNode(data);
+  while ((ht >= 3) && (stack[ht - 1]->color == RED)) {
+    if (dir[ht - 2] == 0) {
+      yPtr = stack[ht - 2]->link[1];
+      if (yPtr != NULL && yPtr->color == RED) {
+        stack[ht - 2]->color = RED;
+        stack[ht - 1]->color = yPtr->color = BLACK;
+        ht = ht - 2;
+      } else {
+        if (dir[ht - 1] == 0) {
+          yPtr = stack[ht - 1];
+        } else {
+          xPtr = stack[ht - 1];
+          yPtr = xPtr->link[1];
+          xPtr->link[1] = yPtr->link[0];
+          yPtr->link[0] = xPtr;
+          stack[ht - 2]->link[0] = yPtr;
+        }
+        xPtr = stack[ht - 2];
+        xPtr->color = RED;
+        yPtr->color = BLACK;
+        xPtr->link[0] = yPtr->link[1];
+        yPtr->link[1] = xPtr;
+        if (xPtr == root) {
+          root = yPtr;
+        } else {
+          stack[ht - 3]->link[dir[ht - 3]] = yPtr;
+        }
+        break;
+      }
+    } else {
+      yPtr = stack[ht - 2]->link[0];
+      if ((yPtr != NULL) && (yPtr->color == RED)) {
+        stack[ht - 2]->color = RED;
+        stack[ht - 1]->color = yPtr->color = BLACK;
+        ht = ht - 2;
+      } else {
+        if (dir[ht - 1] == 1) {
+          yPtr = stack[ht - 1];
+        } else {
+          xPtr = stack[ht - 1];
+          yPtr = xPtr->link[0];
+          xPtr->link[0] = yPtr->link[1];
+          yPtr->link[1] = xPtr;
+          stack[ht - 2]->link[1] = yPtr;
+        }
+        xPtr = stack[ht - 2];
+        yPtr->color = BLACK;
+        xPtr->color = RED;
+        xPtr->link[1] = yPtr->link[0];
+        yPtr->link[0] = xPtr;
+        if (xPtr == root) {
+          root = yPtr;
+        } else {
+          stack[ht - 3]->link[dir[ht - 3]] = yPtr;
+        }
+        break;
+      }
+    }
+  }
+  root->color = BLACK;
+}
+
+// Delete a node
+void deletion(int data) {
+  struct rbNode *stack[98], *ptr, *xPtr, *yPtr;
+  struct rbNode *pPtr, *qPtr, *rPtr;
+  int dir[98], ht = 0, diff, i;
+  enum nodeColor color;
+
+  if (!root) {
+    printf("Tree not available\n");
+    return;
+  }
+
+  ptr = root;
+  while (ptr != NULL) {
+    if ((data - ptr->data) == 0)
+      break;
+    diff = (data - ptr->data) > 0 ? 1 : 0;
+    stack[ht] = ptr;
+    dir[ht++] = diff;
+    ptr = ptr->link[diff];
+  }
+
+  if (ptr->link[1] == NULL) {
+    if ((ptr == root) && (ptr->link[0] == NULL)) {
+      free(ptr);
+      root = NULL;
+    } else if (ptr == root) {
+      root = ptr->link[0];
+      free(ptr);
+    } else {
+      stack[ht - 1]->link[dir[ht - 1]] = ptr->link[0];
+    }
+  } else {
+    xPtr = ptr->link[1];
+    if (xPtr->link[0] == NULL) {
+      xPtr->link[0] = ptr->link[0];
+      color = xPtr->color;
+      xPtr->color = ptr->color;
+      ptr->color = color;
+
+      if (ptr == root) {
+        root = xPtr;
+      } else {
+        stack[ht - 1]->link[dir[ht - 1]] = xPtr;
+      }
+
+      dir[ht] = 1;
+      stack[ht++] = xPtr;
+    } else {
+      i = ht++;
+      while (1) {
+        dir[ht] = 0;
+        stack[ht++] = xPtr;
+        yPtr = xPtr->link[0];
+        if (!yPtr->link[0])
+          break;
+        xPtr = yPtr;
+      }
+
+      dir[i] = 1;
+      stack[i] = yPtr;
+      if (i > 0)
+        stack[i - 1]->link[dir[i - 1]] = yPtr;
+
+      yPtr->link[0] = ptr->link[0];
+
+      xPtr->link[0] = yPtr->link[1];
+      yPtr->link[1] = ptr->link[1];
+
+      if (ptr == root) {
+        root = yPtr;
+      }
+
+      color = yPtr->color;
+      yPtr->color = ptr->color;
+      ptr->color = color;
+    }
+  }
+
+  if (ht < 1)
+    return;
+
+  if (ptr->color == BLACK) {
+    while (1) {
+      pPtr = stack[ht - 1]->link[dir[ht - 1]];
+      if (pPtr && pPtr->color == RED) {
+        pPtr->color = BLACK;
+        break;
+      }
+
+      if (ht < 2)
+        break;
+
+      if (dir[ht - 2] == 0) {
+        rPtr = stack[ht - 1]->link[1];
+
+        if (!rPtr)
+          break;
+
+        if (rPtr->color == RED) {
+          stack[ht - 1]->color = RED;
+          rPtr->color = BLACK;
+          stack[ht - 1]->link[1] = rPtr->link[0];
+          rPtr->link[0] = stack[ht - 1];
+
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          dir[ht] = 0;
+          stack[ht] = stack[ht - 1];
+          stack[ht - 1] = rPtr;
+          ht++;
+
+          rPtr = stack[ht - 1]->link[1];
+        }
+
+        if ((!rPtr->link[0] || rPtr->link[0]->color == BLACK) &&
+          (!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+          rPtr->color = RED;
+        } else {
+          if (!rPtr->link[1] || rPtr->link[1]->color == BLACK) {
+            qPtr = rPtr->link[0];
+            rPtr->color = RED;
+            qPtr->color = BLACK;
+            rPtr->link[0] = qPtr->link[1];
+            qPtr->link[1] = rPtr;
+            rPtr = stack[ht - 1]->link[1] = qPtr;
+          }
+          rPtr->color = stack[ht - 1]->color;
+          stack[ht - 1]->color = BLACK;
+          rPtr->link[1]->color = BLACK;
+          stack[ht - 1]->link[1] = rPtr->link[0];
+          rPtr->link[0] = stack[ht - 1];
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          break;
+        }
+      } else {
+        rPtr = stack[ht - 1]->link[0];
+        if (!rPtr)
+          break;
+
+        if (rPtr->color == RED) {
+          stack[ht - 1]->color = RED;
+          rPtr->color = BLACK;
+          stack[ht - 1]->link[0] = rPtr->link[1];
+          rPtr->link[1] = stack[ht - 1];
+
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          dir[ht] = 1;
+          stack[ht] = stack[ht - 1];
+          stack[ht - 1] = rPtr;
+          ht++;
+
+          rPtr = stack[ht - 1]->link[0];
+        }
+        if ((!rPtr->link[0] || rPtr->link[0]->color == BLACK) &&
+          (!rPtr->link[1] || rPtr->link[1]->color == BLACK)) {
+          rPtr->color = RED;
+        } else {
+          if (!rPtr->link[0] || rPtr->link[0]->color == BLACK) {
+            qPtr = rPtr->link[1];
+            rPtr->color = RED;
+            qPtr->color = BLACK;
+            rPtr->link[1] = qPtr->link[0];
+            qPtr->link[0] = rPtr;
+            rPtr = stack[ht - 1]->link[0] = qPtr;
+          }
+          rPtr->color = stack[ht - 1]->color;
+          stack[ht - 1]->color = BLACK;
+          rPtr->link[0]->color = BLACK;
+          stack[ht - 1]->link[0] = rPtr->link[1];
+          rPtr->link[1] = stack[ht - 1];
+          if (stack[ht - 1] == root) {
+            root = rPtr;
+          } else {
+            stack[ht - 2]->link[dir[ht - 2]] = rPtr;
+          }
+          break;
+        }
+      }
+      ht--;
+    }
+  }
+}
+
+// Print the inorder traversal of the tree
+void inorderTraversal(struct rbNode *node) {
+  if (node) {
+    inorderTraversal(node->link[0]);
+    printf("%d  ", node->data);
+    inorderTraversal(node->link[1]);
+  }
+  return;
+}
+
+// Driver code
+int main() {
+  int ch, data;
+  while (1) {
+    printf("1. Insertion\t2. Deletion\n");
+    printf("3. Traverse\t4. Exit");
+    printf("\nEnter your choice:");
+    scanf("%d", &ch);
+    switch (ch) {
+      case 1:
+        printf("Enter the element to insert:");
+        scanf("%d", &data);
+        insertion(data);
+        break;
+      case 2:
+        printf("Enter the element to delete:");
+        scanf("%d", &data);
+        deletion(data);
+        break;
+      case 3:
+        inorderTraversal(root);
+        printf("\n");
+        break;
+      case 4:
+        exit(0);
+      default:
+        printf("Not available\n");
+        break;
+    }
+    printf("\n");
+  }
+  return 0;
+}	
+	
+```
+</details>
+	
+<details>
+<summary>code in python</summary>
+	
+```
+class Node():
+    def __init__(self,val):
+        self.val = val                                   # Value of Node
+        self.parent = None                               # Parent of Node
+        self.left = None                                 # Left Child of Node
+        self.right = None                                # Right Child of Node
+        self.color = 1                                   # Red Node as new node is always inserted as Red Node
+
+# Define R-B Tree
+class RBTree():
+    def __init__(self):
+        self.NULL = Node ( 0 )
+        self.NULL.color = 0
+        self.NULL.left = None
+        self.NULL.right = None
+        self.root = self.NULL
+
+
+    # Insert New Node
+    def insertNode(self, key):
+        node = Node(key)
+        node.parent = None
+        node.val = key
+        node.left = self.NULL
+        node.right = self.NULL
+        node.color = 1                                   # Set root colour as Red
+
+        y = None
+        x = self.root
+
+        while x != self.NULL :                           # Find position for new node
+            y = x
+            if node.val < x.val :
+                x = x.left
+            else :
+                x = x.right
+
+        node.parent = y                                  # Set parent of Node as y
+        if y == None :                                   # If parent i.e, is none then it is root node
+            self.root = node
+        elif node.val < y.val :                          # Check if it is right Node or Left Node by checking the value
+            y.left = node
+        else :
+            y.right = node
+
+        if node.parent == None :                         # Root node is always Black
+            node.color = 0
+            return
+
+        if node.parent.parent == None :                  # If parent of node is Root Node
+            return
+
+        self.fixInsert ( node )                          # Else call for Fix Up
+
+
+    def minimum(self, node):
+        while node.left != self.NULL:
+            node = node.left
+        return node
+
+
+    # Code for left rotate
+    def LR ( self , x ) :
+        y = x.right                                      # Y = Right child of x
+        x.right = y.left                                 # Change right child of x to left child of y
+        if y.left != self.NULL :
+            y.left.parent = x
+
+        y.parent = x.parent                              # Change parent of y as parent of x
+        if x.parent == None :                            # If parent of x == None ie. root node
+            self.root = y                                # Set y as root
+        elif x == x.parent.left :
+            x.parent.left = y
+        else :
+            x.parent.right = y
+        y.left = x
+        x.parent = y
+
+
+    # Code for right rotate
+    def RR ( self , x ) :
+        y = x.left                                       # Y = Left child of x
+        x.left = y.right                                 # Change left child of x to right child of y
+        if y.right != self.NULL :
+            y.right.parent = x
+
+        y.parent = x.parent                              # Change parent of y as parent of x
+        if x.parent == None :                            # If x is root node
+            self.root = y                                # Set y as root
+        elif x == x.parent.right :
+            x.parent.right = y
+        else :
+            x.parent.left = y
+        y.right = x
+        x.parent = y
+
+
+    # Fix Up Insertion
+    def fixInsert(self, k):
+        while k.parent.color == 1:                        # While parent is red
+            if k.parent == k.parent.parent.right:         # if parent is right child of its parent
+                u = k.parent.parent.left                  # Left child of grandparent
+                if u.color == 1:                          # if color of left child of grandparent i.e, uncle node is red
+                    u.color = 0                           # Set both children of grandparent node as black
+                    k.parent.color = 0
+                    k.parent.parent.color = 1             # Set grandparent node as Red
+                    k = k.parent.parent                   # Repeat the algo with Parent node to check conflicts
+                else:
+                    if k == k.parent.left:                # If k is left child of it's parent
+                        k = k.parent
+                        self.RR(k)                        # Call for right rotation
+                    k.parent.color = 0
+                    k.parent.parent.color = 1
+                    self.LR(k.parent.parent)
+            else:                                         # if parent is left child of its parent
+                u = k.parent.parent.right                 # Right child of grandparent
+                if u.color == 1:                          # if color of right child of grandparent i.e, uncle node is red
+                    u.color = 0                           # Set color of childs as black
+                    k.parent.color = 0
+                    k.parent.parent.color = 1             # set color of grandparent as Red
+                    k = k.parent.parent                   # Repeat algo on grandparent to remove conflicts
+                else:
+                    if k == k.parent.right:               # if k is right child of its parent
+                        k = k.parent
+                        self.LR(k)                        # Call left rotate on parent of k
+                    k.parent.color = 0
+                    k.parent.parent.color = 1
+                    self.RR(k.parent.parent)              # Call right rotate on grandparent
+            if k == self.root:                            # If k reaches root then break
+                break
+        self.root.color = 0                               # Set color of root as black
+
+
+    # Function to fix issues after deletion
+    def fixDelete ( self , x ) :
+        while x != self.root and x.color == 0 :           # Repeat until x reaches nodes and color of x is black
+            if x == x.parent.left :                       # If x is left child of its parent
+                s = x.parent.right                        # Sibling of x
+                if s.color == 1 :                         # if sibling is red
+                    s.color = 0                           # Set its color to black
+                    x.parent.color = 1                    # Make its parent red
+                    self.LR ( x.parent )                  # Call for left rotate on parent of x
+                    s = x.parent.right
+                # If both the child are black
+                if s.left.color == 0 and s.right.color == 0 :
+                    s.color = 1                           # Set color of s as red
+                    x = x.parent
+                else :
+                    if s.right.color == 0 :               # If right child of s is black
+                        s.left.color = 0                  # set left child of s as black
+                        s.color = 1                       # set color of s as red
+                        self.RR ( s )                     # call right rotation on x
+                        s = x.parent.right
+
+                    s.color = x.parent.color
+                    x.parent.color = 0                    # Set parent of x as black
+                    s.right.color = 0
+                    self.LR ( x.parent )                  # call left rotation on parent of x
+                    x = self.root
+            else :                                        # If x is right child of its parent
+                s = x.parent.left                         # Sibling of x
+                if s.color == 1 :                         # if sibling is red
+                    s.color = 0                           # Set its color to black
+                    x.parent.color = 1                    # Make its parent red
+                    self.RR ( x.parent )                  # Call for right rotate on parent of x
+                    s = x.parent.left
+
+                if s.right.color == 0 and s.right.color == 0 :
+                    s.color = 1
+                    x = x.parent
+                else :
+                    if s.left.color == 0 :                # If left child of s is black
+                        s.right.color = 0                 # set right child of s as black
+                        s.color = 1
+                        self.LR ( s )                     # call left rotation on x
+                        s = x.parent.left
+
+                    s.color = x.parent.color
+                    x.parent.color = 0
+                    s.left.color = 0
+                    self.RR ( x.parent )
+                    x = self.root
+        x.color = 0
+
+
+    # Function to transplant nodes
+    def __rb_transplant ( self , u , v ) :
+        if u.parent == None :
+            self.root = v
+        elif u == u.parent.left :
+            u.parent.left = v
+        else :
+            u.parent.right = v
+        v.parent = u.parent
+
+
+    # Function to handle deletion
+    def delete_node_helper ( self , node , key ) :
+        z = self.NULL
+        while node != self.NULL :                          # Search for the node having that value/ key and store it in 'z'
+            if node.val == key :
+                z = node
+
+            if node.val <= key :
+                node = node.right
+            else :
+                node = node.left
+
+        if z == self.NULL :                                # If Kwy is not present then deletion not possible so return
+            print ( "Value not present in Tree !!" )
+            return
+
+        y = z
+        y_original_color = y.color                          # Store the color of z- node
+        if z.left == self.NULL :                            # If left child of z is NULL
+            x = z.right                                     # Assign right child of z to x
+            self.__rb_transplant ( z , z.right )            # Transplant Node to be deleted with x
+        elif (z.right == self.NULL) :                       # If right child of z is NULL
+            x = z.left                                      # Assign left child of z to x
+            self.__rb_transplant ( z , z.left )             # Transplant Node to be deleted with x
+        else :                                              # If z has both the child nodes
+            y = self.minimum ( z.right )                    # Find minimum of the right sub tree
+            y_original_color = y.color                      # Store color of y
+            x = y.right
+            if y.parent == z :                              # If y is child of z
+                x.parent = y                                # Set parent of x as y
+            else :
+                self.__rb_transplant ( y , y.right )
+                y.right = z.right
+                y.right.parent = y
+
+            self.__rb_transplant ( z , y )
+            y.left = z.left
+            y.left.parent = y
+            y.color = z.color
+        if y_original_color == 0 :                          # If color is black then fixing is needed
+            self.fixDelete ( x )
+
+
+    # Deletion of node
+    def delete_node ( self , val ) :
+        self.delete_node_helper ( self.root , val )         # Call for deletion
+
+
+    # Function to print
+    def __printCall ( self , node , indent , last ) :
+        if node != self.NULL :
+            print(indent, end=' ')
+            if last :
+                print ("R----",end= ' ')
+                indent += "     "
+            else :
+                print("L----",end=' ')
+                indent += "|    "
+
+            s_color = "RED" if node.color == 1 else "BLACK"
+            print ( str ( node.val ) + "(" + s_color + ")" )
+            self.__printCall ( node.left , indent , False )
+            self.__printCall ( node.right , indent , True )
+
+    # Function to call print
+    def print_tree ( self ) :
+        self.__printCall ( self.root , "" , True )
+
+
+if __name__ == "__main__":
+    bst = RBTree()
+
+    bst.insertNode(10)
+    bst.insertNode(20)
+    bst.insertNode(30)
+    bst.insertNode(5)
+    bst.insertNode(4)
+    bst.insertNode(2)
+
+    bst.print_tree()
+
+    print("\nAfter deleting an element")
+    bst.delete_node(2)
+    bst.print_tree()	
+	
+```
+</details>	

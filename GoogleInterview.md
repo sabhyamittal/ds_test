@@ -682,18 +682,571 @@ for i in range(len(arr)):
  
  <details>
  <summary>code in c++ </summary>
+	 
  ```
+ #include "stdio.h"
+#include "stdlib.h"
+
+#define M 3
+
+typedef struct _node {
+        int    n; /* n < M No. of keys in node will always less than order of B tree */
+        int              keys[M - 1]; /*array of keys*/
+        struct _node *p[M]; /* (n+1 pointers will be in use) */
+} node;
+node *root = NULL;
+
+typedef enum KeyStatus {
+        Duplicate,
+        SearchFailure,
+        Success,
+        InsertIt,
+        LessKeys,
+} KeyStatus;
+
+void insert(int key);
+void display(node *root, int);
+void DelNode(int x);
+void search(int x);
+KeyStatus ins(node *r, int x, int* y, node** u);
+int searchPos(int x, int *key_arr, int n);
+KeyStatus del(node *r, int x);
+void eatline(void);
+void inorder(node *ptr);
+int totalKeys(node *ptr);
+void printTotal(node *ptr);
+int getMin(node *ptr);
+int getMax(node *ptr);
+void getMinMax(node *ptr);
+int max(int first, int second, int third);
+int maxLevel(node *ptr);
+void printMaxLevel(node *ptr);
+
+
+int main() {
+        int key;
+        int choice;
+        printf("Creation of B tree for M=%d\n", M);
+        while (1) {
+                printf("1.Insert\n");
+                printf("2.Delete\n");
+                printf("3.Search\n");
+                printf("4.Display\n");
+                printf("5.Quit\n");
+                printf("6.Enumerate\n");
+                printf("7.Total Keys\n");
+                printf("8.Min and Max Keys\n");
+                printf("9.Max Level\n");
+                printf("Enter your choice : ");
+                scanf("%d", &choice); eatline();
+
+                switch (choice) {
+                case 1:
+                        printf("Enter the key : ");
+                        scanf("%d", &key); eatline();
+                        insert(key);
+                        break;
+                case 2:
+                        printf("Enter the key : ");
+                        scanf("%d", &key); eatline();
+                        DelNode(key);
+                        break;
+                case 3:
+                        printf("Enter the key : ");
+                        scanf("%d", &key); eatline();
+                        search(key);
+                        break;
+                case 4:
+                        printf("Btree is :\n");
+                        display(root, 0);
+                        break;
+                case 5:
+                        exit(1);
+                case 6:
+                        printf("Btree in sorted order is:\n");
+                        inorder(root); putchar('\n');
+                        break;
+                case 7:
+                        printf("The total number of keys in this tree is:\n");
+                        printTotal(root);
+                        break;
+                case 8:
+                        getMinMax(root);
+                        break;
+                case 9:
+                        printf("The maximum level in this tree is:\n");
+                        printMaxLevel(root);
+                        break;
+                default:
+                        printf("Wrong choice\n");
+                        break;
+                }/*End of switch*/
+        }/*End of while*/
+        return 0;
+}/*End of main()*/
+
+void insert(int key) {
+        node *newnode;
+        int upKey;
+        KeyStatus value;
+        value = ins(root, key, &upKey, &newnode);
+        if (value == Duplicate)
+                printf("Key already available\n");
+        if (value == InsertIt) {
+                node *uproot = root;
+                root = (node*)malloc(sizeof(node));
+                root->n = 1;
+                root->keys[0] = upKey;
+                root->p[0] = uproot;
+                root->p[1] = newnode;
+        }/*End of if */
+}/*End of insert()*/
+
+KeyStatus ins(node *ptr, int key, int *upKey, node **newnode) {
+        node *newPtr, *lastPtr;
+        int pos, i, n, splitPos;
+        int newKey, lastKey;
+        KeyStatus value;
+        if (ptr == NULL) {
+                *newnode = NULL;
+                *upKey = key;
+                return InsertIt;
+        }
+        n = ptr->n;
+        pos = searchPos(key, ptr->keys, n);
+        if (pos < n && key == ptr->keys[pos])
+                return Duplicate;
+        value = ins(ptr->p[pos], key, &newKey, &newPtr);
+        if (value != InsertIt)
+                return value;
+        /*If keys in node is less than M-1 where M is order of B tree*/
+        if (n < M - 1) {
+                pos = searchPos(newKey, ptr->keys, n);
+                /*Shifting the key and pointer right for inserting the new key*/
+                for (i = n; i>pos; i--) {
+                        ptr->keys[i] = ptr->keys[i - 1];
+                        ptr->p[i + 1] = ptr->p[i];
+                }
+                /*Key is inserted at exact location*/
+                ptr->keys[pos] = newKey;
+                ptr->p[pos + 1] = newPtr;
+                ++ptr->n; /*incrementing the number of keys in node*/
+                return Success;
+        }/*End of if */
+         /*If keys in nodes are maximum and position of node to be inserted is last*/
+        if (pos == M - 1) {
+                lastKey = newKey;
+                lastPtr = newPtr;
+        }
+        else { /*If keys in node are maximum and position of node to be inserted is not last*/
+                lastKey = ptr->keys[M - 2];
+                lastPtr = ptr->p[M - 1];
+                for (i = M - 2; i>pos; i--) {
+                        ptr->keys[i] = ptr->keys[i - 1];
+                        ptr->p[i + 1] = ptr->p[i];
+                }
+                ptr->keys[pos] = newKey;
+                ptr->p[pos + 1] = newPtr;
+        }
+        splitPos = (M - 1) / 2;
+        (*upKey) = ptr->keys[splitPos];
+
+        (*newnode) = (node*)malloc(sizeof(node));/*Right node after split*/
+        ptr->n = splitPos; /*No. of keys for left splitted node*/
+        (*newnode)->n = M - 1 - splitPos;/*No. of keys for right splitted node*/
+        for (i = 0; i < (*newnode)->n; i++) {
+                (*newnode)->p[i] = ptr->p[i + splitPos + 1];
+                if (i < (*newnode)->n - 1)
+                        (*newnode)->keys[i] = ptr->keys[i + splitPos + 1];
+                else
+                        (*newnode)->keys[i] = lastKey;
+        }
+        (*newnode)->p[(*newnode)->n] = lastPtr;
+        return InsertIt;
+}/*End of ins()*/
+
+void display(node *ptr, int blanks) {
+        if (ptr) {
+                int i;
+                for (i = 1; i <= blanks; i++)
+                        printf(" ");
+                for (i = 0; i < ptr->n; i++)
+                        printf("%d ", ptr->keys[i]);
+                printf("\n");
+                for (i = 0; i <= ptr->n; i++)
+                        display(ptr->p[i], blanks + 10);
+        }/*End of if*/
+}/*End of display()*/
+
+void search(int key) {
+        int pos, i, n;
+        node *ptr = root;
+        printf("Search path:\n");
+        while (ptr) {
+                n = ptr->n;
+                for (i = 0; i < ptr->n; i++)
+                        printf(" %d", ptr->keys[i]);
+                printf("\n");
+                pos = searchPos(key, ptr->keys, n);
+                if (pos < n && key == ptr->keys[pos]) {
+                        printf("Key %d found in position %d of last dispalyed node\n", key, i);
+                        return;
+                }
+                ptr = ptr->p[pos];
+        }
+        printf("Key %d is not available\n", key);
+}/*End of search()*/
+
+int searchPos(int key, int *key_arr, int n) {
+        int pos = 0;
+        while (pos < n && key > key_arr[pos])
+                pos++;
+        return pos;
+}/*End of searchPos()*/
+
+void DelNode(int key) {
+        node *uproot;
+        KeyStatus value;
+        value = del(root, key);
+        switch (value) {
+        case SearchFailure:
+                printf("Key %d is not available\n", key);
+                break;
+        case LessKeys:
+                uproot = root;
+                root = root->p[0];
+                free(uproot);
+                break;
+        default:
+                return;
+        }/*End of switch*/
+}/*End of delnode()*/
+
+KeyStatus del(node *ptr, int key) {
+        int pos, i, pivot, n, min;
+        int *key_arr;
+        KeyStatus value;
+        node **p, *lptr, *rptr;
+
+        if (ptr == NULL)
+                return SearchFailure;
+        /*Assigns values of node*/
+        n = ptr->n;
+        key_arr = ptr->keys;
+        p = ptr->p;
+        min = (M - 1) / 2;/*Minimum number of keys*/
+
+                                          //Search for key to delete
+        pos = searchPos(key, key_arr, n);
+        // p is a leaf
+        if (p[0] == NULL) {
+                if (pos == n || key < key_arr[pos])
+                        return SearchFailure;
+                /*Shift keys and pointers left*/
+                for (i = pos + 1; i < n; i++)
+                {
+                        key_arr[i - 1] = key_arr[i];
+                        p[i] = p[i + 1];
+                }
+                return --ptr->n >= (ptr == root ? 1 : min) ? Success : LessKeys;
+        }/*End of if */
+
+         //if found key but p is not a leaf
+        if (pos < n && key == key_arr[pos]) {
+                node *qp = p[pos], *qp1;
+                int nkey;
+                while (1) {
+                        nkey = qp->n;
+                        qp1 = qp->p[nkey];
+                        if (qp1 == NULL)
+                                break;
+                        qp = qp1;
+                }/*End of while*/
+                key_arr[pos] = qp->keys[nkey - 1];
+                qp->keys[nkey - 1] = key;
+        }/*End of if */
+        value = del(p[pos], key);
+        if (value != LessKeys)
+                return value;
+
+        if (pos > 0 && p[pos - 1]->n > min) {
+                pivot = pos - 1; /*pivot for left and right node*/
+                lptr = p[pivot];
+                rptr = p[pos];
+                /*Assigns values for right node*/
+                rptr->p[rptr->n + 1] = rptr->p[rptr->n];
+                for (i = rptr->n; i>0; i--) {
+                        rptr->keys[i] = rptr->keys[i - 1];
+                        rptr->p[i] = rptr->p[i - 1];
+                }
+                rptr->n++;
+                rptr->keys[0] = key_arr[pivot];
+                rptr->p[0] = lptr->p[lptr->n];
+                key_arr[pivot] = lptr->keys[--lptr->n];
+                return Success;
+        }/*End of if */
+         //if (posn > min)
+        if (pos < n && p[pos + 1]->n > min) {
+                pivot = pos; /*pivot for left and right node*/
+                lptr = p[pivot];
+                rptr = p[pivot + 1];
+                /*Assigns values for left node*/
+                lptr->keys[lptr->n] = key_arr[pivot];
+                lptr->p[lptr->n + 1] = rptr->p[0];
+                key_arr[pivot] = rptr->keys[0];
+                lptr->n++;
+                rptr->n--;
+                for (i = 0; i < rptr->n; i++) {
+                        rptr->keys[i] = rptr->keys[i + 1];
+                        rptr->p[i] = rptr->p[i + 1];
+                }/*End of for*/
+                rptr->p[rptr->n] = rptr->p[rptr->n + 1];
+                return Success;
+        }/*End of if */
+
+        if (pos == n)
+                pivot = pos - 1;
+        else
+                pivot = pos;
+
+        lptr = p[pivot];
+        rptr = p[pivot + 1];
+        /*merge right node with left node*/
+        lptr->keys[lptr->n] = key_arr[pivot];
+        lptr->p[lptr->n + 1] = rptr->p[0];
+        for (i = 0; i < rptr->n; i++) {
+                lptr->keys[lptr->n + 1 + i] = rptr->keys[i];
+                lptr->p[lptr->n + 2 + i] = rptr->p[i + 1];
+        }
+        lptr->n = lptr->n + rptr->n + 1;
+        free(rptr); /*Remove right node*/
+        for (i = pos + 1; i < n; i++) {
+                key_arr[i - 1] = key_arr[i];
+                p[i] = p[i + 1];
+        }
+        return --ptr->n >= (ptr == root ? 1 : min) ? Success : LessKeys;
+}/*End of del()*/
+
+void eatline(void) {
+        char c;
+        while ((c = getchar()) != '\n');
+}
+
+void inorder(node *ptr) {
+        if (ptr) {
+                if (ptr->n >= 1) {
+                        inorder(ptr->p[0]);
+                        printf("%d ", ptr->keys[0]);
+                        inorder(ptr->p[1]);
+                        if (ptr->n == 2) {
+                                printf("%d ", ptr->keys[1]);
+                                inorder(ptr->p[2]);
+                        }
+                }
+        }
+}
+int totalKeys(node *ptr) {
+        if (ptr) {
+                int count = 1;
+                if (ptr->n >= 1) {
+                        count += totalKeys(ptr->p[0]);
+                        count += totalKeys(ptr->p[1]);
+                        if (ptr->n == 2) count += totalKeys(ptr->p[2]) + 1;
+                }
+                return count;
+        }
+        return 0;
+}
+
+
+void printTotal(node *ptr) {
+        printf("%d\n", totalKeys(ptr));
+}
+
+
+int getMin(node *ptr) {
+        if (ptr) {
+                int min;
+                if (ptr->p[0] != NULL) min = getMin(ptr->p[0]);
+                else min = ptr->keys[0];
+                return min;
+        }
+        return 0;
+}
+int getMax(node *ptr) {
+        if (ptr) {
+                int max;
+                if (ptr->n == 1) {
+                        if (ptr->p[1] != NULL) max = getMax(ptr->p[1]);
+                        else max = ptr->keys[0];
+                }
+                if (ptr->n == 2) {
+                        if (ptr->p[2] != NULL) max = getMax(ptr->p[2]);
+                        else max = ptr->keys[1];
+                }
+                return max;
+        }
+        return 0;
+}
+
+
+void getMinMax(node *ptr) {
+        printf("%d %d\n", getMin(ptr), getMax(ptr));
+}
+
+
+int max(int first, int second, int third) {
+        int max = first;
+        if (second > max) max = second;
+        if (third > max) max = third;
+        return max;
+}
+
+
+int maxLevel(node *ptr) {
+        if (ptr) {
+                int l = 0, mr = 0, r = 0, max_depth;
+                if (ptr->p[0] != NULL) l = maxLevel(ptr->p[0]);
+                if (ptr->p[1] != NULL) mr = maxLevel(ptr->p[1]);
+                if (ptr->n == 2) {
+                        if (ptr->p[2] != NULL) r = maxLevel(ptr->p[2]);
+                }
+                max_depth = max(l, mr, r) + 1;
+                return max_depth;
+        }
+        return 0;
+}
+
+
+void printMaxLevel(node *ptr) {
+        int max = maxLevel(ptr) - 1;
+        if (max == -1) printf("tree is empty\n");
+        else printf("%d\n", max);
+}	 
+	 
  ```
  </details>
- 
+	 
+	 
+ <details>
+ <summary>code in python</summary>
+	 
+ ```
+# Searching a key on a B-tree in Python
+
+
+# Create a node
+class BTreeNode:
+  def __init__(self, leaf=False):
+    self.leaf = leaf
+    self.keys = []
+    self.child = []
+
+
+# Tree
+class BTree:
+  def __init__(self, t):
+    self.root = BTreeNode(True)
+    self.t = t
+
+    # Insert node
+  def insert(self, k):
+    root = self.root
+    if len(root.keys) == (2 * self.t) - 1:
+      temp = BTreeNode()
+      self.root = temp
+      temp.child.insert(0, root)
+      self.split_child(temp, 0)
+      self.insert_non_full(temp, k)
+    else:
+      self.insert_non_full(root, k)
+
+    # Insert nonfull
+  def insert_non_full(self, x, k):
+    i = len(x.keys) - 1
+    if x.leaf:
+      x.keys.append((None, None))
+      while i >= 0 and k[0] < x.keys[i][0]:
+        x.keys[i + 1] = x.keys[i]
+        i -= 1
+      x.keys[i + 1] = k
+    else:
+      while i >= 0 and k[0] < x.keys[i][0]:
+        i -= 1
+      i += 1
+      if len(x.child[i].keys) == (2 * self.t) - 1:
+        self.split_child(x, i)
+        if k[0] > x.keys[i][0]:
+          i += 1
+      self.insert_non_full(x.child[i], k)
+
+    # Split the child
+  def split_child(self, x, i):
+    t = self.t
+    y = x.child[i]
+    z = BTreeNode(y.leaf)
+    x.child.insert(i + 1, z)
+    x.keys.insert(i, y.keys[t - 1])
+    z.keys = y.keys[t: (2 * t) - 1]
+    y.keys = y.keys[0: t - 1]
+    if not y.leaf:
+      z.child = y.child[t: 2 * t]
+      y.child = y.child[0: t - 1]
+
+  # Print the tree
+  def print_tree(self, x, l=0):
+    print("Level ", l, " ", len(x.keys), end=":")
+    for i in x.keys:
+      print(i, end=" ")
+    print()
+    l += 1
+    if len(x.child) > 0:
+      for i in x.child:
+        self.print_tree(i, l)
+
+  # Search key in the tree
+  def search_key(self, k, x=None):
+    if x is not None:
+      i = 0
+      while i < len(x.keys) and k > x.keys[i][0]:
+        i += 1
+      if i < len(x.keys) and k == x.keys[i][0]:
+        return (x, i)
+      elif x.leaf:
+        return None
+      else:
+        return self.search_key(k, x.child[i])
+      
+    else:
+      return self.search_key(k, self.root)
+
+
+def main():
+  B = BTree(3)
+
+  for i in range(10):
+    B.insert((i, 2 * i))
+
+  B.print_tree(B.root)
+
+  if B.search_key(8) is not None:
+    print("\nFound")
+  else:
+    print("\nNot Found")
+
+
+if __name__ == '__main__':
+  main()	 
+	 
+ ```
+</details>
+	 
  #### Binary search tree
  
  <details>
  <summary>code in c++ </summary>
   
- ```
-   
- 
+ ``` 
  
 #include <stdio.h>
 #include <stdlib.h>
@@ -1032,16 +1585,375 @@ inorder(root)
  </details>
  
  #### BFS
- 
+BFS: travelling all the nodes first and moving on to their child from left to right.
+works on queue data structure.
+graph traversal algorithm.
+	 
  <details>
  <summary>code in c++ </summary>
+	 
  ```
+ 
+ #include <stdio.h>
+#include <stdlib.h>
+#define SIZE 40
+
+struct queue {
+  int items[SIZE];
+  int front;
+  int rear;
+};
+
+struct queue* createQueue();
+void enqueue(struct queue* q, int);
+int dequeue(struct queue* q);
+void display(struct queue* q);
+int isEmpty(struct queue* q);
+void printQueue(struct queue* q);
+
+struct node {
+  int vertex;
+  struct node* next;
+};
+
+struct node* createNode(int);
+
+struct Graph {
+  int numVertices;
+  struct node** adjLists;
+  int* visited;
+};
+
+// BFS algorithm
+void bfs(struct Graph* graph, int startVertex) {
+  struct queue* q = createQueue();
+
+  graph->visited[startVertex] = 1;
+  enqueue(q, startVertex);
+
+  while (!isEmpty(q)) {
+    printQueue(q);
+    int currentVertex = dequeue(q);
+    printf("Visited %d\n", currentVertex);
+
+    struct node* temp = graph->adjLists[currentVertex];
+
+    while (temp) {
+      int adjVertex = temp->vertex;
+
+      if (graph->visited[adjVertex] == 0) {
+        graph->visited[adjVertex] = 1;
+        enqueue(q, adjVertex);
+      }
+      temp = temp->next;
+    }
+  }
+}
+
+// Creating a node
+struct node* createNode(int v) {
+  struct node* newNode = malloc(sizeof(struct node));
+  newNode->vertex = v;
+  newNode->next = NULL;
+  return newNode;
+}
+
+// Creating a graph
+struct Graph* createGraph(int vertices) {
+  struct Graph* graph = malloc(sizeof(struct Graph));
+  graph->numVertices = vertices;
+
+  graph->adjLists = malloc(vertices * sizeof(struct node*));
+  graph->visited = malloc(vertices * sizeof(int));
+
+  int i;
+  for (i = 0; i < vertices; i++) {
+    graph->adjLists[i] = NULL;
+    graph->visited[i] = 0;
+  }
+
+  return graph;
+}
+
+// Add edge
+void addEdge(struct Graph* graph, int src, int dest) {
+  // Add edge from src to dest
+  struct node* newNode = createNode(dest);
+  newNode->next = graph->adjLists[src];
+  graph->adjLists[src] = newNode;
+
+  // Add edge from dest to src
+  newNode = createNode(src);
+  newNode->next = graph->adjLists[dest];
+  graph->adjLists[dest] = newNode;
+}
+
+// Create a queue
+struct queue* createQueue() {
+  struct queue* q = malloc(sizeof(struct queue));
+  q->front = -1;
+  q->rear = -1;
+  return q;
+}
+
+// Check if the queue is empty
+int isEmpty(struct queue* q) {
+  if (q->rear == -1)
+    return 1;
+  else
+    return 0;
+}
+
+// Adding elements into queue
+void enqueue(struct queue* q, int value) {
+  if (q->rear == SIZE - 1)
+    printf("\nQueue is Full!!");
+  else {
+    if (q->front == -1)
+      q->front = 0;
+    q->rear++;
+    q->items[q->rear] = value;
+  }
+}
+
+// Removing elements from queue
+int dequeue(struct queue* q) {
+  int item;
+  if (isEmpty(q)) {
+    printf("Queue is empty");
+    item = -1;
+  } else {
+    item = q->items[q->front];
+    q->front++;
+    if (q->front > q->rear) {
+      printf("Resetting queue ");
+      q->front = q->rear = -1;
+    }
+  }
+  return item;
+}
+
+// Print the queue
+void printQueue(struct queue* q) {
+  int i = q->front;
+
+  if (isEmpty(q)) {
+    printf("Queue is empty");
+  } else {
+    printf("\nQueue contains \n");
+    for (i = q->front; i < q->rear + 1; i++) {
+      printf("%d ", q->items[i]);
+    }
+  }
+}
+
+int main() {
+  struct Graph* graph = createGraph(6);
+  addEdge(graph, 0, 1);
+  addEdge(graph, 0, 2);
+  addEdge(graph, 1, 2);
+  addEdge(graph, 1, 4);
+  addEdge(graph, 1, 3);
+  addEdge(graph, 2, 4);
+  addEdge(graph, 3, 4);
+
+  bfs(graph, 0);
+
+  return 0;
+}	 
+	 
  ```
  </details>
+	 
+<details>
+<summary>code in python</summary>
+	
+```
+# Python3 Program to print BFS traversal
+# from a given source vertex. BFS(int s)
+# traverses vertices reachable from s.
+from collections import defaultdict
+
+# This class represents a directed graph
+# using adjacency list representation
+class Graph:
+
+    # Constructor
+    def __init__(self):
+
+        # default dictionary to store graph
+        self.graph = defaultdict(list)
+
+    # function to add an edge to graph
+    def addEdge(self,u,v):
+        self.graph[u].append(v)
+
+    # Function to print a BFS of graph
+    def BFS(self, s):
+
+        # Mark all the vertices as not visited
+        visited = [False] * (max(self.graph) + 1)
+
+        # Create a queue for BFS
+        queue = []
+
+        # Mark the source node as 
+        # visited and enqueue it
+        queue.append(s)
+        visited[s] = True
+
+        while queue:
+
+            # Dequeue a vertex from 
+            # queue and print it
+            s = queue.pop(0)
+            print (s, end = " ")
+
+            # Get all adjacent vertices of the
+            # dequeued vertex s. If a adjacent
+            # has not been visited, then mark it
+            # visited and enqueue it
+            for i in self.graph[s]:
+                if visited[i] == False:
+                    queue.append(i)
+                    visited[i] = True
+
+# Driver code
+
+# Create a graph given in
+# the above diagram
+g = Graph()
+g.addEdge(0, 1)
+g.addEdge(0, 2)
+g.addEdge(1, 2)
+g.addEdge(2, 0)
+g.addEdge(2, 3)
+g.addEdge(3, 3)
+
+print ("Following is Breadth First Traversal"
+                  " (starting from vertex 2)")
+g.BFS(2)	
+	
+```
+</details>
  
  #### DFS
+DFS: pre-order of binary search tree.
+travelling along  the tree from the root until the leaf node and then moving 
+towards the children of respective nodes in order.
+works on stack data structure.
+graph traversal algorithm.
+	 
  <details>
  <summary>code in c++ </summary>
+	 
  ```
+#include<stdio.h>
+#include<conio.h>
+int a[20][20],reach[20],n;
+void dfs(int v) {
+	int i;
+	reach[v]=1;
+	for (i=1;i<=n;i++)
+	  if(a[v][i] && !reach[i]) {
+		printf("\n %d->%d",v,i);
+		dfs(i);
+	}
+}
+void main() {
+	int i,j,count=0;
+	clrscr();
+	printf("\n Enter number of vertices:");
+	scanf("%d",&n);
+	for (i=1;i<=n;i++) {
+		reach[i]=0;
+		for (j=1;j<=n;j++)
+		   a[i][j]=0;
+	}
+	printf("\n Enter the adjacency matrix:\n");
+	for (i=1;i<=n;i++)
+	  for (j=1;j<=n;j++)
+	   scanf("%d",&a[i][j]);
+	dfs(1);
+	printf("\n");
+	for (i=1;i<=n;i++) {
+		if(reach[i])
+		   count++;
+	}
+	if(count==n)
+	  printf("\n Graph is connected"); else
+	  printf("\n Graph is not connected");
+	getch();
+		 
+	 
  ```
  </details>
+	 
+<details>
+<summary>code in python</summary>
+	
+```
+# Python3 program to print DFS traversal
+# from a given given graph
+from collections import defaultdict
+
+# This class represents a directed graph using
+# adjacency list representation
+
+
+class Graph:
+
+    # Constructor
+    def __init__(self):
+
+        # default dictionary to store graph
+        self.graph = defaultdict(list)
+
+    # function to add an edge to graph
+    def addEdge(self, u, v):
+        self.graph[u].append(v)
+
+    # A function used by DFS
+    def DFSUtil(self, v, visited):
+
+        # Mark the current node as visited
+        # and print it
+        visited.add(v)
+        print(v, end=' ')
+
+        # Recur for all the vertices
+        # adjacent to this vertex
+        for neighbour in self.graph[v]:
+            if neighbour not in visited:
+                self.DFSUtil(neighbour, visited)
+
+    # The function to do DFS traversal. It uses
+    # recursive DFSUtil()
+    def DFS(self, v):
+
+        # Create a set to store visited vertices
+        visited = set()
+
+        # Call the recursive helper function
+        # to print DFS traversal
+        self.DFSUtil(v, visited)
+
+# Driver code
+
+
+# Create a graph given
+# in the above diagram
+g = Graph()
+g.addEdge(0, 1)
+g.addEdge(0, 2)
+g.addEdge(1, 2)
+g.addEdge(2, 0)
+g.addEdge(2, 3)
+g.addEdge(3, 3)
+
+print("Following is DFS from (starting from vertex 2)")
+g.DFS(2)
+	
+	
+```
+</details>	

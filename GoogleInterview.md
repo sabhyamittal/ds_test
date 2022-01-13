@@ -98,7 +98,8 @@ int main(){
  </details>
  
  <details>
-  <summary>code in python</summary>
+ <summary>code in python</summary>
+  
   ```
   def partition(arr, low, high):
     i = (low-1)         # index of smaller element
@@ -151,7 +152,7 @@ for i in range(n):
 ```
 </details>                  
  
- #### Merge sort
+#### Merge sort
  
  <details>
  <summary>code in c++ </summary>

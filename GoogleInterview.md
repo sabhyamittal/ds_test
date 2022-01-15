@@ -1974,6 +1974,7 @@ myTree.printHelper(root, "", True)
 BFS: travelling all the nodes first and moving on to their child from left to right.
 works on queue data structure.
 graph traversal algorithm.
+level order traversal of graph.	 
 	 
  <details>
  <summary>code in c++ </summary>

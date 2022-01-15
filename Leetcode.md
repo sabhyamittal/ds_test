@@ -2868,100 +2868,313 @@ class Solution:
 <summary>code</summary>
   
 ```
-  
+class Solution(object):
+    def wordsAbbreviation(self, words):
+        def abbrev(word, i = 0):
+            if (len(word) - i <= 3): return word
+            return word[:i+1] + str(len(word) - i - 2) + word[-1]
+
+        N = len(words)
+        ans = map(abbrev, words)
+        prefix = [0] * N
+
+        for i in xrange(N):
+            while True:
+                dupes = set()
+                for j in xrange(i+1, N):
+                    if ans[i] == ans[j]:
+                        dupes.add(j)
+
+                if not dupes: break
+                dupes.add(i)
+                for k in dupes:
+                    prefix[k] += 1
+                    ans[k] = abbrev(words[k], prefix[k])
+
+        return ans  
   
 ```
 </details>  
+	
 #### 531. Lonely Pixel I
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def findLonelyPixel(self, picture):
+    return sum(col.count('B') == 1 == picture[col.index('B')].count('B') for col in zip(*picture))  
   
 ```
-</details>  
+</details> 
+	
 #### 536. Construct Binary Tree from String
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def str2tree(self, s: str) -> TreeNode:
+        return self._str2treeInternal(s, 0)[0]
+    
+    def _getNumber(self, s: str, index: int) -> (int, int):
+        
+        is_negative = False
+        
+        # A negative number
+        if s[index] == '-':
+            is_negative = True
+            index = index + 1
+        
+        number = 0
+        while index < len(s) and s[index].isdigit():
+            number = number * 10 + int(s[index])
+            index += 1
+        
+        return number if not is_negative else -number, index
+            
+    
+    def _str2treeInternal(self, s: str, index: int) -> (TreeNode, int):
+        
+        if index == len(s):
+            return None, index
+        
+        # Start of the tree will always contain a number representing
+        # the root of the tree. So we calculate that first.
+        value, index = self._getNumber(s, index)
+        node = TreeNode(value)
+        
+        # Next, if there is any data left, we check for the first subtree
+        # which according to the problem statement will always be the left child.
+        if index < len(s) and s[index] == '(':
+            node.left, index = self._str2treeInternal(s, index + 1)
+        
+        # Indicates a right child
+        if node.left and index < len(s) and s[index] == '(':
+            node.right, index = self._str2treeInternal(s, index + 1)
+        
+        return node, index + 1 if index < len(s) and s[index] == ')' else index  
   
 ```
 </details>  
+	
 #### 545. Boundary of Binary Tree
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution(object):
+    def boundaryOfBinaryTree(self, root):
+        def dfs_leftmost(node):
+            if not node or not node.left and not node.right:
+                return
+            boundary.append(node.val)
+            if node.left:
+                dfs_leftmost(node.left)
+            else:
+                dfs_leftmost(node.right)
+
+        def dfs_leaves(node):
+            if not node:
+                return
+            dfs_leaves(node.left)
+            if node != root and not node.left and not node.right:
+                boundary.append(node.val)
+            dfs_leaves(node.right)
+
+        def dfs_rightmost(node):
+            if not node or not node.left and not node.right:
+                return
+            if node.right:
+                dfs_rightmost(node.right)
+            else:
+                dfs_rightmost(node.left)
+            boundary.append(node.val)
+
+        if not root:
+            return []
+        boundary = [root.val]
+        dfs_leftmost(root.left)
+        dfs_leaves(root)
+        dfs_rightmost(root.right)
+        return boundary  
   
 ```
 </details>  
+	
 #### 549. Binary Tree Longest Consecutive Sequence II
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def longestConsecutive(self, root: TreeNode) -> int:
+                
+        def longest_path(root: TreeNode) -> List[int]:
+            nonlocal maxval
+            
+            if not root:
+                return [0, 0]
+            
+            inr = dcr = 1
+            if root.left:
+                left = longest_path(root.left)
+                if (root.val == root.left.val + 1):
+                    dcr = left[1] + 1
+                elif (root.val == root.left.val - 1):
+                    inr = left[0] + 1
+            
+            if root.right:
+                right = longest_path(root.right)
+                if (root.val == root.right.val + 1):
+                    dcr = max(dcr, right[1] + 1)
+                elif (root.val == root.right.val - 1):
+                    inr = max(inr, right[0] + 1)
+                    
+            maxval = max(maxval, dcr + inr - 1)
+            return [inr, dcr]
+        
+        maxval = 0
+        longest_path(root)
+        return maxval  
   
 ```
 </details>  
+	
 #### 562. Longest Line of Consecutive One in Matrix
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def longestLine(self, M):
+    maxlen = 0
+    currlen = collections.Counter()
+    for i, row in enumerate(M):
+        for j, a in enumerate(row):
+            for key in i, j+.1, i+j+.2, i-j+.3:
+                currlen[key] = (currlen[key] + 1) * a
+                maxlen = max(maxlen, currlen[key])
+    return maxlen  
   
 ```
 </details>  
+	
 #### 568. Maximum Vacation Days
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def maxVacationDays(self, flights, days):
+    NINF = float('-inf')
+    N, K = len(days), len(days[0])
+    best = [NINF] * N
+    best[0] = 0
+    
+    for t in xrange(K):
+        cur = [NINF] * N
+        for i in xrange(N):
+            for j, adj in enumerate(flights[i]):
+                if adj or i == j:
+                    cur[j] = max(cur[j], best[i] + days[j][t])
+        best = cur
+    return max(best)  
   
 ```
 </details>  
+	
 #### 582. Kill Process
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def killProcess(self, pid, ppid, kill):
+        d = collections.defaultdict(list)
+        for c, p in zip(pid, ppid): d[p].append(c)
+        bfs = [kill]
+        for i in bfs: bfs.extend(d.get(i, []))
+        return bfs  
   
 ```
 </details>  
+	
 #### 588. Design In-Memory File System
   
 <details>
 <summary>code</summary>
   
 ```
-  
+from collections import defaultdict
+class Node:
+    def __init__(self):
+        self.child=defaultdict(Node)
+        self.content=""
+        
+class FileSystem(object):
+
+    def __init__(self):
+        self.root=Node()
+        
+    def find(self,path):#find and return node at path.
+        curr=self.root
+        if len(path)==1:
+            return self.root
+        for word in path.split("/")[1:]:
+            curr=curr.child[word]
+        return curr
+        
+    def ls(self, path):
+        curr=self.find(path)
+        if curr.content:#file path,return file name
+            return [path.split('/')[-1]]
+        return sorted(curr.child.keys())
+		
+    def mkdir(self, path):
+        self.find(path)
+
+    def addContentToFile(self, filePath, content):
+        curr=self.find(filePath)
+        curr.content+=content
+
+    def readContentFromFile(self, filePath):
+        curr=self.find(filePath)
+        return curr.content  
   
 ```
 </details>  
+	
 #### 604. Design Compressed String Iterator
   
 <details>
 <summary>code</summary>
   
 ```
-  
+import re
+class StringIterator(object):
+    def __init__(self, compressedString):
+        self.tokens = []
+        for token in re.findall('\D\d+', compressedString):
+            self.tokens.append((token[0], int(token[1:])))
+        self.tokens = self.tokens[::-1]
+
+    def next(self):
+        if not self.tokens: return ' '
+        t, n = self.tokens.pop()
+        if n > 1: 
+            self.tokens.append((t, n - 1))
+        return t
+
+    def hasNext(self):
+        return bool(self.tokens)  
   
 ```
 </details>  
+	
 #### 616. Add Bold Tag in String
   
 <details>
@@ -2972,6 +3185,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 624. Maximum Distance in Arrays
   
 <details>
@@ -2982,6 +3196,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 631. Design Excel Sum Formula
   
 <details>
@@ -2992,6 +3207,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 635. Design Log Storage System
   
 <details>
@@ -3002,6 +3218,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 642. Design Search Autocomplete System
   
 <details>
@@ -3012,6 +3229,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 644. Maximum Average Subarray II
   
 <details>
@@ -3022,6 +3240,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 651. 4 Keys Keyboard
   
 <details>
@@ -3032,6 +3251,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 656. Coin Path
   
 <details>
@@ -3042,6 +3262,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 694. Number of Distinct Islands
   
 <details>
@@ -3052,6 +3273,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 702. Search in a Sorted Array of Unknown Size
   
 <details>
@@ -3062,6 +3284,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 708. Insert into a Sorted Circular Linked List
   
 <details>
@@ -3072,6 +3295,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 716. Max Stack
   
 <details>
@@ -3082,6 +3306,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 723. Candy Crush
   
 <details>
@@ -3092,6 +3317,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 727. Minimum Window Subsequence
   
 <details>
@@ -3102,6 +3328,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 734. Sentence Similarity
   
 <details>
@@ -3112,6 +3339,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 737. Sentence Similarity II
   
 <details>
@@ -3122,6 +3350,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 742. Closest Leaf in a Binary Tree
   
 <details>
@@ -3132,6 +3361,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 750. Number Of Corner Rectangles
   
 <details>
@@ -3142,6 +3372,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 759. Employee Free Time
   
 <details>
@@ -3152,6 +3383,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 760. Find Anagram Mappings
   
 <details>
@@ -3162,6 +3394,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 772. Basic Calculator III
   
 <details>
@@ -3172,6 +3405,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 774. Minimize Max Distance to Gas Station
   
 <details>
@@ -3182,6 +3416,7 @@ class Solution:
   
 ```
 </details>  
+	
 #### 1055. Shortest Way to Form String
   
 <details>

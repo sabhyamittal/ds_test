@@ -1420,7 +1420,50 @@ class Union(object):
 <summary>code</summary>
   
 ```
-  
+class NumMatrix(object):
+    def __init__(self, matrix):
+        """
+        initialize your data structure here.
+        :type matrix: List[List[int]]
+        """
+        for row in matrix:
+            for col in xrange(1, len(row)):
+                row[col] += row[col-1]
+        self.matrix = matrix
+        
+
+    def update(self, row, col, val):
+        """
+        update the element at matrix[row,col] to val.
+        :type row: int
+        :type col: int
+        :type val: int
+        :rtype: void
+        """
+        original = self.matrix[row][col]
+        if col != 0:
+            original -= self.matrix[row][col-1]
+            
+        diff = original - val
+        
+        for y in xrange(col, len(self.matrix[0])):
+            self.matrix[row][y] -= diff
+
+    def sumRegion(self, row1, col1, row2, col2):
+        """
+        sum of elements matrix[(row1,col1)..(row2,col2)], inclusive.
+        :type row1: int
+        :type col1: int
+        :type row2: int
+        :type col2: int
+        :rtype: int
+        """
+        sum = 0
+        for x in xrange(row1, row2+1):
+            sum += self.matrix[x][col2]
+            if col1 != 0:
+                sum -= self.matrix[x][col1-1]
+        return sum  
   
 ```
 </details>  
@@ -3181,7 +3224,35 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def addBoldTag(self, s, dict):
+        """
+        :type s: str
+        :type dict: List[str]
+        :rtype: str
+        """
+        status = [False]*len(s)
+        final = ""
+        for word in dict:
+            start = s.find(word)
+            last = len(word)
+            while start != -1:
+                for i in range(start, last+start):
+                    status[i] = True
+                start = s.find(word,start+1)
+        i = 0
+        i = 0
+        while i < len(s):
+            if status[i]:
+                final += "<b>"
+                while i < len(s) and status[i]:
+                    final += s[i]
+                    i += 1
+                final += "</b>"
+            else:
+                final += s[i]
+                i += 1
+        return final  
   
 ```
 </details>  
@@ -3192,7 +3263,12 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+ def maxDistance(self, arrays):
+        res, curMin, curMax = 0, 10000, -10000
+        for a in arrays :
+            res = max(res, max(a[-1]-curMin, curMax-a[0]))
+            curMin, curMax = min(curMin, a[0]), max(curMax, a[-1])
+        return res  
   
 ```
 </details>  
@@ -3203,7 +3279,31 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Excel(object):
+
+    def __init__(self, H, W):
+        self.M = [[{'v': 0, 'sum': None} for i in range(H)] for j in range(ord(W) - 64)]
+
+    def set(self, r, c, v):
+        self.M[r - 1][ord(c) - 65] = {'v': v, 'sum': None}
+
+    def get(self, r, c):
+        cell = self.M[r - 1][ord(c) - 65]
+        if not cell['sum']: return cell['v']
+        return sum(self.get(*pos) * cell['sum'][pos] for pos in cell['sum'])
+
+    def sum(self, r, c, strs):
+        self.M[r - 1][ord(c) - 65]['sum'] = self.parse(strs)
+        return self.get(r, c)
+
+    def parse(self, strs):
+        c = collections.Counter()
+        for s in strs:
+            s, e = s.split(':')[0], s.split(':')[1] if ':' in s else s
+            for i in range(int(s[1:]), int(e[1:]) + 1):
+                for j in range(ord(s[0]) - 64, ord(e[0]) - 64 + 1):
+                    c[(i, chr(j + 64))] += 1
+        return c  
   
 ```
 </details>  
@@ -3214,7 +3314,21 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class LogSystem(object):
+    def __init__(self):
+        self.logs = []
+
+    def put(self, tid, timestamp):
+        self.logs.append((tid, timestamp))
+        
+    def retrieve(self, s, e, gra):
+        index = {'Year': 5, 'Month': 8, 'Day': 11, 
+                 'Hour': 14, 'Minute': 17, 'Second': 20}[gra]
+        start = s[:index]
+        end = e[:index]
+        
+        return sorted(tid for tid, timestamp in self.logs
+                      if start <= timestamp[:index] <= end)  
   
 ```
 </details>  
@@ -3225,7 +3339,56 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class TrieNode(object):
+    def __init__(self):
+        self.children = {}
+        self.isEnd = False
+        self.data = None
+        self.rank = 0
+        
+class AutocompleteSystem(object):
+    def __init__(self, sentences, times):
+        self.root = TrieNode()
+        self.keyword = ""
+        for i, sentence in enumerate(sentences):
+            self.addRecord(sentence, times[i])
+
+    def addRecord(self, sentence, hot):
+        p = self.root
+        for c in sentence:
+            if c not in p.children:
+                p.children[c] = TrieNode()
+            p = p.children[c]
+        p.isEnd = True
+        p.data = sentence
+        p.rank -= hot
+    
+    def dfs(self, root):
+        ret = []
+        if root:
+            if root.isEnd:
+                ret.append((root.rank, root.data))
+            for child in root.children:
+                ret.extend(self.dfs(root.children[child]))
+        return ret
+        
+    def search(self, sentence):
+        p = self.root
+        for c in sentence:
+            if c not in p.children:
+                return []
+            p = p.children[c]
+        return self.dfs(p)
+    
+    def input(self, c):
+        results = []
+        if c != "#":
+            self.keyword += c
+            results = self.search(self.keyword)
+        else:
+            self.addRecord(self.keyword, 1)
+            self.keyword = ""
+        return [item[1] for item in sorted(results)[:3]]  
   
 ```
 </details>  
@@ -3236,7 +3399,27 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+def findMaxAverage(self, A, K):
+    N = len(A)
+    P = [0]
+    for x in A:
+        P.append(P[-1] + x)
+
+    def d(x, y):
+        return (P[y+1] - P[x]) / float(y+1-x)
+
+    hull = collections.deque()
+    ans = float('-inf')
+
+    for j in xrange(K-1, N):
+        while len(hull) >= 2 and d(hull[-2], hull[-1]-1) >= d(hull[-2], j-K):
+            hull.pop()
+        hull.append(j-K + 1)
+        while len(hull) >= 2 and d(hull[0], hull[1]-1) <= d(hull[0], j):
+            hull.popleft()
+        ans = max(ans, d(hull[0], j))
+
+    return ans  
   
 ```
 </details>  
@@ -3247,7 +3430,14 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+def maxA(self, N):
+    best = [0, 1]
+    for x in xrange(2, N+1):
+        cur = best[x-1] + 1
+        for y in xrange(x-1):
+            cur = max(cur, best[y] * (x-y-1))
+        best.append(cur)
+    return best[N]  
   
 ```
 </details>  
@@ -3258,7 +3448,14 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+def cheapestJump(self, A, B):
+        if not A or A[0] == -1: return []
+        dp = [[float('inf')] for _ in A]
+        dp[0] = [A[0], 1]
+        for j in range(1, len(A)):
+            if A[j] == -1: continue
+            dp[j] = min([dp[i][0] + A[j]] + dp[i][1:] + [j + 1] for i in range(max(0, j - B), j))
+        return dp[-1][1:] if dp[-1][0] < float('inf') else []  
   
 ```
 </details>  
@@ -3269,7 +3466,35 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+Approach: Hash By Path Signature	
+class Solution:
+    def numDistinctIslands(self, grid: List[List[int]]) -> int:
+
+        # Do a DFS to find all cells in the current island.
+        def dfs(row, col, direction):
+            if row < 0 or col < 0 or row >= len(grid) or col >= len(grid[0]):
+                return
+            if (row, col) in seen or not grid[row][col]:
+                return
+            seen.add((row, col))
+            path_signature.append(direction)
+            dfs(row + 1, col, "D")
+            dfs(row - 1, col, "U")
+            dfs(row, col + 1, "R")
+            dfs(row, col - 1, "L")
+            path_signature.append("0")
+        
+        # Repeatedly start DFS's as long as there are islands remaining.
+        seen = set()
+        unique_islands = set()
+        for row in range(len(grid)):
+            for col in range(len(grid[0])):
+                path_signature = []
+                dfs(row, col, "0")
+                if path_signature:
+                    unique_islands.add(tuple(path_signature))
+        
+        return len(unique_islands)  
   
 ```
 </details>  
@@ -3280,7 +3505,31 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def search(self, reader, target):
+        if reader.get(0) == target:
+            return 0
+        
+        # search boundaries
+        left, right = 0, 1
+        while reader.get(right) < target:
+            left = right
+            right <<= 1
+        
+        # binary search
+        while left <= right:
+            pivot = left + ((right - left) >> 1)
+            num = reader.get(pivot)
+            
+            if num == target:
+                return pivot
+            if num > target:
+                right = pivot - 1
+            else:
+                left = pivot + 1
+        
+        # there is no target element
+        return -1  
   
 ```
 </details>  
@@ -3291,7 +3540,41 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def insert(self, head: 'Node', insertVal: int) -> 'Node':
+
+        if head == None:
+            newNode = Node(insertVal, None)
+            newNode.next = newNode
+            return newNode
+ 
+        prev, curr = head, head.next
+        toInsert = False
+
+        while True:
+            
+            if prev.val <= insertVal <= curr.val:
+                # Case #1.
+                toInsert = True
+            elif prev.val > curr.val:
+                # Case #2. where we locate the tail element
+                # 'prev' points to the tail, i.e. the largest element!
+                if insertVal >= prev.val or insertVal <= curr.val:
+                    toInsert = True
+
+            if toInsert:
+                prev.next = Node(insertVal, curr)
+                # mission accomplished
+                return head
+
+            prev, curr = curr, curr.next
+            # loop condition
+            if prev == head:
+                break
+        # Case #3.
+        # did not insert the node in the loop
+        prev.next = Node(insertVal, curr)
+        return head  
   
 ```
 </details>  
@@ -3302,7 +3585,29 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class MaxStack(list):
+    def push(self, x):
+        m = max(x, self[-1][1] if self else None)
+        self.append((x, m))
+
+    def pop(self):
+        return list.pop(self)[0]
+
+    def top(self):
+        return self[-1][0]
+
+    def peekMax(self):
+        return self[-1][1]
+
+    def popMax(self):
+        m = self[-1][1]
+        b = []
+        while self[-1][0] != m:
+            b.append(self.pop())
+
+        self.pop()
+        map(self.push, reversed(b))
+        return m  
   
 ```
 </details>  
@@ -3313,7 +3618,33 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Solution(object):
+    def candyCrush(self, board):
+        R, C = len(board), len(board[0])
+        todo = False
+
+        for r in xrange(R):
+            for c in xrange(C-2):
+                if abs(board[r][c]) == abs(board[r][c+1]) == abs(board[r][c+2]) != 0:
+                    board[r][c] = board[r][c+1] = board[r][c+2] = -abs(board[r][c])
+                    todo = True
+
+        for r in xrange(R-2):
+            for c in xrange(C):
+                if abs(board[r][c]) == abs(board[r+1][c]) == abs(board[r+2][c]) != 0:
+                    board[r][c] = board[r+1][c] = board[r+2][c] = -abs(board[r][c])
+                    todo = True
+
+        for c in xrange(C):
+            wr = R-1
+            for r in xrange(R-1, -1, -1):
+                if board[r][c] > 0:
+                    board[wr][c] = board[r][c]
+                    wr -= 1
+            for wr in xrange(wr, -1, -1):
+                board[wr][c] = 0
+
+        return self.candyCrush(board) if todo else board  
   
 ```
 </details>  
@@ -3324,7 +3655,46 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+def minWindow(self, S, T):
+	
+    # Find - Get ending point of subsequence starting after S[s]
+    def find_subseq(s):
+        t = 0
+        while s < len(S):
+            if S[s] == T[t]:
+                t += 1
+                if t == len(T):
+                    break
+            s += 1
+        
+        return s if t == len(T) else None       # Ensure last character of T was found before loop ended
+    
+    # Improve - Get best starting point of subsequence ending at S[s]
+    def improve_subseq(s):
+        t = len(T) - 1
+        while t >= 0:
+            if S[s] == T[t]:
+                t -= 1
+            s -= 1
+        
+		return s+1
+    
+    s, min_len, min_window = 0, float('inf'), ''
+    
+    while s < len(S):
+        end = find_subseq(s)            # Find end-point of subsequence
+        if not end:
+            break
+            
+        start = improve_subseq(end)     # Improve start-point of subsequence
+
+		if end-start+1 < min_len:       # Track min length
+            min_len = end-start+1
+            min_window = S[start:end+1]
+        
+        s = start+1                     # Start next subsequence search
+
+    return min_window  
   
 ```
 </details>  
@@ -3335,7 +3705,19 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Solution(object):
+    def areSentencesSimilar(self, words1, words2, pairs):
+        from collections import defaultdict
+        if len(words1) != len(words2):
+            return False
+        words = defaultdict(set)
+        for word1, word2 in pairs:
+            words[word1].add(word2)
+            words[word2].add(word1)
+        for word1, word2 in zip(words1, words2):
+            if word1 != word2 and word2 not in words[word1]:
+                return False
+        return True  
   
 ```
 </details>  
@@ -3346,7 +3728,56 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+Approach #1: Depth-First Search
+class Solution(object):
+    def areSentencesSimilarTwo(self, words1, words2, pairs):
+        if len(words1) != len(words2): return False
+        graph = collections.defaultdict(list)
+        for w1, w2 in pairs:
+            graph[w1].append(w2)
+            graph[w2].append(w1)
+
+        for w1, w2 in zip(words1, words2):
+            stack, seen = [w1], {w1}
+            while stack:
+                word = stack.pop()
+                if word == w2: break
+                for nei in graph[word]:
+                    if nei not in seen:
+                        seen.add(nei)
+                        stack.append(nei)
+            else:
+                return False
+        return True	
+	
+Approach #2: Union-Find
+class DSU:
+    def __init__(self, N):
+        self.par = range(N)
+    def find(self, x):
+        if self.par[x] != x:
+            self.par[x] = self.find(self.par[x])
+        return self.par[x]
+    def union(self, x, y):
+        self.par[self.find(x)] = self.find(y)
+
+class Solution(object):
+    def areSentencesSimilarTwo(self, words1, words2, pairs):
+        if len(words1) != len(words2): return False
+
+        index = {}
+        count = itertools.count()
+        dsu = DSU(2 * len(pairs))
+        for pair in pairs:
+            for p in pair:
+                if p not in index:
+                    index[p] = next(count)
+            dsu.union(index[pair[0]], index[pair[1]])
+
+        return all(w1 == w2 or
+                   w1 in index and w2 in index and
+                   dsu.find(index[w1]) == dsu.find(index[w2])
+                   for w1, w2 in zip(words1, words2))	
   
 ```
 </details>  
@@ -3357,7 +3788,74 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+Approach #1: Convert to Graph
+class Solution(object):
+    def findClosestLeaf(self, root, k):
+        graph = collections.defaultdict(list)
+        def dfs(node, par = None):
+            if node:
+                graph[node].append(par)
+                graph[par].append(node)
+                dfs(node.left, node)
+                dfs(node.right, node)
+
+        dfs(root)
+        queue = collections.deque(node for node in graph
+                                  if node and node.val == k)
+        seen = set(queue)
+
+        while queue:
+            node = queue.popleft()
+            if node:
+                if len(graph[node]) <= 1:
+                    return node.val
+                for nei in graph[node]:
+                    if nei not in seen:
+                        seen.add(nei)
+                        queue.append(nei)
+					
+Approach #2: Annotate Closest Leaf
+class Solution(object):
+    def findClosestLeaf(self, root, k):
+        annotation = {}
+        def closest_leaf(root):
+            if root not in annotation:
+                if not root:
+                    ans = float('inf'), None
+                elif not root.left and not root.right:
+                    ans = 0, root
+                else:
+                    d1, leaf1 = closest_leaf(root.left)
+                    d2, leaf2 = closest_leaf(root.right)
+                    ans = min(d1, d2) + 1, leaf1 if d1 < d2 else leaf2
+                annotation[root] = ans
+            return annotation[root]
+
+        #Search for node.val == k
+        path = []
+        def dfs(node):
+            if not node:
+                return
+            if node.val == k:
+                path.append(node)
+                return True
+            path.append(node)
+            ans1 = dfs(node.left)
+            if ans1: return True
+            ans2 = dfs(node.right)
+            if ans2: return True
+            path.pop()
+
+        dfs(root)
+        dist, leaf = float('inf'), None
+        for i, node in enumerate(path):
+            d0, leaf0 = closest_leaf(node)
+            d0 += len(path) - 1 - i
+            if d0 < dist:
+                dist = d0
+                leaf = leaf0
+
+        return leaf.val					
   
 ```
 </details>  
@@ -3368,7 +3866,44 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+Approach #1: Count Corners
+class Solution(object):
+    def countCornerRectangles(self, grid):
+        count = collections.Counter()
+        ans = 0
+        for row in grid:
+            for c1, v1 in enumerate(row):
+                if v1:
+                    for c2 in xrange(c1+1, len(row)):
+                        if row[c2]:
+                            ans += count[c1, c2]
+                            count[c1, c2] += 1
+        return ans
+	
+Approach #2: Heavy and Light Rows
+class Solution(object):
+    def countCornerRectangles(self, grid):
+        rows = [[c for c, val in enumerate(row) if val]
+                for row in grid]
+        N = sum(len(row) for row in grid)
+        SQRTN = int(N**.5)
+
+        ans = 0
+        count = collections.Counter()
+        for r, row in enumerate(rows):
+            if len(row) >= SQRTN:
+                target = set(row)
+                for r2, row2 in enumerate(rows):
+                    if r2 <= r and len(row2) >= SQRTN:
+                        continue
+                    found = sum(1 for c2 in row2 if c2 in target)
+                    ans += found * (found - 1) / 2
+            else:
+                for pair in itertools.combinations(row, 2):
+                    ans += count[pair]
+                    count[pair] += 1
+
+        return ans	
   
 ```
 </details>  
@@ -3380,7 +3915,17 @@ class StringIterator(object):
   
 ```
   
-  
+  def employeeFreeTime(self, schedule):
+
+    ints = sorted([i for s in schedule for i in s], key=lambda x: x.start)
+    res, pre = [], ints[0]
+    for i in ints[1:]:
+        if i.start <= pre.end and i.end > pre.end:
+            pre.end = i.end
+        elif i.start > pre.end:
+            res.append(Interval(pre.end, i.start))
+            pre = i
+    return res
 ```
 </details>  
 	
@@ -3390,8 +3935,12 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
-  
+Approach #1: Hash Table
+class Solution(object):
+    def anagramMappings(self, A, B):
+        D = {x: i for i, x in enumerate(B)}
+        return [D[x] for x in A]
+	  
 ```
 </details>  
 	
@@ -3401,7 +3950,69 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+class Solution:
+	def calculate(self, s):
+		"""
+		:type s: str
+		:rtype: int
+		"""
+
+		# first define a couple helper methods
+
+		# operation helper to perform basic math operations
+		def operation(op, second, first):
+			if op == "+":
+				return first + second
+			elif op == "-":
+				return first - second
+			elif op == "*":
+				return first * second
+			elif op == "/":  # integer division
+				return first // second
+
+		# calculate the relative precedence of the the operators "()" > "*/" > "+="
+		# and determine if we want to do a pre-calculation in the stack
+		# (when current_op is <= op_from_ops)
+		def precedence(current_op, op_from_ops):
+			if op_from_ops == "(" or op_from_ops == ")":
+				return False
+			if (current_op == "*" or current_op == "/") and (op_from_ops == "+" or op_from_ops == "-"):
+				return False
+			return True
+
+		if not s:
+			return 0
+		# define two stack: nums to store the numbers and ops to store the operators
+		nums, ops = [], []
+		i = 0
+		while i < len(s):
+			c = s[i]
+			if c == " ":
+				i += 1
+				continue
+			elif c.isdigit():
+				num = int(c)
+				while i < len(s) - 1 and s[i + 1].isdigit():
+					num = num * 10 + int(s[i + 1])
+					i += 1
+				nums.append(num)
+			elif c == "(":
+				ops.append(c)
+			elif c == ")":
+				# do the math when we encounter a ')' until '('
+				while ops[-1] != "(":
+					nums.append(operation(ops.pop(), nums.pop(), nums.pop()))
+				ops.pop()
+			elif c in ["+", "-", "*", "/"]:
+				while len(ops) != 0 and precedence(c, ops[-1]):
+					nums.append(operation(ops.pop(), nums.pop(), nums.pop()))
+				ops.append(c)
+			i += 1
+
+		while len(ops) > 0:
+			nums.append(operation(ops.pop(), nums.pop(), nums.pop()))
+
+		return nums.pop()  
   
 ```
 </details>  
@@ -3412,7 +4023,39 @@ class StringIterator(object):
 <summary>code</summary>
   
 ```
-  
+Approach #1: Dynamic Programming  
+class Solution(object):
+    def minmaxGasDist(self, stations, K):
+        N = len(stations)
+        deltas = [stations[i+1] - stations[i] for i in xrange(N-1)]
+        dp = [[0.0] * (K+1) for _ in xrange(N-1)]
+        #dp[i][j] = answer for deltas[:i+1] when adding j gas stations
+        for i in xrange(K+1):
+            dp[0][i] = deltas[0] / float(i + 1)
+
+        for p in xrange(1, N-1):
+            for k in xrange(K+1):
+                dp[p][k] = min(max(deltas[p] / float(x+1), dp[p-1][k-x])
+                               for x in xrange(k+1))
+
+        return dp[-1][K]
+	
+Approach #2: Heap
+class Solution(object):
+    def minmaxGasDist(self, stations, K):
+        pq = [] #(-part_length, original_length, num_parts)
+        for i in xrange(len(stations) - 1):
+            x, y = stations[i], stations[i+1]
+            pq.append((x-y, y-x, 1))
+        heapq.heapify(pq)
+
+        for _ in xrange(K):
+            negnext, orig, parts = heapq.heappop(pq)
+            parts += 1
+            heapq.heappush(pq, (-(orig / float(parts)), orig, parts))
+
+        return -pq[0][0]	
+
   
 ```
 </details>  

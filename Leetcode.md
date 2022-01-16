@@ -4066,240 +4066,1058 @@ class Solution(object):
 <summary>code</summary>
   
 ```
-  
+:::python
+def shortestWay(self, source: str, target: str) -> int:
+    inverted_index = collections.defaultdict(list)
+    for i, ch in enumerate(source):
+        inverted_index[ch].append(i)
+
+    loop_cnt = 1
+    i = -1
+    for ch in target:
+        if ch not in inverted_index:
+            return -1
+        offset_list_for_ch = inverted_index[ch]
+        # bisect_left(A, x) returns the smallest index j s.t. A[j] >= x. If no such index j exists, it returns len(A).
+        j = bisect.bisect_left(offset_list_for_ch, i)
+        if j == len(offset_list_for_ch):
+            loop_cnt += 1
+            i = offset_list_for_ch[0] + 1
+        else:
+            i = offset_list_for_ch[j] + 1
+
+    return loop_cnt  
   
 ```
-</details>  
+</details> 
+	
 #### 1056. Confusing Number
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def confusingNumber(self, N):
+        S = str(N)
+        rotation = {"0" : "0", "1" : "1", "6" : "9", "8" : "8", "9" : "6"}
+        result = []
+        
+        for c in S[::-1]:           # iterate in reverse
+            if c not in rotation:
+                return False
+            result.append(rotation[c])
+                
+        return "".join(result) != S  
   
 ```
 </details>  
+	
 #### 1057. Campus Bikes
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def assignBikes(self, workers, bikes):
+        distances = []     # distances[worker] is tuple of (distance, worker, bike) for each bike 
+        for i, (x, y) in enumerate(workers):
+            distances.append([])
+            for j, (x_b, y_b) in enumerate(bikes):
+                distance = abs(x - x_b) + abs(y - y_b)
+                distances[-1].append((distance, i, j))
+            distances[-1].sort(reverse = True)  # reverse so we can pop the smallest distance
+        
+        result = [None] * len(workers)
+        used_bikes = set()
+        queue = [distances[i].pop() for i in range(len(workers))]   # smallest distance for each worker
+        heapq.heapify(queue)
+        
+        while len(used_bikes) < len(workers):
+            _, worker, bike = heapq.heappop(queue)
+            if bike not in used_bikes:
+                result[worker] = bike
+                used_bikes.add(bike)
+            else:
+                heapq.heappush(queue, distances[worker].pop())  # bike used, add next closest bike
+        
+        return result  
   
 ```
-</details>  
+</details> 
+	
 #### 1059. All Paths from Source Lead to Destination
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    
+    # We don't use the state WHITE as such anywhere. Instead, the "null" value in the states array below is a substitute for WHITE.
+    GRAY = 1
+    BLACK = 2
+
+    def leadsToDestination(self, n: int, edges: List[List[int]], source: int, destination: int) -> bool:
+        graph = self.buildDigraph(n, edges)
+        return self.leadsToDest(graph, source, destination, [None] * n)
+        
+    def leadsToDest(self, graph, node, dest, states):
+        
+        # If the state is GRAY, this is a backward edge and hence, it creates a Loop.
+        if states[node] != None:
+            return states[node] == Solution.BLACK
+        
+        # If this is a leaf node, it should be equal to the destination.
+        if len(graph[node]) == 0:
+            return node == dest
+        
+        # Now, we are processing this node. So we mark it as GRAY.
+        states[node] = Solution.GRAY
+        
+        for next_node in graph[node]:
+            
+            # If we get a `false` from any recursive call on the neighbors, we short circuit and return from there.
+            if not self.leadsToDest(graph, next_node, dest, states):
+                return False;
+        
+        # Recursive processing done for the node. We mark it BLACK.
+        states[node] = Solution.BLACK
+        return True
+        
+    def buildDigraph(self, n, edges):
+        graph = [[] for _ in range(n)]
+        
+        for edge in edges:
+            graph[edge[0]].append(edge[1])
+            
+        return graph     
   
 ```
 </details>  
+	
 #### 1060. Missing Element in Sorted Array
   
 <details>
 <summary>code</summary>
   
 ```
-  
+Approach 1: One Pass
+class Solution:
+    def missingElement(self, nums: List[int], k: int) -> int:
+        # Return how many numbers are missing until nums[idx]
+        missing = lambda idx: nums[idx] - nums[0] - idx
+                
+        n = len(nums)
+        # If kth missing number is larger than 
+        # the last element of the array
+        if k > missing(n - 1):
+            return nums[-1] + k - missing(n - 1) 
+
+        idx = 1
+        # find idx such that 
+        # missing(idx - 1) < k <= missing(idx)
+        while missing(idx) < k:
+            idx += 1
+
+        # kth missing number is greater than nums[idx - 1]
+        # and less than nums[idx]
+        return nums[idx - 1] + k - missing(idx - 1)
+			       
+Approach 2: Binary Search			       
+class Solution:
+    def missingElement(self, nums: List[int], k: int) -> int:
+        # Return how many numbers are missing until nums[idx]
+        missing = lambda idx: nums[idx] - nums[0] - idx
+            
+        n = len(nums)
+        # If kth missing number is larger than 
+        # the last element of the array
+        if k > missing(n - 1):
+            return nums[-1] + k - missing(n - 1) 
+        
+        left, right = 0, n - 1
+        # find left = right index such that 
+        # missing(left - 1) < k <= missing(left)
+        while left != right:
+            pivot = left + (right - left) // 2
+            
+            if missing(pivot) < k:
+                left = pivot + 1
+            else:
+                right = pivot 
+        
+        # kth missing number is greater than nums[left - 1]
+        # and less than nums[left]
+        return nums[left - 1] + k - missing(left - 1) 	
   
 ```
 </details>  
+	
 #### 1061. Lexicographically Smallest Equivalent String
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class UF:
+    def __init__(self, n):
+        self.ps = list(range(n))
+
+    def find(self, x):
+        if self.ps[x] != x:
+            self.ps[x] = self.find(self.ps[x])
+        return self.ps[x]
+
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py:
+            return
+        if px < py:
+            self.ps[py] = px
+        else:
+            self.ps[px] = py
+
+
+class Solution:
+    def smallestEquivalentString(self, A: str, B: str, S: str) -> str:
+
+        uf = UF(26)
+        for a, b in zip(A, B):
+            if a != b:
+                uf.union(ord(a) - 97, ord(b) - 97)
+
+        return ''.join((chr(uf.find(ord(c) - 97) + 97) for c in list(S)))  
   
 ```
-</details>  
+</details> 
+	
 #### 1062. Longest Repeating Substring
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def search(self, L: int, n: int, S: str) -> str:
+        """
+        Search a substring of given length
+        that occurs at least 2 times.
+        @return start position if the substring exits and -1 otherwise.
+        """
+        # Subtask 2 : TODO
+        
+    def longestRepeatingSubstring(self, S: str) -> str:
+        n = len(S)
+        
+        # binary search, L = repeating string length
+        left, right = 1, n
+        while left <= right:
+            L = left + (right - left) // 2
+            if self.search(L, n, S) != -1:
+                left = L + 1
+            else:
+                right = L - 1
+               
+        return left - 1
+			   
+Approach 1: Binary Search + Hashset of Already Seen Strings
+class Solution:
+    def search(self, L: int, n: int, S: str) -> str:
+        """
+        Search a substring of given length
+        that occurs at least 2 times.
+        @return start position if the substring exits and -1 otherwise.
+        """
+        seen = set()
+        for start in range(0, n - L + 1):
+            tmp = S[start:start + L]
+            if tmp in seen:
+                return start
+            seen.add(tmp)
+        return -1
+        
+    def longestRepeatingSubstring(self, S: str) -> str:
+        n = len(S)
+        
+        # binary search, L = repeating string length
+        left, right = 1, n
+        while left <= right:
+            L = left + (right - left) // 2
+            if self.search(L, n, S) != -1:
+                left = L + 1
+            else:
+                right = L - 1
+               
+        return left - 1
+			   
+Approach 2: Binary Search + Hashset of Hashes of Already Seen Strings
+class Solution:
+    def search(self, L: int, n: int, S: str) -> str:
+        """
+        Search a substring of given length
+        that occurs at least 2 times.
+        @return start position if the substring exits and -1 otherwise.
+        """
+        seen = set()
+        for start in range(0, n - L + 1):
+            tmp = S[start:start + L]
+            h = hash(tmp)
+            if h in seen:
+                return start
+            seen.add(h)
+        return -1
+        
+    def longestRepeatingSubstring(self, S: str) -> str:
+        n = len(S)
+        
+        # binary search, L = repeating string length
+        left, right = 1, n
+        while left <= right:
+            L = left + (right - left) // 2
+            if self.search(L, n, S) != -1:
+                left = L + 1
+            else:
+                right = L - 1
+               
+        return left - 1			   
+			   
+Approach 3: Binary Search + Rabin-Karp
+class Solution:
+    def search(self, L: int, a: int, modulus: int, n: int, nums: List[int]) -> str:
+        """
+        Rabin-Karp with polynomial rolling hash.
+        Search a substring of given length
+        that occurs at least 2 times.
+        @return start position if the substring exits and -1 otherwise.
+        """
+        # compute the hash of string S[:L]
+        h = 0
+        for i in range(L):
+            h = (h * a + nums[i]) % modulus
+              
+        # already seen hashes of strings of length L
+        seen = {h} 
+        # const value to be used often : a**L % modulus
+        aL = pow(a, L, modulus) 
+        for start in range(1, n - L + 1):
+            # compute rolling hash in O(1) time
+            h = (h * a - nums[start - 1] * aL + nums[start + L - 1]) % modulus
+            if h in seen:
+                return start
+            seen.add(h)
+        return -1
+        
+    def longestRepeatingSubstring(self, S: str) -> str:
+        n = len(S)
+        # convert string to array of integers
+        # to implement constant time slice
+        nums = [ord(S[i]) - ord('a') for i in range(n)]
+        # base value for the rolling hash function
+        a = 26
+        # modulus value for the rolling hash function to avoid overflow
+        modulus = 2**24
+        
+        # binary search, L = repeating string length
+        left, right = 1, n
+        while left <= right:
+            L = left + (right - left) // 2
+            if self.search(L, a, modulus, n, nums) != -1:
+                left = L + 1
+            else:
+                right = L - 1
+               
+        return left - 1			   
   
 ```
 </details>  
+	
 #### 1064. Fixed Point
   
 <details>
 <summary>code</summary>
   
 ```
-  
+ def fixedPoint(self, A):
+        l, r = 0, len(A) - 1
+        while l < r:
+            m = (l + r) / 2
+            if A[m] - m < 0:
+                l = m + 1
+            else:
+                r = m
+        return l if A[l] == l else -1  
   
 ```
 </details>  
+	
 #### 1065. Index Pairs of a String
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class TrieNode:
+    def __init__(self):
+        self.children, self.is_word = {}, False
+
+    @staticmethod
+    def construct_trie(words):
+        root = TrieNode()
+        for word in words:
+            node = root
+            for c in word:
+                node.children.setdefault(c, TrieNode())
+                node = node.children[c]
+            node.is_word = True
+        return root
+
+class Solution:
+    def indexPairs(self, text, words):
+        res, trie = [], TrieNode.construct_trie(words)
+        for l in range(len(text)):
+            node = trie
+            for r in range(l, len(text)):
+                if text[r] not in node.children:
+                    break
+                node = node.children[text[r]]
+                if node.is_word:
+                    res.append((l, r))
+        return res  
   
 ```
 </details>  
+	
 #### 1066. Campus Bikes II
   
 <details>
 <summary>code</summary>
   
 ```
-  
+ def assignBikes(self, workers, bikes):
+        def dis(i, j):
+            return abs(workers[i][0] - bikes[j][0]) + abs(workers[i][1] - bikes[j][1])
+        h = [[0, 0, 0]]
+        seen = set()
+        while True:
+            cost, i, taken = heapq.heappop(h)
+            if (i, taken) in seen: continue
+            seen.add((i, taken))
+            if i == len(workers):
+                return cost
+            for j in xrange(len(bikes)):
+                if taken & (1 << j) == 0:
+                    heapq.heappush(h, [cost + dis(i, j), i + 1, taken | (1 << j)])  
   
 ```
 </details>  
+	
 #### 1086. High Five
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def highFive(self, items: List[List[int]]) -> List[List[int]]:
+        items.sort(reverse=True)
+        
+        res = []
+        curr = []
+        idx = items[0][0]
+        
+        for i, val in items:
+            if i == idx:
+                if len(curr) < 5:
+                    curr.append(val)
+            else:
+                res.append([idx, sum(curr) // len(curr)])
+                curr = [val]
+                idx = i
+        
+        res.append([idx, sum(curr) // len(curr)])
+        
+        res = res[::-1]
+        
+        return res
+Solution 2, use priority queue for each id,
+
+class Solution:
+    def highFive(self, items: List[List[int]]) -> List[List[int]]:
+        d = collections.defaultdict(list)
+        
+        for idx, val in items:
+            heapq.heappush(d[idx], val)
+            
+            if len(d[idx]) > 5:
+                heapq.heappop(d[idx])
+        
+        res = [[i, sum(d[i]) // len(d[i])] for i in sorted(d)]
+        
+        return res  
   
 ```
 </details>  
+	
 #### 1087. Brace Expansion
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution(object):
+    def expand(self, S):
+        """
+        :type S: str
+        :rtype: List[str]
+        """
+        self.res = []
+        def helper(s, word):
+            if not s:
+                self.res.append(word)
+            else:
+                if s[0] == "{":
+                    i = s.find("}")
+                    for letter in s[1:i].split(','):
+                        helper(s[i+1:], word+letter)
+                else:
+                    helper(s[1:], word + s[0])
+        helper(S, "")
+        self.res.sort()
+        return self.res  
   
 ```
 </details>  
+	
 #### 1088. Confusing Number II
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution(object):
+    def confusingNumberII(self, N):
+        """
+        :type N: int
+        :rtype: int
+        """
+        valid = [0,1,6,8,9]
+        mapping = {0: 0,1: 1,6: 9,8: 8, 9: 6}
+
+        self.count = 0
+
+        def backtrack(v, rotation,digit):
+            if v: 
+                if v != rotation: 
+                    self.count += 1  
+            for i in valid: 
+                if v*10+i > N:
+                    break 
+                else:
+                    backtrack(v*10+i, mapping[i]*digit + rotation, digit*10)
+        
+        backtrack(1,1, 10)
+        backtrack(6,9,10)
+        backtrack(8,8,10)
+        backtrack(9,6,10)
+
+        return self.count     
   
 ```
-</details>  
+</details>
+	
 #### 1099. Two Sum Less Than K
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def twoSumLessThanK(self, nums: List[int], k: int) -> int:
+        nums.sort()
+        answer = -1
+        left = 0
+        right = len(nums) -1
+        while left < right:
+            sum = nums[left] + nums[right]
+            if (sum < k):
+                answer = max(answer, sum)
+                left += 1
+            else:
+                right -= 1
+        return answer  
   
 ```
-</details>  
+</details> 
+	
 #### 1100. Find K-Length Substrings With No Repeated Characters
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def numKLenSubstrNoRepeats(self, S, K):
+        res, i = 0, 0
+        cur = set()
+        for j in xrange(len(S)):
+            while S[j] in cur:
+                cur.remove(S[i])
+                i += 1
+            cur.add(S[j])
+            res += j - i + 1 >= K
+        return res  
   
 ```
 </details>  
+	
 #### 1101. The Earliest Moment When Everyone Become Friends
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def earliestAcq(self, logs: List[List[int]], n: int) -> int:
+        # First, we need to sort the events in chronological order.
+        logs.sort(key = lambda x: x[0])
+
+        uf = UnionFind(n)
+        # Initially, we treat each individual as a separate group.
+        group_cnt = n
+
+        # We merge the groups along the way.
+        for timestamp, friend_a, friend_b in logs:
+            if uf.union(friend_a, friend_b):
+                group_cnt -= 1
+
+            # The moment when all individuals are connected to each other.
+            if group_cnt == 1:
+                return timestamp
+
+        # There are still more than one groups left,
+        #  i.e. not everyone is connected.
+        return -1
+
+
+class UnionFind:
+
+    def __init__(self, size):
+        self.group = [group_id for group_id in range(size)]
+        self.rank = [0] * size
+
+    def find(self, person):
+        if self.group[person] != person:
+            self.group[person] = self.find(self.group[person])
+        return self.group[person]
+
+    def union(self, a, b):
+        """
+            return: true if a and b are not connected before
+                otherwise, connect a with b and then return false
+        """
+        group_a = self.find(a)
+        group_b = self.find(b)
+        is_merged = False
+        if group_a == group_b:
+            return is_merged
+
+        is_merged = True
+        # Merge the lower-rank group into the higher-rank group.
+        if self.rank[group_a] > self.rank[group_b]:
+            self.group[group_b] = group_a
+        elif self.rank[group_a] < self.rank[group_b]:
+            self.group[group_a] = group_b
+        else:
+            self.group[group_a] = group_b
+            self.rank[group_b] += 1
+
+        return is_merged  
   
 ```
 </details>  
+	
 #### 1102. Path With Maximum Minimum Value
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def maximumMinimumPath(self, A: List[List[int]]) -> int:
+        R, C = len(A), len(A[0])
+        parent = [i for i in range(R * C)]
+        dire = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        seen = [[0 for _ in range(C)] for _ in range(R)]
+        
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(x, y):
+            rx, ry = find(x), find(y)
+            if rx != ry:
+                parent[ry] = rx
+        
+        points = [(x, y) for x in range(R) for y in range(C)]
+        points.sort(key = lambda x: A[x[0]][x[1]], reverse = True)
+        
+        for x, y in points:
+            seen[x][y] = 1
+            for dx, dy in dire:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < R and 0 <= ny < C and seen[nx][ny]:
+                    union(x * C + y, nx * C + ny)
+            if find(0) == find(R * C - 1):
+                return A[x][y]
+        return -1  
+	
+	
+class Solution:
+    def maximumMinimumPath(self, A: List[List[int]]) -> int:
+        dire = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        R, C = len(A), len(A[0])
+        
+        def check(val):
+            memo = [[0 for _ in range(C)] for _ in range(R)]
+            
+            def dfs(x,y):
+                if x == R - 1 and y == C - 1:
+                    return True
+                memo[x][y] = 1
+                for d in dire:
+                    nx = x + d[0]
+                    ny = y + d[1]
+                    if 0 <= nx < R and 0 <= ny < C and not memo[nx][ny] and A[nx][ny] >= val and dfs(nx,ny):
+                        return True
+                return False
+            
+            return dfs(0,0)   
+        
+        unique = set()
+        ceiling = min(A[0][0], A[-1][-1])
+        for r in range(R):
+            for c in range(C):
+                if A[r][c] <= ceiling:
+                    unique.add(A[r][c])
+                
+        arr = sorted(unique)
+        l, r = 0, len(arr) - 1
+        while l <= r:
+            m = l + (r - l) // 2
+            # if check(m):
+            if check(arr[m]):
+                # cause we're trying to find the MAXIMUM of 'minimum'
+                l = m + 1
+            else:
+                r = m - 1
+        return arr[r]
+	
+class Solution:
+    def maximumMinimumPath(self, A: List[List[int]]) -> int:
+        dire = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        R, C = len(A), len(A[0])
+        
+        maxHeap = [(-A[0][0], 0, 0)]
+        seen = [[0 for _ in range(C)] for _ in range(R)]
+        while maxHeap:
+            val, x, y = heapq.heappop(maxHeap)
+            # seen[x][y] = 1 # got TLE
+            if x == R - 1 and y == C - 1: return -val
+            for dx, dy in dire:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < R and 0 <= ny < C and not seen[nx][ny]:
+                    seen[nx][ny] = 1 # passed
+                    heapq.heappush(maxHeap, (max(val, -A[nx][ny]), nx, ny))
+        return -1	
   
 ```
 </details>  
+	
 #### 1120. Maximum Average Subtree
   
 <details>
 <summary>code</summary>
   
 ```
-  
+ def maximumAverageSubtree(self, root):
+        self.res = 0
+        def helper(root):
+            if not root: return [0, 0.0]
+            n1, s1 = helper(root.left)
+            n2, s2 = helper(root.right)
+            n = n1 + n2 + 1
+            s = s1 + s2 + root.val
+            self.res = max(self.res, s / n)
+            return [n, s]
+        helper(root)
+        return self.res  
   
 ```
 </details>  
+	
 #### 1133. Largest Unique Number
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def largestUniqueNumber(self, A: List[int]) -> int:        
+        return max([-1] + [k for k,v in collections.Counter(A).items() if v == 1])  
   
 ```
 </details>  
+	
 #### 1134. Armstrong Number
   
 <details>
 <summary>code</summary>
   
 ```
-  
+import math
+class Solution(object):
+    def isArmstrong(self, N):
+        total = 0 # Keep track of the sum for each digit to the power of k
+		
+		# Calculate k
+		# One method of calculating k is to convert N to a string and then get the length of that.
+		# This second method is from this: https://brilliant.org/wiki/finding-digits-of-a-number/
+		# It's a pretty useful and interesting formula.
+        k = math.floor(math.log10(N)) + 1 
+        
+		# Create a copy of N so that we can compare the total to N without modifying its original value.
+        c = N
+        while c: # Terminates when c is 0
+            digit = c % 10 # Extract the digit
+            total += digit ** k 
+            c //= 10
+        
+        return total == N  
   
 ```
 </details>  
+	
 #### 1135. Connecting Cities With Minimum Cost
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    '''Connecting Cities with Minimum Cost == Find Minimum Spanning Tree'''
+    def minimumCost(self, N: int, connections: List[List[int]]) -> int:
+        '''
+        Prim's Algorithm:
+        1) Initialize a tree with a single vertex, chosen
+        arbitrarily from the graph.
+        2) Grow the tree by one edge: of the edges that
+        connect the tree to vertices not yet in the tree,
+        find the minimum-weight edge, and transfer it to the tree.
+        3) Repeat step 2 (until all vertices are in the tree).
+        '''
+        # city1 <-> city2 may have multiple different cost connections,
+        # so use a list of tuples. Nested dict will break algorithm.
+        G = collections.defaultdict(list)
+        for city1, city2, cost in connections:
+            G[city1].append((cost, city2))
+            G[city2].append((cost, city1))
+        
+        queue = [(0, N)]  # [1] Arbitrary starting point N costs 0.
+        visited = set()
+        total = 0
+        while queue and len(visited) < N: # [3] Exit if all cities are visited.
+            # cost is always least cost connection in queue.
+            cost, city = heapq.heappop(queue)
+            if city not in visited:
+                visited.add(city)
+                total += cost # [2] Grow tree by one edge.
+                for edge_cost, next_city in G[city]:
+                    heapq.heappush(queue, (edge_cost, next_city))
+        return total if len(visited) == N else -1
+    
+    def minimumCost(self, N: int, connections: List[List[int]]) -> int:
+        '''
+        Kruskal's Algorithm:
+        1) Create a forest F (a set of trees), where each vertex in 
+        the graph is a separate tree.
+        2) Create a set S containing all the edges in the graph.
+        3) While S is nonempty and F is not yet spanning (fully connected):
+            3A) Remove an edge with minimum weight from S
+            3B) If the removed edge connects two different trees then 
+            add it to the forest F, combining two trees into a single tree.
+        '''
+        def find(city):
+            # Recursively re-set city's parent to its parent's parent.
+            # Build the bush: ideally each tree/set is of height 1.
+            if parent[city] != city:
+                parent[city] = find(parent[city])
+            return parent[city]
+        
+        def union(c1, c2):
+            root1, root2 = find(c1), find(c2)
+            if root1 == root2:
+                return False
+            parent[root2] = root1  # Always join roots!
+            return True
+        
+        # [1] Keep track of disjoint sets. Initially each city is its own set.
+        parent = {city: city for city in range(1, N+1)}
+        # [2] Sort connections so we are always picking minimum cost edge.
+        connections.sort(key=lambda x: x[2])
+        total = 0
+        for city1, city2, cost in connections:  # [3A]  
+            if union(city1, city2):  # [3B]
+                total += cost
+        # Check that all cities are connected.
+        root = find(N)
+        return total if all(root == find(city) for city in range(1, N+1)) else -1  
   
 ```
 </details>  
+	
 #### 1136. Parallel Courses
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def minimumSemesters(self, N: int, relations: List[List[int]]) -> int:
+        graph = {i: [] for i in range(1, N + 1)}
+        for start_node, end_node in relations:
+            graph[start_node].append(end_node)
+
+        visited = {}
+
+        def dfs(node: int) -> int:
+            # return the longest path (inclusive)
+            if node in visited:
+                return visited[node]
+            else:
+                # mark as visiting
+                visited[node] = -1
+
+            max_length = 1
+            for end_node in graph[node]:
+                length = dfs(end_node)
+                # we meet a cycle!
+                if length == -1:
+                    return -1
+                else:
+                    max_length = max(length+1, max_length)
+            # mark as visited
+            visited[node] = max_length
+            return max_length
+
+        max_length = -1
+        for node in graph.keys():
+            length = dfs(node)
+            # we meet a cycle!
+            if length == -1:
+                return -1
+            else:
+                max_length = max(length, max_length)
+        return max_length  
   
 ```
 </details>  
+	
 #### 1150. Check If a Number Is Majority Element in a Sorted Array
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def isMajorityElement(self, nums, target):
+    N = len(nums)
+    if nums[N // 2] != target:
+        return False
+    lo = bisect.bisect_left(nums, target)
+    hi = bisect.bisect_right(nums, target)
+    return hi - lo > N // 2
+
+
+def isMajorityElement(self, nums, target):
+
+        def search(a, x):
+            lo, hi = 0, len(a)
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if a[mid] < x:
+                    lo = mid + 1
+                else:
+                    hi = mid
+            return lo
+            
+        N = len(nums)
+        if nums[N // 2] != target:
+            return False
+        lo = search(nums, target)
+        hi = search(nums, target + 1)
+        return hi - lo > N // 2
+
+
+def isMajorityElement(self, nums, target):
+    k = len(nums) // 2
+    if nums[k] != target:
+        return False
+    lo = bisect.bisect_left(nums, target, 0, k)
+    hi = lo + k
+    return hi < len(nums) and nums[hi] == target  
   
 ```
 </details>  
+	
 #### 1151. Minimum Swaps to Group All 1's Together
   
 <details>
 <summary>code</summary>
   
 ```
-  
+Approach 1: Sliding Window with Two Pointers
+class Solution:
+    def minSwaps(self, data: List[int]) -> int:
+        ones = sum(data)
+        cnt_one = max_one = 0
+        left = right = 0
+        while right < len(data):
+            # updating the number of 1's by adding the new element
+            cnt_one += data[right]
+            right += 1
+            # maintain the length of the window to ones
+            if right - left > ones:
+                # updating the number of 1's by removing the oldest element
+                cnt_one -= data[left]
+                left += 1
+            # record the maximum number of 1's in the window
+            max_one = max(max_one, cnt_one)
+        return ones - max_one	
+		
+		
+Approach 2: Sliding Window with Deque (Double-ended Queue)	
+class Solution:
+    def minSwaps(self, data: List[int]) -> int:
+        ones = sum(data)
+        cnt_one = max_one = 0
+
+        # maintain a deque with the size = ones
+        deque = collections.deque()
+        for i in range(len(data)):
+
+            # we would always add the new element into the deque
+            deque.append(data[i])
+            cnt_one += data[i]
+
+            # when there are more than ones elements in the deque,
+            # remove the leftmost one
+            if len(deque) > ones:
+                cnt_one -= deque.popleft()
+            max_one = max(max_one, cnt_one)
+        return ones - max_one  
   
 ```
 </details>  
+	
 #### 1153. String Transforms Into Another String
   
 <details>

@@ -5124,377 +5124,1804 @@ class Solution:
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def canConvert(self, str1: str, str2: str) -> bool:
+        if str1 == str2:
+            return True
+        
+        conversion_mappings = dict()
+        unique_characters_in_str2 = set()
+        
+        # Make sure that no character in str1 is mapped to multiple characters in str2.
+        for letter1, letter2 in zip(str1, str2):
+            if letter1 not in conversion_mappings:
+                conversion_mappings[letter1] = letter2
+                unique_characters_in_str2.add(letter2)
+            elif conversion_mappings[letter1] != letter2:
+                # letter1 maps to 2 different characters, so str1 cannot transform into str2.
+                return False
+        
+        
+        if len(unique_characters_in_str2) < 26:
+            # No character in str1 maps to 2 or more different characters in str2 and there
+            # is at least one temporary character that can be used to break any loops.
+            return True
+        
+        # The conversion mapping forms one or more cycles and there are no temporary 
+        # characters that we can use to break the loops, so str1 cannot transform into str2.
+        return False  
   
 ```
 </details>  
+		
 #### 1165. Single-Row Keyboard
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def calculateTime(self, keyboard: str, word: str) -> int:
+        cur_index = 0
+        time = 0
+        for w in word:
+            next_index = keyboard.index(w)
+            time += abs(next_index - cur_index)
+            cur_index = next_index
+        return time  
   
 ```
 </details>  
+		
 #### 1166. Design File System
   
 <details>
 <summary>code</summary>
   
 ```
-  
+
+# The TrieNode data structure.
+class TrieNode(object):
+    def __init__(self, name):
+        self.map = defaultdict(TrieNode)
+        self.name = name
+        self.value = -1
+
+class FileSystem:
+
+    def __init__(self):
+        
+        # Root node contains the empty string.
+        self.root = TrieNode("")
+
+    def createPath(self, path: str, value: int) -> bool:
+        
+        # Obtain all the components
+        components = path.split("/")
+        
+        # Start "curr" from the root node.
+        cur = self.root
+        
+        # Iterate over all the components.
+        for i in range(1, len(components)):
+            name = components[i]
+            
+            # For each component, we check if it exists in the current node's dictionary.
+            if name not in cur.map:
+                
+                # If it doesn't and it is the last node, add it to the Trie.
+                if i == len(components) - 1:
+                    cur.map[name] = TrieNode(name)
+                else:
+                    return False
+            cur = cur.map[name]
+        
+        # Value not equal to -1 means the path already exists in the trie. 
+        if cur.value!=-1:
+            return False
+        
+        cur.value = value
+        return True
+
+    def get(self, path: str) -> int:
+        
+        # Obtain all the components
+        cur = self.root
+        
+        # Start "curr" from the root node.
+        components = path.split("/")
+        
+        # Iterate over all the components.
+        for i in range(1, len(components)):
+            
+            # For each component, we check if it exists in the current node's dictionary.
+            name = components[i]
+            if name not in cur.map:
+                return -1
+            cur = cur.map[name]
+        return cur.value  
   
 ```
 </details>  
+		
 #### 1167. Minimum Cost to Connect Sticks
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def connectSticks(self, A):
+        heapq.heapify(A)
+        res = 0
+        while len(A) > 1:
+            x, y = heapq.heappop(A), heapq.heappop(A)
+            res += x + y
+            heapq.heappush(A, x + y)
+        return res  
   
 ```
 </details>  
+	
 #### 1168. Optimize Water Distribution in a Village
   
 <details>
 <summary>code</summary>
   
 ```
-  
+Approach 1: Prim's Algorithm with Heap
+class Solution:
+    def minCostToSupplyWater(self, n: int, wells: List[int], pipes: List[List[int]]) -> int:
+
+        # bidirectional graph represented in adjacency list
+        graph = defaultdict(list)
+
+        # add a virtual vertex indexed with 0.
+        #   then add an edge to each of the house weighted by the cost
+        for index, cost in enumerate(wells):
+            graph[0].append((cost, index + 1))
+
+        # add the bidirectional edges to the graph
+        for house_1, house_2, cost in pipes:
+            graph[house_1].append((cost, house_2))
+            graph[house_2].append((cost, house_1))
+
+        # A set to maintain all the vertex that has been added to
+        #   the final MST (Minimum Spanning Tree),
+        #   starting from the vertex 0.
+        mst_set = set([0])
+
+        # heap to maitain the order of edges to be visited,
+        #   starting from the edges originated from the vertex 0.
+        # Note: we can start arbitrarily from any node.
+        heapq.heapify(graph[0])
+        edges_heap = graph[0]
+
+        total_cost = 0
+        while len(mst_set) < n + 1:
+            cost, next_house = heapq.heappop(edges_heap)
+            if next_house not in mst_set:
+                # adding the new vertex into the set
+                mst_set.add(next_house)
+                total_cost += cost
+                # expanding the candidates of edge to choose from
+                #   in the next round
+                for new_cost, neighbor_house in graph[next_house]:
+                    if neighbor_house not in mst_set:
+                        heapq.heappush(edges_heap, (new_cost, neighbor_house))
+
+        return total_cost	
+			      
+Approach 2: Kruskal's Algorithm with Union-Find
+class UnionFind:
+    """
+        Implementation of UnionFind without load-balancing.
+    """
+    def __init__(self, size) -> None:
+        """
+        container to hold the group id for each member
+        Note: the index of member starts from 1,
+            thus we add one more element to the container.
+        """
+        self.group = [i for i in range(size + 1)]
+        # the rank of each node for later rebalancing
+        self.rank = [0] * (size + 1)
+
+    def find(self, person: int) -> int:
+        """
+            return the group id that the person belongs to
+        """
+        if self.group[person] != person:
+            self.group[person] = self.find(self.group[person])
+        return self.group[person]
+
+    def union(self, person_1: int, person_2: int) -> bool:
+        """
+            Join the groups together.
+            return:
+                false when the two persons belong to the same group already,
+                otherwise true
+        """
+        group_1 = self.find(person_1)
+        group_2 = self.find(person_2)
+        if group_1 == group_2:
+            return False
+
+        # attach the group of lower rank to the group with higher rank
+        if self.rank[group_1] > self.rank[group_2]:
+            self.group[group_2] = group_1
+        elif self.rank[group_1] < self.rank[group_2]:
+            self.group[group_1] = group_2
+        else:
+            self.group[group_1] = group_2
+            self.rank[group_2] += 1
+
+        return True
+
+
+class Solution:
+    def minCostToSupplyWater(self, n: int, wells: List[int], pipes: List[List[int]]) -> int:
+        ordered_edges = []
+        # add the virtual vertex (index with 0) along with the new edges.
+        for index, weight in enumerate(wells):
+            ordered_edges.append((weight, 0, index+1))
+
+        # add the existing edges
+        for house_1, house_2, weight in pipes:
+            ordered_edges.append((weight, house_1, house_2))
+
+        # sort the entire edges by their weights
+        ordered_edges.sort(key=lambda x: x[0])
+
+        # iterate through the ordered edges
+        uf = UnionFind(n)
+        total_cost = 0
+        for cost, house_1, house_2 in ordered_edges:
+            # determine if we should add the new edge to the final MST
+            if uf.union(house_1, house_2):
+                total_cost += cost
+
+        return total_cost		
   
 ```
 </details>  
+	
 #### 1180. Count Substrings with Only One Distinct Letter
   
 <details>
 <summary>code</summary>
   
 ```
+class Solution:
+    def countLetters(self, S: str) -> int:
+        total = 1
+        substrings = [0] * len(S)
+        substrings[0] = 1
+        for i in range(1, len(S)):
+            if S[i - 1] == S[i]:
+                substrings[i] = substrings[i-1] + 1
+            else:
+                substrings[i] = 1
+            total += substrings[i]
+        return total
   
-  
+	class Solution:
+    def countLetters(self, S: str) -> int:
+        total = 1
+        count = 1
+        for i in range(1, len(S)):
+            if S[i] == S[i-1]:
+                count += 1
+            else:
+                count = 1
+            total += count
+        return total	
 ```
 </details>  
+		
 #### 1182. Shortest Distance to Target Color
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def shortestDistanceColor(self, colors: List[int], queries: List[List[int]]) -> List[int]:
+        hashmap = collections.defaultdict(list)
+        for i,c in enumerate(colors):
+            hashmap[c].append(i)
+
+        query_results = []
+        for i, (target, color) in enumerate(queries):
+            if color not in hashmap:
+                query_results.append(-1)
+                continue
+
+            index_list = hashmap[color]
+            # use bisect from Python standard library
+            # more details: https://docs.python.org/3/library/bisect.html
+            insert = bisect.bisect_left(index_list, target)
+
+            # compare the index on the left and right of insert
+            # make sure it will not fall out of the index_list
+            left_nearest = abs(index_list[max(insert - 1, 0)] - target)
+            right_nearest = abs(index_list[min(insert, len(index_list) - 1)] - target)
+            query_results.append(min(left_nearest, right_nearest))
+
+        return query_results  
+		
+Approach 2: Pre-computed
+class Solution:
+    def shortestDistanceColor(self, colors: List[int], queries: List[List[int]]) -> List[int]:
+        # initializations
+        n = len(colors)
+        rightmost = [0, 0, 0]
+        leftmost = [n - 1, n - 1, n - 1]
+
+        distance = [[-1] * n for _ in range(3)]
+
+        # looking forward
+        for i in range(n):
+            color = colors[i] - 1
+            for j in range(rightmost[color], i + 1):
+                distance[color][j] = i - j
+            rightmost[color] = i + 1
+
+        # looking backward
+        for i in range(n - 1, -1, -1):
+            color = colors[i] - 1
+            for j in range(leftmost[color], i - 1, -1):
+                # if the we did not find a target color on its right
+                # or we find out that a target color on its left is
+                # closer to the one on its right
+                if distance[color][j] == -1 or distance[color][j] > j - i:
+                    distance[color][j] = j - i
+            leftmost[color] = i - 1
+
+        return [distance[color - 1][index] for index,color in queries]		
   
 ```
-</details>  
+</details> 
+		
 #### 1183. Maximum Number of Ones
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def maximumNumberOfOnes(self, width: int, height: int, sideLength: int, maxOnes: int) -> int:
+        res = []
+        for i in range(sideLength):
+            for j in range(sideLength):
+                res += [((width - i - 1) // sideLength + 1) * ((height - j - 1) // sideLength + 1)]
+        res = sorted(res,reverse = True)
+        return sum(res[:maxOnes])
+		
+Or 1-liner just for fun..
+
+class Solution:
+    def maximumNumberOfOnes(self, width: int, height: int, sideLength: int, maxOnes: int) -> int:
+        return sum(sorted([((width-i-1)//sideLength+1)*((height-j-1)//sideLength+1) for i in range(sideLength) for j in range(sideLength)],reverse = True)[:maxOnes])
+		
   
 ```
 </details>  
+		
 #### 1196. How Many Apples Can You Put into the Basket
   
 <details>
 <summary>code</summary>
   
 ```
+class Solution:
+    def maxNumberOfApples(self, arr: List[int]) -> int:
+        arr.sort()
+        apples = units = 0
+
+        for _, weight in enumerate(arr):
+            units += weight
+            if units > 5000:
+                break
+
+            apples += 1
+        return apples  
   
-  
+Approach 2: Min-Heap
+class Solution:
+    def maxNumberOfApples(self, arr: List[int]) -> int:
+        # note that build a heap only requires O(N)
+        # more details: https://stackoverflow.com/questions/9755721/how-can-building-a-heap-be-on-time-complexity
+        heapq.heapify(arr)
+        apples = units = 0
+
+        # note that arr[0] always represents the smallest
+        # element in the min-heap
+        while arr and units + arr[0] <= 5000:
+            units += heapq.heappop(arr)
+            apples += 1
+        return apples		
+		
+Approach 3: Bucket Sort
+class Solution:
+    def maxNumberOfApples(self, arr: List[int]) -> int:
+        # initialize the bucket to store all elements
+        size = max(arr) + 1
+        bucket = [0] * size
+        for weight in arr:
+            bucket[weight] += 1
+
+        apples = units = 0
+        for i in range(size):
+            # if we have apples of i units of weight
+            if bucket[i] != 0:
+                # we need to make sure that:
+                # 1. we do not take more apples than those provided
+                # 2. we do not exceed 5000 units of weight
+                take = min(bucket[i], (5000 - units) // i)
+                if take == 0:
+                    break
+
+                apples += take
+                units += take * i
+        return apples		
+		
 ```
 </details>  
+		
 #### 1197. Minimum Knight Moves
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def minKnightMoves(self, x: int, y: int) -> int:
+        # the offsets in the eight directions
+        offsets = [(1, 2), (2, 1), (2, -1), (1, -2),
+                   (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
+
+        def bfs(x, y):
+            visited = set()
+            queue = deque([(0, 0)])
+            steps = 0
+
+            while queue:
+                curr_level_cnt = len(queue)
+                # iterate through the current level
+                for i in range(curr_level_cnt):
+                    curr_x, curr_y = queue.popleft()
+                    if (curr_x, curr_y) == (x, y):
+                        return steps
+
+                    for offset_x, offset_y in offsets:
+                        next_x, next_y = curr_x + offset_x, curr_y + offset_y
+                        if (next_x, next_y) not in visited:
+                            visited.add((next_x, next_y))
+                            queue.append((next_x, next_y))
+
+                # move on to the next level
+                steps += 1
+
+        return bfs(x, y)  
   
 ```
 </details>  
+		
 #### 1198. Find Smallest Common Element in All Rows
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def smallestCommonElement(self, M):
+        c = collections.Counter()
+        for row in M:
+            for a in row:
+                c[a] += 1
+                if c[a] == len(M):
+                    return a
+        return -1  
   
 ```
 </details>  
+		
 #### 1199. Minimum Time to Build Blocks
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def minBuildTime(self, blocks: List[int], split: int) -> int:
+        heapq.heapify(blocks)
+        while len(blocks) > 1:
+            block_1 = heapq.heappop(blocks)
+            block_2 = heapq.heappop(blocks)
+            new_block = max(block_1, block_2) + split
+            heapq.heappush(blocks, new_block)
+        return blocks[0]  
   
 ```
 </details>  
+		
 #### 1213. Intersection of Three Sorted Arrays
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def arraysIntersection(self, arr1: List[int], arr2: List[int], arr3: List[int]) -> List[int]:
+        ans = []
+        # prepare three pointers to iterate through three arrays
+        # p1, p2, and p3 point to the beginning of arr1, arr2, and arr3 accordingly
+        p1 = p2 = p3 = 0
+        while p1 < len(arr1) and p2 < len(arr2) and p3 < len(arr3):
+            if arr1[p1] == arr2[p2] == arr3[p3]:
+                ans.append(arr1[p1])
+                p1 += 1
+                p2 += 1
+                p3 += 1
+            else:
+                if arr1[p1] < arr2[p2]:
+                    p1 += 1
+                elif arr2[p2] < arr3[p3]:
+                    p2 += 1
+                else:
+                    p3 += 1
+        return ans  
   
 ```
 </details>  
+		
 #### 1214. Two Sum BSTs
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def twoSumBSTs(self, root1: TreeNode, root2: TreeNode, target: int) -> bool:
+        stack, s = [], set()
+        # traverse the first tree 
+        # and store node complements (target - val) in hashset
+        while stack or root1:
+            while root1:
+                stack.append(root1)
+                root1 = root1.left
+            root1 = stack.pop()
+            s.add(target - root1.val)
+            root1 = root1.right
+        
+        # traverse the second tree 
+        # and check if one of the values exists in hashset
+        while stack or root2:
+            while root2:
+                stack.append(root2)
+                root2 = root2.left
+            root2 = stack.pop()
+            if root2.val in s:
+                return True
+            root2 = root2.right
+
+        return False  
   
 ```
 </details>  
+		
 #### 1216. Valid Palindrome III
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def isValidPalindrome(self, s: str, k: int) -> bool:
+        n = len(s)
+        dp = [[0] * (n + 1) for _ in range(n + 1)] 
+        for i in range(n + 1): 
+            for j in range(n + 1): 
+                if not i or not j: 
+                    dp[i][j] = i or j 
+                elif s[i - 1] == s[n - j]: 
+                    dp[i][j] = dp[i - 1][j - 1] 
+                else: 
+                    dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1])
+        return dp[n][n] <= k * 2  
   
 ```
-</details>  
+</details> 
+		
 #### 1228. Missing Number In Arithmetic Progression
   
 <details>
 <summary>code</summary>
   
 ```
-  
+Soluton 1: Arithmetic Sequence Sum
+		
+		
+ def missingNumber(self, A):
+        return (min(A) + max(A)) * (len(A) + 1) / 2 - sum(A)		
+		
+Solution 2: Binary Search	
+		
+def missingNumber(self, A):
+        n = len(A)
+        d = (A[-1] - A[0]) / n
+        left, right = 0, n
+        while left < right:
+            mid = (left + right) / 2
+            if A[mid] == A[0] + d * mid:
+                left = mid + 1
+            else:
+                right = mid
+        return A[0] + d * left  
   
 ```
 </details>  
+		
 #### 1229. Meeting Scheduler
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def minAvailableDuration(self, slots1: List[List[int]], slots2: List[List[int]], duration: int) -> List[int]:
+
+        slots1.sort()
+        slots2.sort()
+        pointer1 = pointer2 = 0
+
+        while pointer1 < len(slots1) and pointer2 < len(slots2):
+            # find the boundaries of the intersection, or the common slot
+            intersect_right = min(slots1[pointer1][1], slots2[pointer2][1])
+            intersect_left = max(slots1[pointer1][0],slots2[pointer2][0])
+            if intersect_right - intersect_left >= duration:
+                return [intersect_left, intersect_left + duration]
+            # always move the one that ends earlier
+            if slots1[pointer1][1]< slots2[pointer2][1]:
+                pointer1 += 1
+            else:
+                pointer2 += 1
+        return [] 
+
+Method 2: Heap:		
+		
+class Solution:
+    def minAvailableDuration(self, slots1: List[List[int]], slots2: List[List[int]], duration: int) -> List[int]:
+        # build up a heap containing time slots last longer than duration
+        timeslots = list(filter(lambda x: x[1] - x[0] >= duration, slots1 + slots2))
+        heapq.heapify(timeslots)
+
+        while len(timeslots) > 1:
+            start1, end1 = heapq.heappop(timeslots)
+            start2, end2 = timeslots[0]
+            if end1 >= start2 + duration:
+                return [start2, start2 + duration]
+        return []		
   
 ```
-</details>  
+</details>
+		
 #### 1231. Divide Chocolate
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def maximizeSweetness(self, sweetness: List[int], k: int) -> int:
+        # Initialize the left and right boundaries.
+        # left = 1 and right = (total sweetness) / (number of people).
+        number_of_people = k + 1
+        left = min(sweetness)
+        right = sum(sweetness) // number_of_people
+        
+        while left < right:
+            # Get the middle index between left and right boundary indexes.
+            # cur_sweetness stands for the total sweetness for the current person.
+            # people_with_chocolate stands for the number of people that have 
+            # a piece of chocolate of sweetness greater than or equal to mid.  
+            mid = (left + right + 1) // 2
+            cur_sweetness = 0
+            people_with_chocolate = 0
+            
+            # Start assigning chunks to the current person.
+            for s in sweetness:
+                cur_sweetness += s
+                
+                # If the total sweetness is no less than mid, this means we can break off
+                # the current piece and move on to assigning chunks to the next person.
+                if cur_sweetness >= mid:
+                    people_with_chocolate += 1
+                    cur_sweetness = 0
+
+            if people_with_chocolate >= k + 1:
+                left = mid
+            else:
+                right = mid - 1
+                
+        return right  
   
 ```
 </details>  
+		
 #### 1236. Web Crawler
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def crawl(self, startUrl: str, htmlParser: 'HtmlParser') -> List[str]:
+        visited = {startUrl}
+        domain = startUrl.split("http://")[1].split("/")[0]
+        ans = [startUrl]
+        queue = collections.deque([startUrl])
+        while queue:
+            for _ in range(len(queue)):
+                url = queue.popleft()
+                check = htmlParser.getUrls(url)
+                for new_url in check:
+                    if new_url in visited:
+                        continue
+                    if new_url.split("http://")[1].split("/")[0] != domain:
+                        continue
+                    ans.append(new_url)
+                    visited.add(new_url)
+                    queue.append(new_url)        
+        return ans  
   
 ```
 </details>  
+		
 #### 1244. Design A Leaderboard
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Leaderboard:
+
+    def __init__(self):
+        self.scores = {}
+
+    def addScore(self, playerId: int, score: int) -> None:
+        if playerId not in self.scores:
+            self.scores[playerId] = 0
+        self.scores[playerId] += score
+
+    def top(self, K: int) -> int:
+    
+        # This is a min-heap by default in Python.
+        heap = []
+        for x in self.scores.values():
+            heapq.heappush(heap, x)
+            if len(heap) > K:
+                heapq.heappop(heap)
+        res = 0
+        while heap:
+            res += heapq.heappop(heap)
+        return res
+
+    def reset(self, playerId: int) -> None:
+        self.scores[playerId] = 0  
+		
+Approach : Using a TreeMap / SortedMap		
+
+from sortedcontainers import SortedDict
+
+class Leaderboard:
+
+    def __init__(self):
+        self.scores = {}
+        self.sortedScores = SortedDict()
+
+    def addScore(self, playerId: int, score: int) -> None:
+
+        # The scores dictionary simply contains the mapping from the
+        # playerId to their score. The sortedScores contain a BST with 
+        # key as the score and value as the number of players that have
+        # that score.     
+        if playerId not in self.scores:
+            self.scores[playerId] = score
+            self.sortedScores[-score] = self.sortedScores.get(-score, 0) + 1
+        else:
+            preScore = self.scores[playerId]
+            val = self.sortedScores.get(-preScore)
+            if val == 1:
+                del self.sortedScores[-preScore]
+            else:
+                self.sortedScores[-preScore] = val - 1    
+            
+            newScore = preScore + score;
+            self.scores[playerId] = newScore
+            self.sortedScores[-newScore] = self.sortedScores.get(-newScore, 0) + 1
+        
+    def top(self, K: int) -> int:
+        count, total = 0, 0;
+
+        for key, value in self.sortedScores.items():
+            times = self.sortedScores.get(key)
+            for _ in range(times): 
+                total += -key;
+                count += 1;
+                
+                # Found top-K scores, break.
+                if count == K:
+                    break;
+                
+            # Found top-K scores, break.
+            if count == K:
+                break;
+        
+        return total;
+
+    def reset(self, playerId: int) -> None:
+        preScore = self.scores[playerId]
+        if self.sortedScores[-preScore] == 1:
+            del self.sortedScores[-preScore]
+        else:
+            self.sortedScores[-preScore] -= 1
+        del self.scores[playerId];		
   
 ```
 </details>  
+		
 #### 1245. Tree Diameter
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def treeDiameter(self, edges: List[List[int]]) -> int:
+
+        # build the adjacency list representation of the graph
+        graph = [set() for i in range(len(edges)+1)]
+        for edge in edges:
+            u, v = edge
+            graph[u].add(v)
+            graph[v].add(u)
+
+        def bfs(start):
+            """
+             return the farthest node from the 'start' node
+               and the distance between them.
+            """
+            visited = [False] * len(graph)
+
+            visited[start] = True
+            queue = deque([start])
+            distance = -1
+            last_node = None
+            while queue:
+                next_queue = deque()
+                while queue:
+                    next_node = queue.popleft()
+                    for neighbor in graph[next_node]:
+                        if not visited[neighbor]:
+                            visited[neighbor] = True
+                            next_queue.append(neighbor)
+                            last_node = neighbor
+                distance += 1
+                queue = next_queue
+
+            return last_node, distance
+
+        # 1). find one of the farthest nodes
+        farthest_node, distance_1 = bfs(0)
+        # 2). find the other farthest node
+        #  and the distance between two farthest nodes
+        another_farthest_node, distance_2 = bfs(farthest_node)
+
+        return distance_2  
+		
+Approach 2: Centroids of Graph via BFS
+		
+class Solution:
+    def treeDiameter(self, edges: List[List[int]]) -> int:
+
+        # build the adjacency list representation of the graph.
+        graph = [set() for i in range(len(edges)+1)]
+        for edge in edges:
+            u, v = edge
+            graph[u].add(v)
+            graph[v].add(u)
+
+        # find the outer most nodes, _i.e._ leaf nodes
+        leaves = []
+        for vertex, links in enumerate(graph):
+            if len(links) == 1:
+                leaves.append(vertex)
+
+        # "peel" the graph layer by layer,
+        #   until we have the centroids left.
+        layers = 0
+        vertex_left = len(edges) + 1
+        while vertex_left > 2:
+            vertex_left -= len(leaves)
+            next_leaves = []
+            for leaf in leaves:
+                # the only neighbor left on the leaf node.
+                neighbor = graph[leaf].pop()
+                graph[neighbor].remove(leaf)
+                if len(graph[neighbor]) == 1:
+                    next_leaves.append(neighbor)
+            layers += 1
+            leaves = next_leaves
+
+        return layers * 2 + (0 if vertex_left == 1 else 1)
+		
+Approach 3: DFS (Depth-First Search)
+		
+class Solution:
+    def treeDiameter(self, edges: List[List[int]]) -> int:
+
+        # build the adjacency list representation of the graph.
+        graph = [set() for i in range(len(edges)+1)]
+        for edge in edges:
+            u, v = edge
+            graph[u].add(v)
+            graph[v].add(u)
+
+        diameter = 0
+
+        def dfs(curr, visited):
+            """
+                return the max distance
+                  starting from the 'curr' node to its leaf nodes
+            """
+            nonlocal diameter
+
+            # the top 2 distance starting from this node
+            top_1_distance, top_2_distance = 0, 0
+
+            distance = 0
+            visited[curr] = True
+
+            for neighbor in graph[curr]:
+                if not visited[neighbor]:
+                    distance = 1 + dfs(neighbor, visited)
+
+                if distance > top_1_distance:
+                    top_1_distance, top_2_distance = distance, top_1_distance
+                elif distance > top_2_distance:
+                    top_2_distance = distance
+
+            # with the top 2 distance, we can update the current diameter
+            diameter = max(diameter, top_1_distance + top_2_distance)
+
+            return top_1_distance
+
+        visited = [False for i in range(len(graph))]
+        dfs(0, visited)
+
+        return diameter		
   
 ```
 </details>  
+		
 #### 1259. Handshakes That Don't Cross
   
 <details>
 <summary>code</summary>
   
 ```
-  
+@functools.lru_cache(None)
+    def numberOfWays(self, n):
+        return sum(self.numberOfWays(i) * self.numberOfWays(n - 2 - i) for i in range(0, n, 2)) if n else 1
+
+Solution 2: Catalan Numbers
+ def numberOfWays(self, n):
+        res = 1
+        for i in xrange(1, n / 2 + 1):
+            res *= n - i + 1
+            res /= i
+        return res / (n / 2 + 1) % (10**9 + 7)	
   
 ```
 </details>  
+	
 #### 1265. Print Immutable Linked List in Reverse
   
 <details>
 <summary>code</summary>
   
 ```
-  
+✔️ Solution 1: Using Recursive
+
+class Solution:
+    def printLinkedListInReverse(self, head: 'ImmutableListNode') -> None:
+        if head == None: return
+        self.printLinkedListInReverse(head.getNext())
+        head.printValue()
+Complexity:
+
+Time: O(N)
+Space: O(N)
+✔️ Solution 2: Using Stack
+
+class Solution:
+    def printLinkedListInReverse(self, head: 'ImmutableListNode') -> None:
+        st = []
+        while head != None:
+            st.append(head)
+            head = head.getNext()
+        while st:
+            st.pop().printValue()
+Complexity:
+
+Time: O(N)
+Space: O(N)
+✔️ Follow-up 1:Constant space complexity?
+
+class Solution:
+    def printLinkedListInReverse(self, head: 'ImmutableListNode') -> None:
+        def count(head):
+            cnt = 0
+            while head:
+                cnt += 1
+                head = head.getNext()
+            return cnt
+        
+        def printAt(head, index):
+            for i in range(index):
+                head = head.getNext()
+            head.printValue()
+        
+        n = count(head)
+        for i in range(n-1, -1, -1):
+            printAt(head, i)
+Complexity:
+
+Time: O(N^2)
+Space: O(1)
+✔️ Follow-up 2: Linear time complexity and less than linear space complexity?
+
+class Solution:
+    def printLinkedListInReverse(self, head: 'ImmutableListNode') -> None:
+        def count(head):
+            cnt = 0
+            while head:
+                cnt += 1
+                head = head.getNext()
+            return cnt
+        
+        def getHeadNodes(head, step):
+            cnt = 0
+            ans = []
+            while head:
+                if cnt % step == 0:
+                    ans.append(head)
+                head = head.getNext()
+                cnt += 1
+            return ans
+        
+        def printReverse(head, step):
+            cnt = 0
+            st = []
+            while head != None and cnt < step:
+                st.append(head)
+                head = head.getNext()
+                cnt += 1
+            while st:
+                st.pop().printValue()
+        
+        step = int(sqrt(count(head))) + 1
+        headNodes = getHeadNodes(head, step)
+        while headNodes:
+            printReverse(headNodes.pop(), step)
+Complexity:
+
+Time: O(N)
+Space: O(Sqrt(N))  
   
 ```
-</details>  
+</details> 
+	
 #### 1272. Remove Interval
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def removeInterval(self, intervals: List[List[int]], toBeRemoved: List[int]) -> List[List[int]]:
+
+        remove_start, remove_end = toBeRemoved
+        output = []
+
+        for start, end in intervals:
+            # If there are no overlaps, add the interval to the list as is.
+            if start > remove_end or end < remove_start:
+                output.append([start, end])
+            else:
+                # Is there a left interval we need to keep?
+                if start < remove_start:
+                    output.append([start, remove_start])
+                # Is there a right interval we need to keep?
+                if end > remove_end:
+                    output.append([remove_end, end])
+
+        return output  
   
 ```
 </details>  
+	
 #### 1274. Number of Ships in a Rectangle
   
 <details>
 <summary>code</summary>
   
 ```
+class Solution:
+    def countShips(self, sea: 'Sea', topRight: 'Point', bottomLeft: 'Point') -> int:
+        # If the current rectangle does not contain any ships, return 0.         
+        if (bottomLeft.x > topRight.x) or (bottomLeft.y > topRight.y):
+            return 0
+        if not sea.hasShips(topRight, bottomLeft):
+            return 0
+
+        # If the rectangle represents a single point, a ship is located.
+        if (topRight.x == bottomLeft.x) and (topRight.y == bottomLeft.y):
+            return 1
+
+        # Recursively check each of the 4 sub-rectangles for ships.
+        mid_x = (topRight.x + bottomLeft.x) // 2
+        mid_y = (topRight.y + bottomLeft.y) // 2
+        return self.countShips(sea, Point(mid_x, mid_y), bottomLeft) + \
+               self.countShips(sea, topRight, Point(mid_x + 1, mid_y + 1)) + \
+               self.countShips(sea, Point(mid_x, topRight.y), Point(bottomLeft.x, mid_y + 1)) + \
+               self.countShips(sea, Point(topRight.x, mid_y), Point(mid_x + 1, bottomLeft.y))
   
   
 ```
 </details>  
+	
 #### 1426. Counting Elements
   
 <details>
 <summary>code</summary>
   
 ```
+def countElements(self, arr: List[int]) -> int:
+    count = 0
+    for x in arr:
+        if x + 1 in arr:
+            count += 1
+    return count
+
+# Note that we could also do this as a one-liner generator comprehension. 
+# return sum(1 for x in arr if x + 1 in arr)  
   
-  
+Approach 2: Search with HashSet
+def countElements(self, arr: List[int]) -> int:
+    hash_set = set(arr)
+    count = 0
+    for x in arr:
+        if x + 1 in hash_set:
+            count += 1
+    return count	
+	
+Approach 3: Search with Sorted Array	
+def countElements(self, arr: List[int]) -> int:
+    arr.sort()
+    count = 0
+    run_length = 1
+    for i in range(len(arr)):
+        if arr[i - 1] != arr[i]:
+            if arr[i - 1] + 1 == arr[i]:
+                count += run_length
+            run_length = 0
+        run_length += 1
+    return count
+	
 ```
 </details>  
+	
 #### 1427. Perform String Shifts
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def stringShift(self, string: str, shift: List[List[int]]) -> str:
+        for direction, amount in shift:
+            amount %= len(string)
+            if direction == 0:
+                # Move necessary amount of characters from start to end
+                string = string[amount:] + string[:amount]
+            else:
+                # Move necessary amount of characters from end to start
+                string = string[-amount:] + string[:-amount]
+        return string  
+	
+Approach 2: Compute Net Shift
+	
+class Solution:
+    def stringShift(self, string: str, shift: List[List[int]]) -> str:
+
+        # Add up the left shifts and right shifts.
+        overall_shifts = [0, 0]
+        for direction, amount in shift:
+            overall_shifts[direction] += amount
+        left_shifts, right_shifts = overall_shifts
+        
+        # Determine which shift (if any) to perform.
+        if left_shifts > right_shifts:
+            left_shifts = (left_shifts - right_shifts) % len(string)
+            string = string[left_shifts:] + string[:left_shifts]
+        else:
+            right_shifts = (right_shifts - left_shifts) % len(string)
+            string = string[-right_shifts:] + string[:-right_shifts]
+
+        return string	
+	
+class Solution:
+    def stringShift(self, s: str, shift: List[List[int]]) -> str:
+
+        # Count the number of left shifts. A right shift is a negative left shift.
+        left_shifts = 0
+        for direction, amount in shift:
+            if direction == 1:
+                amount = -amount
+            left_shifts += amount
+            
+        # Convert back to a positive, do left shifts, and return.
+        left_shifts %= len(s)
+        s = s[left_shifts:] + s[:left_shifts]
+        return s	
   
 ```
 </details>  
+	
 #### 1428. Leftmost Column with at Least a One
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def leftMostColumnWithOne(self, binaryMatrix: 'BinaryMatrix') -> int:
+        rows, cols = binaryMatrix.dimensions()
+        smallest_index = cols
+        # Go through each of the rows.
+        for row in range(rows):
+            # Linear seach for the first 1 in this row.
+            for col in range(cols):
+                if binaryMatrix.get(row, col) == 1:
+                    smallest_index = min(smallest_index, col)
+                    break
+        # If we found an index, we should return it. Otherwise, return -1.
+        return -1 if smallest_index == cols else smallest_index  
+	
+Approach 2: Binary Search Each Row
+class Solution:
+    def leftMostColumnWithOne(self, binaryMatrix: 'BinaryMatrix') -> int:
+        rows, cols = binaryMatrix.dimensions()
+        smallest_index = cols
+        for row in range(rows):
+            # Binary Search for the first 1 in the row.
+            lo = 0
+            hi = cols - 1
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if binaryMatrix.get(row, mid) == 0:
+                    lo = mid + 1
+                else:
+                    hi = mid
+            # If the last element in the search space is a 1, then this row
+            # contained a 1.
+            if binaryMatrix.get(row, lo) == 1:
+                smallest_index = min(smallest_index, lo)
+        # If smallest_index is still set to cols, then there were no 1's in 
+        # the grid. 
+        return -1 if smallest_index == cols else smallest_index	
+		    
+Approach 3: Start at Top Right, Move Only Left and Down		    
+		    
+class Solution:
+    def leftMostColumnWithOne(self, binaryMatrix: 'BinaryMatrix') -> int:
+        
+        rows, cols = binaryMatrix.dimensions()
+        
+        # Set pointers to the top-right corner.
+        current_row = 0
+        current_col = cols - 1
+        
+        # Repeat the search until it goes off the grid.
+        while current_row < rows and current_col >= 0:
+            if binaryMatrix.get(current_row, current_col) == 0:
+                current_row += 1
+            else:
+                current_col -= 1
+        
+        # If we never left the last column, it must have been all 0's.
+        return current_col + 1 if current_col != cols - 1 else -1		    
   
 ```
 </details>  
+	
 #### 1429. First Unique Number
   
 <details>
 <summary>code</summary>
   
 ```
-  
+from collections import deque
+
+class FirstUnique:
+
+    def __init__(self, nums: List[int]):
+        self._queue = deque(nums)
+        self._is_unique = {}
+        for num in nums:
+            # Notice that we're calling the "add" method of FirstUnique; not of the queue. 
+            self.add(num)
+        
+    def showFirstUnique(self) -> int:
+        # We need to start by "cleaning" the queue of any non-uniques at the start.
+        # Note that we know that if a value is in the queue, then it is also in
+        # is_unique, as the implementation of add() guarantees this.
+        while self._queue and not self._is_unique[self._queue[0]]:
+            self._queue.popleft()
+        # Check if there is still a value left in the queue. There might be no uniques.
+        if self._queue:
+            return self._queue[0] # We don't want to actually *remove* the value.
+        return -1
+        
+    def add(self, value: int) -> None:
+        # Case 1: We need to add the number to the queue and mark it as unique. 
+        if value not in self._is_unique:
+            self._is_unique[value] = True
+            self._queue.append(value)
+        # Case 2 and 3: We need to mark the number as no longer unique.
+        else:
+            self._is_unique[value] = False  
+	
+Approach 3: LinkedHashSet for Queue, and HashMap of Unique-Statuses
+	
+# In Python, we have to make do with the OrderedDict class. We can use it as a Set by setting
+# the values to None.
+
+from collections import OrderedDict
+
+class FirstUnique:
+
+    def __init__(self, nums: List[int]):
+        self._queue = OrderedDict()
+        self._is_unique = {}
+        for num in nums:
+            # Notice that we're calling the "add" method of FirstUnique; not of the queue. 
+            self.add(num)
+        
+    def showFirstUnique(self) -> int:
+        # Check if there is still a value left in the queue. There might be no uniques.
+        if self._queue:
+            # We don't want to actually *remove* the value.
+            # Seeing as OrderedDict has no "get first" method, the way that we can get
+            # the first value is to create an iterator, and then get the "next" value
+            # from that. Note that this is O(1).
+            return next(iter(self._queue))
+        return -1
+        
+    def add(self, value: int) -> None:
+        # Case 1: We need to add the number to the queue and mark it as unique. 
+        if value not in self._is_unique:
+            self._is_unique[value] = True
+            self._queue[value] = None
+        # Case 2: We need to mark the value as no longer unique and then 
+        # remove it from the queue.
+        elif self._is_unique[value]:
+            self._is_unique[value] = False
+            self._queue.pop(value)
+        # Case 3: We don't need to do anything; the number was removed from the queue
+        # the second time it occurred.	
   
 ```
 </details>  
+	
 #### 1474. Delete N Nodes After M Nodes of a Linked List
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def deleteNodes(self, head: ListNode, m: int, n: int) -> ListNode:
+        dummy = ListNode(None)
+        dummy.next = head
+        i = 0
+        while head:
+            if i < m-1:
+                i += 1
+            else:
+                j = 0
+                while j < n and head.next:
+                    head.next = head.next.next
+                    j += 1
+                i = 0
+            head = head.next
+        return dummy.next  
   
 ```
 </details>  
+	
 #### 1485. Clone Binary Tree With Random Pointer
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def copyRandomBinaryTree(self, root: 'Node') -> 'NodeCopy':
+        if not root:   # Protection against a null root input  
+            return None
+
+        # Step 1. Create a copy of each node
+        copy = {}
+        stack = [root]
+
+        while stack:
+            node = stack.pop()
+            copy[node] = NodeCopy(node.val)
+            if node.left:
+                stack.append(node.left)
+            if node.right:
+                stack.append(node.right)
+
+        # Step 2. Connect the copied nodes together
+        stack = [root]
+
+        while stack:
+            node = stack.pop()
+            if node.left:
+                copy[node].left = copy[node.left]
+                stack.append(node.left)
+            if node.right:
+                copy[node].right = copy[node.right]
+                stack.append(node.right)
+            if node.random:
+                copy[node].random = copy[node.random]
+
+        return copy[root]  
+	
+Approach 2: Recursive Tree Traversal + Hashmap	
+	
+class Solution:
+    def copyRandomBinaryTree(self, root: 'Node') -> 'NodeCopy':
+        if not root:
+            return None
+
+        def dfs_copy(node):
+            if not node:
+                return
+
+            copy[node] = NodeCopy(node.val)
+
+            dfs_copy(node.left)
+            dfs_copy(node.right)
+
+            return node
+
+        def dfs_connect(node):
+            if not node:
+                return
+
+            if node.left:
+                copy[node].left = copy[node.left]
+            if node.right:
+                copy[node].right = copy[node.right]
+            if node.random:
+                copy[node].random = copy[node.random]
+
+            dfs_connect(node.left)
+            dfs_connect(node.right)
+
+            return node     
+
+        copy = {}
+        dfs_copy(root)
+        dfs_connect(root)
+        return copy[root]	
   
 ```
 </details>  
+	
 #### 1490. Clone N-ary Tree
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def cloneTree(self, root: 'Node') -> 'Node':
+	return Node(root.val, [self.cloneTree(child) for child in root.children]) if root else None  
   
 ```
 </details>  
+	
 #### 1506. Find Root of N-Ary Tree
   
 <details>
 <summary>code</summary>
   
 ```
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+"""
+class Solution:
+    def findRoot(self, tree: List['Node']) -> 'Node':
+        # set that contains all the child nodes.
+        seen = set()
+
+        # add all the child nodes into the set
+        for node in tree:
+            for child in node.children:
+                # we could either add the value or the node itself.
+                seen.add(child.val)
+
+        # find the node that is not in the child node set.
+        for node in tree:
+            if node.val not in seen:
+                return node  
   
-  
+2.
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+"""
+
+class Solution:
+    def findRoot(self, tree: List['Node']) -> 'Node':
+        value_sum = 0
+
+        for node in tree:
+            # the value is added as a parent node
+            value_sum += node.val
+            for child in node.children:
+                # the value is deducted as a child node.
+                value_sum -= child.val
+
+        # the value of the root node is `value_sum`
+        for node in tree:
+            if node.val == value_sum:
+                return node	
 ```
 </details>  
+	
 #### 1522. Diameter of N-Ary Tree
   
 <details>
 <summary>code</summary>
   
 ```
-  
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+"""
+class Solution:
+    def diameter(self, root: 'Node') -> int:
+        diameter = 0
+
+        def height(node):
+            """ return the height of the node """
+            nonlocal diameter
+
+            if len(node.children) == 0:
+                return 0
+
+            # select the top two heights
+            max_height_1, max_height_2 = 0, 0
+            for child in node.children:
+                parent_height = height(child) + 1
+                if parent_height > max_height_1:
+                    max_height_1, max_height_2 = parent_height, max_height_1
+                elif parent_height > max_height_2:
+                    max_height_2 = parent_height
+
+            # calculate the distance between the two farthest leaves nodes.
+            distance = max_height_1 + max_height_2
+            diameter = max(diameter, distance)
+
+            return max_height_1
+
+        height(root)
+        return diameter  
+	
+Approach 2: Distance with Depth
+
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val=None, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+"""
+class Solution:
+    def diameter(self, root: 'Node') -> int:
+        """
+        :type root: 'Node'
+        :rtype: int
+        """
+        diameter = 0
+
+        def maxDepth(node, curr_depth):
+            """ return the maximum depth of leaves nodes
+                 descending from the current node
+            """
+            nonlocal diameter
+
+            if len(node.children) == 0:
+                return curr_depth
+            
+            # select the top 2 depths from its children
+            max_depth_1, max_depth_2 = curr_depth, 0
+            for child in node.children:
+                depth = maxDepth(child, curr_depth+1)
+                if depth > max_depth_1:
+                    max_depth_1, max_depth_2 = depth, max_depth_1
+                elif depth > max_depth_2:
+                    max_depth_2 = depth
+
+            # calculate the distance between the two farthest leaves nodes
+            distance = max_depth_1 + max_depth_2 - 2 * curr_depth
+            diameter = max(diameter, distance)
+
+            return max_depth_1
+
+        maxDepth(root, 0)
+        return diameter	
   
 ```
 </details>  
+	
 #### 1533. Find the Index of the Large Integer
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def getIndex(self, rd: 'ArrayReader') -> int:
+        l, r = 0, rd.length() - 1
+        while l < r:
+            h = (r - l + 1) // 2  # half, h * 2 <= r - l + 1
+            if rd.compareSub(l, l + h - 1, l + h, l + h * 2 - 1) != 1:
+                l = l + h
+            else:
+                r = l + h - 1
+        return l  
   
 ```
 </details>  
+	
 #### 1538. Guess the Majority in a Hidden Array
   
 <details>
 <summary>code</summary>
   
 ```
-  
+def guessMajority(self, reader: 'ArrayReader') -> int:
+        n,groupA,groupB,aIdx,bIdx=reader.length(),1,0,None,None
+        first,second=reader.query(0,1,2,3),reader.query(0,1,2,4)
+        for i in range(4,n):
+            if reader.query(0,1,2,i)==first:
+                groupA,aIdx=groupA+1,i
+            else:
+                groupB,bIdx=groupB+1,i
+        for i in range(3):
+            nxt=[v for v in [0,1,2,3,4] if v!=i]
+            if reader.query(*nxt)==second:
+                groupA,aIdx=groupA+1,i
+            else:
+                groupB,bIdx=groupB+1,i
+        return aIdx if groupA>groupB else bIdx if groupB>groupA else -1  
   
 ```
 </details>  
+	
 #### 1548. The Most Similar Path in a Graph
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def mostSimilar(self, n: int, roads: List[List[int]], names: List[str], tp: List[str]) -> List[int]:
+        # construct graph
+        graph = [[] for _ in range(n)]
+        for u, v in roads:
+            graph[u].append(v)
+            graph[v].append(u)
+        
+        # init variables
+        m = len(tp)
+        dp = [[m] * n for _ in range(m)]
+        prev = [[0] * n for _ in range(m)]
+        
+        # populate dp
+        for v in range(n):
+            dp[0][v] = (names[v] != tp[0])
+        for i in range(1, m):
+            for v in range(n):
+                for u in graph[v]:
+                    if dp[i-1][u] < dp[i][v]:
+                        dp[i][v] = dp[i-1][u]
+                        prev[i][v] = u
+                dp[i][v] += (names[v] != tp[i])
+                
+        # re-construct path
+        path, min_dist = [0], m
+        for v in range(n):
+            if dp[-1][v] < min_dist:
+                min_dist = dp[-1][v]
+                path[0] = v
+        for i in range(m - 1, 0, -1):
+            u = prev[i][path[-1]]
+            path.append(u)
+            
+        return path[::-1]  
   
 ```
 </details>  
+	
 #### 1564. Put Boxes Into the Warehouse I
   
 <details>
 <summary>code</summary>
   
 ```
-  
+class Solution:
+    def maxBoxesInWarehouse(self, boxes: List[int], warehouse: List[int]) -> int:
+        # Preprocess the height of the warehouse rooms to get usable heights
+        for i in range(1, len(warehouse)):
+            warehouse[i] = min(warehouse[i - 1], warehouse[i])
+
+        # Iterate through boxes from the smallest to the largest
+        boxes.sort()
+
+        count = 0
+
+        for room in reversed(warehouse):
+            # Count the boxes that can fit in the current warehouse room
+            if count < len(boxes) and boxes[count] <= room:
+                count += 1
+
+        return count  
+	
+Approach 2: Add Largest Possible Boxes from Left to Right
+class Solution:
+    def maxBoxesInWarehouse(self, boxes: List[int], warehouse: List[int]) -> int:
+
+        i = 0
+        count = 0
+        boxes.sort(reverse = True)
+
+        for room in warehouse:
+            # Iterate through boxes from largest to smallest
+            # Discard boxes that doesn't fit in the current warehouse
+            while i < len(boxes) and boxes[i] > room:
+                i += 1
+            if i == len(boxes):
+                return count
+            count += 1
+            i += 1
+
+        return count	
   
 ```
 </details>  
